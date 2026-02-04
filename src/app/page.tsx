@@ -1,18 +1,22 @@
 
 'use client';
 
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Logo } from '@/components/ui/Logo';
-import { MainBalanceCard } from '@/components/features/income/MainBalanceCard';
-import { MainSalaryForm } from '@/components/features/income/MainSalaryForm';
-import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
-import { ExpenseList } from '@/components/features/expenses/ExpenseList';
-import { CategoryChart } from '@/components/features/analytics/CategoryChart';
-import { ExpenseChart } from '@/components/features/analytics/ExpenseChart';
-import { GoalList } from '@/components/features/goals/GoalCard';
-import { GoalForm } from '@/components/features/goals/GoalForm';
 import { TrendingUp, BarChart3, Target } from 'lucide-react';
+
+// FORCE CLIENT: Disable SSR for all components with dynamic data (store-based)
+// This eliminates hydration errors by preventing server/client mismatch
+const MainBalanceCard = dynamic(() => import('@/components/features/income/MainBalanceCard').then(mod => ({ default: mod.MainBalanceCard })), { ssr: false });
+const MainSalaryForm = dynamic(() => import('@/components/features/income/MainSalaryForm').then(mod => ({ default: mod.MainSalaryForm })), { ssr: false });
+const ExpenseForm = dynamic(() => import('@/components/features/expenses/ExpenseForm').then(mod => ({ default: mod.ExpenseForm })), { ssr: false });
+const ExpenseList = dynamic(() => import('@/components/features/expenses/ExpenseList').then(mod => ({ default: mod.ExpenseList })), { ssr: false });
+const CategoryChart = dynamic(() => import('@/components/features/analytics/CategoryChart').then(mod => ({ default: mod.CategoryChart })), { ssr: false });
+const ExpenseChart = dynamic(() => import('@/components/features/analytics/ExpenseChart').then(mod => ({ default: mod.ExpenseChart })), { ssr: false });
+const GoalList = dynamic(() => import('@/components/features/goals/GoalCard').then(mod => ({ default: mod.GoalList })), { ssr: false });
+const GoalForm = dynamic(() => import('@/components/features/goals/GoalForm').then(mod => ({ default: mod.GoalForm })), { ssr: false });
 
 export default function HomePage() {
   return (
