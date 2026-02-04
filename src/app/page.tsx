@@ -8,6 +8,7 @@ import { StoreTestPanel } from '@/components/features/StoreTestPanel';
 import { MainBalanceCard } from '@/components/features/income/MainBalanceCard';
 import { MainSalaryForm } from '@/components/features/income/MainSalaryForm';
 import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
+import { ExpenseList } from '@/components/features/expenses/ExpenseList';
 
 export default function HomePage() {
   return (
@@ -26,6 +27,11 @@ export default function HomePage() {
         {/* Expense Form */}
         <div className="w-full max-w-2xl mx-auto mb-8">
           <ExpenseForm />
+        </div>
+
+        {/* Expense List */}
+        <div className="w-full max-w-2xl mx-auto mb-8">
+          <ExpenseList />
         </div>
 
         {/* Logo ve Başlık */}
