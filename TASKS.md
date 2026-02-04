@@ -1,9 +1,9 @@
 # Budgeify - Development Tasks
 
-## Progress: 15/32 Tasks Complete (47%)
+## Progress: 16/32 Tasks Complete (50%)
 
 **Current Phase:** Expense Module (Milestone 5)
-**Next Task:** Task 5.4 - Harcama Ekleme Formu Component'i
+**Next Task:** Task 5.5 - Harcama Listesi Component'i
 
 ### Task 1.1: Next.js Proje Kurulumu ✅ TAMAMLANDI
 
@@ -312,18 +312,21 @@ Kontrol: Ana maaş girişi, görüntülenmesi ve güncellenmesi sorunsuz çalı�
 
 **Commit:** `feat(expense): create CategoryAutocomplete component`
 
-### Task 5.4: Harcama Ekleme Formu Component'i
+### Task 5.4: Harcama Ekleme Formu Component'i ✅ TAMAMLANDI
 
-- [ ] Yeni harcama eklemek için kullanılacak `ExpenseForm` component'ini oluştur. `CategoryAutocomplete`, tutar ve not alanlarını içermeli.
+- [x] Yeni harcama eklemek için kullanılacak `ExpenseForm` component'ini oluştur. `CategoryAutocomplete`, tutar ve not alanlarını içermeli.
 
 **Dosya(lar):** `src/components/features/expenses/ExpenseForm.tsx`
 **Bağımlılık:** Task 2.1, 2.3, 5.2, 5.3 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Form component'i renderlanıyor ve tüm alanları içeriyor.
-- [ ] Form gönderildiğinde `expenseStore`'a yeni harcama ekleniyor.
-- [ ] Input validation (tutarın boş olmaması gibi) mevcut.
+- [x] Form component'i renderlanıyor ve tüm alanları içeriyor.
+- [x] Form gönderildiğinde `useBudgetStore`'a yeni harcama ekleniyor.
+- [x] Input validation (tutar, kategori, tarih kontrolü) mevcut.
+- [x] CategoryAutocomplete entegre edildi.
+- [x] Tarih seçici eklendi (bugünden ileri tarih seçilemez).
+- [x] Not alanı optional (max 200 karakter).
 
 **Styling Notes:** Bottom Sheet / Drawer görünümüne uygun layout (ancak bu task'ta drawer'ı implemente etmeyeceğiz).
 

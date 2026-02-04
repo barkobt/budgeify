@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { StoreTestPanel } from '@/components/features/StoreTestPanel';
 import { MainBalanceCard } from '@/components/features/income/MainBalanceCard';
 import { MainSalaryForm } from '@/components/features/income/MainSalaryForm';
+import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
 
 export default function HomePage() {
   return (
@@ -20,6 +21,11 @@ export default function HomePage() {
         {/* Main Salary Form */}
         <div className="w-full max-w-2xl mx-auto mb-8">
           <MainSalaryForm />
+        </div>
+
+        {/* Expense Form */}
+        <div className="w-full max-w-2xl mx-auto mb-8">
+          <ExpenseForm />
         </div>
 
         {/* Logo ve Başlık */}
