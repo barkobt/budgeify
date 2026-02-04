@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Header from '@/components/layout/Header';
+import BottomNav from '@/components/layout/BottomNav';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -23,9 +24,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className="min-h-screen bg-slate-50 antialiased pt-16">
+      <body className="min-h-screen bg-slate-50 antialiased pt-16 pb-24">
         <Header />
         {children}
+        <BottomNav />
       </body>
     </html>
   );

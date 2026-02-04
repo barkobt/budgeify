@@ -101,18 +101,16 @@ Kontrol: Temel proje kurulumu ve klasör yapısı hazır, `npm run build` hatas�
 Kontrol: Tüm reusable component'lar hazır, `npm run build` hatasız
 ---
 
-### Task 3.1: Header Component'i Oluşturma
-
-- [ ] Uygulama logosunu ve ayarlar ikonunu içeren `Header` component'ini oluştur.
+### Task 3.1: Header Component'i Oluşturma ✅ TAMAMLANDI
 
 **Dosya(lar):** `src/components/layout/Header.tsx`
 **Bağımlılık:** Task 2.1, 2.2 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Header component'i sayfada görünüyor.
-- [ ] Logo ve ayarlar ikonu yerleşimleri doğru.
-- [ ] Responsive düzenlemeler yapıldı (mobile-first).
+- [x] Header component'i sayfada görünüyor.
+- [x] Logo ve ayarlar ikonu yerleşimleri doğru.
+- [x] Responsive düzenlemeler yapıldı (mobile-first).
 
 **Styling Notes:** Minimalist tasarım, sabit üst kısım.
 
@@ -183,7 +181,7 @@ Kontrol: Temel layout (Header, BottomNav) hazır, sayfa iskeletleri işlevsel.
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Component, `incomeStore`'dan ana maaşı çekip gösteriyor.
+- [ ] Component, `incomeStore`'dan ana maaşı çekıp gösteriyor.
 - [ ] UI Reference'taki (gradient, büyük font, shadow) stile uygun.
 - [ ] Miktar, ₺ formatında gösteriliyor.
 
