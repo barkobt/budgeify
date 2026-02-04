@@ -1,9 +1,14 @@
+'use client';
+
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
+
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Logo ve Başlık */}
       <div className="text-center mb-8">
-        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center shadow-xl shadow-blue-500/20">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-xl shadow-blue-500/20">
           <span className="text-4xl">💰</span>
         </div>
         <h1 className="text-4xl font-bold text-slate-900 mb-2">
@@ -14,43 +19,75 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Hoş Geldiniz Kartı */}
-      <div className="w-full max-w-md glass rounded-2xl p-8 shadow-xl shadow-black/5">
-        <h2 className="text-2xl font-semibold text-slate-800 mb-4 text-center">
-          Hoş Geldiniz! 👋
-        </h2>
-        <p className="text-slate-600 text-center mb-6 leading-relaxed">
-          Budgeify ile gelir ve giderlerinizi kolayca takip edin,
-          harcama alışkanlıklarınızı analiz edin ve finansal
-          hedeflerinize ulaşın.
-        </p>
+      {/* Hoş Geldiniz Kartı - Card Component ile */}
+      <div className="w-full max-w-md">
+        <Card>
+          <CardHeader>
+            <CardTitle>Hoş Geldiniz! 👋</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-slate-600 mb-6 leading-relaxed">
+              Budgeify ile gelir ve giderlerinizi kolayca takip edin,
+              harcama alışkanlıklarınızı analiz edin ve finansal
+              hedeflerinize ulaşın.
+            </p>
 
-        {/* Özellik Listesi */}
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center gap-3 text-slate-700">
-            <span className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-lg">
-              📊
-            </span>
-            <span>Gelir ve gider takibi</span>
-          </div>
-          <div className="flex items-center gap-3 text-slate-700">
-            <span className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center text-lg">
-              📈
-            </span>
-            <span>Detaylı harcama analizi</span>
-          </div>
-          <div className="flex items-center gap-3 text-slate-700">
-            <span className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-lg">
-              🎯
-            </span>
-            <span>Tasarruf hedefleri</span>
-          </div>
-        </div>
+            {/* Özellik Listesi */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-slate-700">
+                <span className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-lg">
+                  📊
+                </span>
+                <span className="text-sm">Gelir ve gider takibi</span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-700">
+                <span className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center text-lg">
+                  📈
+                </span>
+                <span className="text-sm">Detaylı harcama analizi</span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-700">
+                <span className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-lg">
+                  🎯
+                </span>
+                <span className="text-sm">Tasarruf hedefleri</span>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button variant="primary" isFullWidth>
+              Başlayalım
+            </Button>
+            <Button variant="ghost" isFullWidth>
+              Daha Sonra
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
 
-        {/* Başla Butonu */}
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40">
-          Başlayalım
-        </button>
+      {/* Buton Varyantları Örneği */}
+      <div className="w-full max-w-md mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Buton Varyantları</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <Button variant="primary" isFullWidth>
+                Primary Buton
+              </Button>
+              <Button variant="secondary" isFullWidth>
+                Secondary Buton
+              </Button>
+              <Button variant="outline" isFullWidth>
+                Outline Buton
+              </Button>
+              <Button variant="ghost" isFullWidth>
+                Ghost Buton
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Footer */}
