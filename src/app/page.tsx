@@ -12,6 +12,7 @@ import { ExpenseList } from '@/components/features/expenses/ExpenseList';
 import { CategoryChart } from '@/components/features/analytics/CategoryChart';
 import { ExpenseChart } from '@/components/features/analytics/ExpenseChart';
 import { GoalList } from '@/components/features/goals/GoalCard';
+import { GoalForm } from '@/components/features/goals/GoalForm';
 
 export default function HomePage() {
   return (
@@ -45,6 +46,11 @@ export default function HomePage() {
         {/* Expense Chart */}
         <div className="w-full max-w-2xl mx-auto mb-8">
           <ExpenseChart />
+        </div>
+
+        {/* Goal Form */}
+        <div className="w-full max-w-2xl mx-auto mb-8">
+          <GoalForm />
         </div>
 
         {/* Goal List */}

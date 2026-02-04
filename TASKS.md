@@ -1,9 +1,9 @@
 # Budgeify - Development Tasks
 
-## Progress: 16/32 Tasks Complete (50%)
+## Progress: 24/32 Tasks Complete (75%)
 
-**Current Phase:** Expense Module (Milestone 5)
-**Next Task:** Task 5.5 - Harcama Listesi Component'i
+**Current Phase:** Analytics & Goals Complete (Milestone 6) ✅
+**Next Task:** Task 7.1 - Final Polish & Optimizations
 
 ### Task 1.1: Next.js Proje Kurulumu ✅ TAMAMLANDI
 
