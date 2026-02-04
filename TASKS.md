@@ -1,9 +1,9 @@
 # Budgeify - Development Tasks
 
-## Progress: 8/32 Tasks Complete (25%)
+## Progress: 10/32 Tasks Complete (31%)
 
 **Current Phase:** Income Module (Milestone 4)
-**Next Task:** Task 4.1 - Ana Maaş State'i Oluşturma
+**Next Task:** Task 4.3 - Ana Maaş Giriş Formu
 
 ### Task 1.1: Next.js Proje Kurulumu ✅ TAMAMLANDI
 
@@ -177,35 +177,36 @@ Kontrol: Tüm reusable component'lar hazır, `npm run build` hatasız
 Kontrol: Temel layout (Header, BottomNav) hazır, sayfa iskeletleri işlevsel.
 ---
 
-### Task 4.1: Ana Maaş State'i Oluşturma
+### Task 4.1: Ana Maaş State'i Oluşturma ✅ TAMAMLANDI (Task 1.3'te yapıldı)
 
-- [ ] `incomeStore.ts` içinde ana maaşı yönetecek Zustand state'ini oluştur.
+- [x] `incomeStore.ts` içinde ana maaşı yönetecek Zustand state'ini oluştur.
 
 **Dosya(lar):** `src/stores/incomeStore.ts`, `src/types/index.ts`
 **Bağımlılık:** Task 1.2 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] `useIncomeStore` hook'u tanımlandı.
-- [ ] `mainSalary` state'i ve `setMainSalary` action'ı mevcut.
-- [ ] TypeScript tipleri doğru şekilde tanımlandı (`Income` tipi MVP kapsamında sadece `salary` tipini içerecek şekilde basitleştirilebilir).
+- [x] `useIncomeStore` hook'u tanımlandı (useBudgetStore içinde).
+- [x] `mainSalary` state'i ve `getMainSalary()` action'ı mevcut.
+- [x] TypeScript tipleri doğru şekilde tanımlandı (Income tipi).
 
 **Styling Notes:** Yok
 
 **Commit:** `feat(store): implement main salary state in incomeStore`
 
-### Task 4.2: Ana Para Bloğu Component'i
+### Task 4.2: Ana Para Bloğu Component'i ✅ TAMAMLANDI
 
-- [ ] Ana sayfada ana maaşı gösteren `MainBalanceCard` component'ini oluştur.
+- [x] Ana sayfada ana maaşı gösteren `MainBalanceCard` component'ini oluştur.
 
 **Dosya(lar):** `src/components/features/income/MainBalanceCard.tsx`
 **Bağımlılık:** Task 2.2, 4.1 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Component, `incomeStore`'dan ana maaşı çekıp gösteriyor.
-- [ ] UI Reference'taki (gradient, büyük font, shadow) stile uygun.
-- [ ] Miktar, ₺ formatında gösteriliyor.
+- [x] Component, `useBudgetStore`'dan bakiye, gelir, gider çekip gösteriyor.
+- [x] UI Reference'taki (gradient, büyük font, shadow) stile uygun.
+- [x] Miktar, ₺ formatında gösteriliyor.
+- [x] Tasarruf oranı ve trend göstergeleri eklendi.
 
 **Styling Notes:** `bg-gradient-to-br from-blue-600 to-cyan-500 text-white`, büyük, bold tipografi, `rounded-2xl`.
 

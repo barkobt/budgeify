@@ -5,11 +5,17 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { StoreTestPanel } from '@/components/features/StoreTestPanel';
+import { MainBalanceCard } from '@/components/features/income/MainBalanceCard';
 
 export default function HomePage() {
   return (
     <main className="pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+        {/* Main Balance Card */}
+        <div className="w-full max-w-2xl mx-auto mb-8">
+          <MainBalanceCard />
+        </div>
+
         {/* Logo ve Başlık */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-xl shadow-blue-500/20">
