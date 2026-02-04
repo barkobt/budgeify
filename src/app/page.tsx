@@ -3,8 +3,6 @@
 
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { StoreTestPanel } from '@/components/features/StoreTestPanel';
 import { MainBalanceCard } from '@/components/features/income/MainBalanceCard';
 import { MainSalaryForm } from '@/components/features/income/MainSalaryForm';
 import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
@@ -72,7 +70,7 @@ export default function HomePage() {
         </div>
 
         {/* Hoş Geldiniz Kartı - Card Component ile */}
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-2xl mx-auto mb-8">
           <Card>
             <CardHeader>
               <CardTitle>Hoş Geldiniz! 👋</CardTitle>
@@ -115,59 +113,6 @@ export default function HomePage() {
               </Button>
             </CardFooter>
           </Card>
-        </div>
-
-        {/* Buton Varyantları ve Input Örneği */}
-        <div className="w-full max-w-md mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>UI Bileşenleri Demo</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Input Examples */}
-                <div className="space-y-4 pb-4 border-b border-white/10">
-                  <Input
-                    label="Gelir Miktarı"
-                    type="number"
-                    placeholder="0.00"
-                    iconLeft="₺"
-                    helperText="Aylık gelir tutarını girin"
-                  />
-                  <Input
-                    label="Açıklama"
-                    type="text"
-                    placeholder="Gider türünü açıkla"
-                    error="Bu alan gereklidir"
-                  />
-                </div>
-
-                {/* Button Variants */}
-                <div className="space-y-3">
-                  <p className="text-sm font-medium text-slate-700">
-                    Buton Varyantları:
-                  </p>
-                  <Button variant="primary" isFullWidth>
-                    Primary Buton
-                  </Button>
-                  <Button variant="secondary" isFullWidth>
-                    Secondary Buton
-                  </Button>
-                  <Button variant="outline" isFullWidth>
-                    Outline Buton
-                  </Button>
-                  <Button variant="ghost" isFullWidth>
-                    Ghost Buton
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Store Test Panel */}
-        <div className="w-full max-w-4xl mt-8">
-          <StoreTestPanel />
         </div>
 
         {/* Footer */}

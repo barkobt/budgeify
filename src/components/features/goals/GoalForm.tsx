@@ -47,6 +47,9 @@ export const GoalForm: React.FC = () => {
   // Success state
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Loading state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   /**
    * Form validation
    */
@@ -91,33 +94,42 @@ export const GoalForm: React.FC = () => {
   /**
    * Form submission
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    // Create new goal
-    const newGoal: Goal = {
-      id: generateId(),
-      name: name.trim(),
-      targetAmount: parseFloat(targetAmount),
-      currentAmount: currentAmount ? parseFloat(currentAmount) : 0,
-      icon: selectedIcon,
-      targetDate: targetDate || undefined,
-      status: 'active',
-      createdAt: getCurrentISODate(),
-    };
+    setIsSubmitting(true);
 
-    addGoal(newGoal);
+    try {
+      // Simulate async operation (for better UX with loading state)
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Show success message
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+      // Create new goal
+      const newGoal: Goal = {
+        id: generateId(),
+        name: name.trim(),
+        targetAmount: parseFloat(targetAmount),
+        currentAmount: currentAmount ? parseFloat(currentAmount) : 0,
+        icon: selectedIcon,
+        targetDate: targetDate || undefined,
+        status: 'active',
+        createdAt: getCurrentISODate(),
+      };
 
-    // Reset form
-    handleReset();
+      addGoal(newGoal);
+
+      // Show success message
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+
+      // Reset form
+      handleReset();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   /**
@@ -226,13 +238,15 @@ export const GoalForm: React.FC = () => {
           variant="primary"
           isFullWidth
           onClick={handleSubmit}
+          isLoading={isSubmitting}
         >
-          Hedef Ekle
+          {isSubmitting ? 'Ekleniyor...' : 'Hedef Ekle'}
         </Button>
         <Button
           variant="ghost"
           isFullWidth
           onClick={handleReset}
+          disabled={isSubmitting}
         >
           Temizle
         </Button>
