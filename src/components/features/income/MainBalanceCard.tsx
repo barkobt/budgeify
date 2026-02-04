@@ -28,9 +28,12 @@ export const MainBalanceCard = () => {
   const isPositive = balance >= 0;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 text-white shadow-2xl shadow-blue-500/30">
+    <section
+      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 text-white shadow-2xl shadow-blue-500/30"
+      aria-label="Finansal Özet Kartı"
+    >
       {/* Decorative Background Pattern */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20" />
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20" aria-hidden="true" />
 
       <div className="relative p-6 sm:p-8">
         {/* Header */}
@@ -57,15 +60,18 @@ export const MainBalanceCard = () => {
 
         {/* Balance Amount */}
         <div className="mb-6">
-          <h1 className="mb-2 text-5xl font-bold tracking-tight sm:text-6xl">
+          <h1
+            className="mb-2 text-5xl font-bold tracking-tight sm:text-6xl"
+            aria-label={`Mevcut bakiye ${formatCurrency(balance)}`}
+          >
             {formatCurrency(balance)}
           </h1>
           {balance !== 0 && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" role="status" aria-live="polite">
               {isPositive ? (
-                <TrendingUp className="h-4 w-4 text-green-200" />
+                <TrendingUp className="h-4 w-4 text-green-200" aria-hidden="true" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-200" />
+                <TrendingDown className="h-4 w-4 text-red-200" aria-hidden="true" />
               )}
               <p className="text-sm text-white/80">
                 {isPositive ? 'Olumlu bakiye' : 'Dikkat: Eksi bakiye'}
@@ -75,20 +81,20 @@ export const MainBalanceCard = () => {
         </div>
 
         {/* Income & Expense Summary */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4" role="group" aria-label="Gelir ve Gider Özeti">
           {/* Income */}
-          <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
+          <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm" role="article" aria-label="Toplam Gelir">
             <div className="mb-1 flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-green-300" />
+              <div className="h-2 w-2 rounded-full bg-green-300" aria-hidden="true" />
               <p className="text-xs font-medium text-white/70">Gelir</p>
             </div>
             <p className="text-xl font-bold">{formatCurrency(totalIncome)}</p>
           </div>
 
           {/* Expense */}
-          <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
+          <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm" role="article" aria-label="Toplam Gider">
             <div className="mb-1 flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-red-300" />
+              <div className="h-2 w-2 rounded-full bg-red-300" aria-hidden="true" />
               <p className="text-xs font-medium text-white/70">Gider</p>
             </div>
             <p className="text-xl font-bold">{formatCurrency(totalExpenses)}</p>
@@ -104,7 +110,7 @@ export const MainBalanceCard = () => {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 
