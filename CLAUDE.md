@@ -388,6 +388,36 @@ const DEFAULT_CATEGORIES = [
 
 ## v1.1 Professional Edition - Technical Setup
 
+### Visual Design Overhaul (Session 2)
+**Date:** 5 Şubat 2026
+**Critical Visual Fixes Applied:**
+
+1. **BottomNav Cleanup** - Removed gray backgrounds from icons
+   - Clean white navigation bar
+   - Accent-700 top indicator for active tab
+   - Professional icon spacing and sizing
+
+2. **MainBalanceCard Color Reduction** - Changed from full purple to white card
+   - White background with border
+   - Indigo ONLY as accent (icon badge)
+   - Green/red colored income/expense boxes (not full card)
+   - Proper contrast and readability
+
+3. **GoalForm Icon Migration** - Replaced 12 emoji icons with Lucide React
+   - Professional icon grid: Home, Car, Plane, Heart, GraduationCap, etc.
+   - Color-coded backgrounds per icon
+   - Larger buttons (h-14) with better spacing (gap-3)
+
+4. **Input Sizing Fix** - Increased padding for better UX
+   - Medium size: py-3 → py-3.5
+   - Better touch targets and form experience
+
+**Kral İndigo Philosophy Enforced:**
+"İndigo bir kraldır, her yerde görünmez ama göründüğü yerde otorite kurar."
+- Use indigo ONLY as accent (~10% of design)
+- White/neutral backgrounds: ~70%
+- Semantic colors (green/red): ~20%
+
 ### Hydration Fix Strategy: SSR Disabled
 **Problem:** Zustand persist middleware causes hydration mismatch (server: empty, client: localStorage data)
 
