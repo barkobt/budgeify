@@ -5,7 +5,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { Plus } from 'lucide-react';
+import { Plus, TrendingUp, Target, BarChart3 } from 'lucide-react';
 
 // FORCE CLIENT: Disable SSR for all components with dynamic data
 const MainBalanceCard = dynamic(() => import('@/components/features/income/MainBalanceCard').then(mod => ({ default: mod.MainBalanceCard })), { ssr: false });
@@ -34,34 +34,49 @@ export default function HomePage() {
               <MainBalanceCard />
 
               {/* Quick Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card variant="default" hover>
-                  <CardHeader noBorder>
-                    <CardTitle className="text-base">Son İşlemler</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-slate-900">12</p>
-                    <p className="text-sm text-slate-500">Bu ay</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card variant="default" hover size="md">
+                  <CardContent className="py-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-100">
+                        <TrendingUp size={24} className="text-accent-700" strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-500">Son İşlemler</p>
+                        <p className="text-2xl font-bold text-slate-900">12</p>
+                        <p className="text-xs text-slate-400">Bu ay</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card variant="default" hover>
-                  <CardHeader noBorder>
-                    <CardTitle className="text-base">Aktif Hedefler</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-slate-900">3</p>
-                    <p className="text-sm text-slate-500">Devam ediyor</p>
+                <Card variant="default" hover size="md">
+                  <CardContent className="py-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
+                        <Target size={24} className="text-green-600" strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-500">Aktif Hedefler</p>
+                        <p className="text-2xl font-bold text-slate-900">3</p>
+                        <p className="text-xs text-slate-400">Devam ediyor</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card variant="default" hover>
-                  <CardHeader noBorder>
-                    <CardTitle className="text-base">Tasarruf Oranı</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-green-600">%25</p>
-                    <p className="text-sm text-slate-500">Hedef: %30</p>
+                <Card variant="default" hover size="md" className="sm:col-span-2 lg:col-span-1">
+                  <CardContent className="py-6">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100">
+                        <BarChart3 size={24} className="text-emerald-600" strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-500">Tasarruf Oranı</p>
+                        <p className="text-2xl font-bold text-green-600">%25</p>
+                        <p className="text-xs text-slate-400">Hedef: %30</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

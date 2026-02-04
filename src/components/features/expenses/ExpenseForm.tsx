@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/Card';
 import { CategoryAutocomplete } from './CategoryAutocomplete';
+import { TrendingDown, Lightbulb } from 'lucide-react';
 
 /**
  * ExpenseForm - Harcama Ekleme Formu
@@ -95,9 +96,14 @@ export const ExpenseForm = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>➖ Harcama Ekle</CardTitle>
+    <Card variant="default" size="md">
+      <CardHeader noBorder>
+        <CardTitle className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/30">
+            <TrendingDown size={20} className="text-white" strokeWidth={2.5} />
+          </div>
+          <span>Harcama Ekle</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -166,10 +172,13 @@ export const ExpenseForm = () => {
           />
 
           {/* Info Box */}
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-            <p className="text-xs text-red-700">
-              <strong>💡 İpucu:</strong> Tüm harcamalarınızı kategorize ederek
-              ekleyin. Bu sayede nereye ne kadar harcadığınızı kolayca görebilirsiniz.
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <p className="text-xs text-amber-700 flex items-start gap-2">
+              <Lightbulb size={14} className="mt-0.5 flex-shrink-0" strokeWidth={2.5} />
+              <span>
+                <strong>İpucu:</strong> Tüm harcamalarınızı kategorize ederek
+                ekleyin. Bu sayede nereye ne kadar harcadığınızı kolayca görebilirsiniz.
+              </span>
             </p>
           </div>
         </form>

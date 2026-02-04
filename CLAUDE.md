@@ -49,7 +49,12 @@ npm run start
 
 ### Geliştirme URL'i
 ```
+# v1.0 (Default)
 http://localhost:3000
+
+# v1.1 (Current Development)
+http://localhost:3001
+npm run dev -- -p 3001
 ```
 
 ---
@@ -155,9 +160,9 @@ class IncomeManager {}
 ### Tailwind CSS 4 Kullanımı
 
 ```tsx
-// ✅ DOĞRU: Tailwind class'ları
+// ✅ DOĞRU: Tailwind class'ları + v1.1 Design System
 <div className="rounded-2xl bg-white/80 backdrop-blur-md shadow-xl">
-  <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3">
+  <button className="bg-accent-700 hover:bg-accent-800 text-white rounded-xl px-6 py-3">
     Kaydet
   </button>
 </div>
@@ -167,34 +172,50 @@ class IncomeManager {}
 <div className={styles.card}>
 ```
 
-**Renk Paleti (Tailwind class'ları):**
-| Kullanım | Tailwind Class |
-|----------|----------------|
-| Primary | `blue-600`, `blue-700` |
-| Accent | `teal-500`, `cyan-500` |
-| Success | `green-500` |
-| Warning | `amber-500` |
-| Error | `red-500` |
-| Background | `slate-50` |
-| Text Primary | `slate-900` |
-| Text Secondary | `slate-500` |
+**v1.1 Renk Paleti - "Kral İndigo" Stratejisi:**
+| Kullanım | CSS Variable | Tailwind Class | Hex |
+|----------|--------------|----------------|-----|
+| **Primary (Neutral)** | `--color-primary-500` | `slate-600` | #64748B |
+| **Accent (Kral İndigo)** | `--color-accent-700` | `accent-700` | #1E40AF |
+| **Accent Dark** | `--color-accent-800` | `accent-800` | #1E3A8A |
+| Success | `--color-success` | `green-500` | #10B981 |
+| Warning | `--color-warning` | `amber-500` | #F59E0B |
+| Error | `--color-error` | `red-500` | #EF4444 |
+| Background | `--color-background` | `slate-50` | #F8FAFC |
+| Text Primary | `--color-text-primary` | `slate-900` | #0F172A |
+| Text Secondary | `--color-text-secondary` | `slate-500` | #64748B |
 
-**Component Stilleri:**
+**Kral İndigo Kullanım İlkeleri:**
+- 🎯 **Strategic Use Only:** Sadece CTA butonlar, focus states, active indicators için kullan
+- ❌ **Not Everywhere:** Tüm sitede indigo kullanma, sadece vurgu noktalarında
+- ✅ **Neutral Foundation:** Primary color neutral (slate) olmalı, Indigo accent olmalı
+
+**v1.1 Component Stilleri:**
 ```tsx
-// Glassmorphism Card
-className="rounded-2xl bg-white/80 backdrop-blur-md shadow-xl shadow-black/5 border border-white/20"
+// Glassmorphism Card (utility class from globals.css)
+className="glass"
+// Expands to: bg-white/85 backdrop-blur-md border border-white/30 shadow-md
 
-// Gradient Card (Ana Para Bloğu)
-className="bg-gradient-to-br from-blue-600 to-cyan-500 text-white rounded-2xl"
+// Kral İndigo Gradient Card (Ana Para Bloğu)
+className="gradient-accent text-white rounded-2xl"
+// Expands to: linear-gradient(135deg, #1E40AF 0%, #4F46E5 50%, #1E3A8A 100%)
 
-// Primary Button
-className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3 transition-all duration-200"
+// Primary Button (Kral İndigo)
+className="bg-accent-700 hover:bg-accent-800 text-white rounded-xl px-6 py-3 transition-all duration-200 shadow-accent-sm"
 
 // Ghost Button
 className="bg-transparent hover:bg-slate-100 text-slate-700 rounded-xl"
 
-// Input
-className="rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+// Input with Kral İndigo focus
+className="rounded-xl border-slate-200 focus:border-accent-700 focus:ring-2 focus:ring-accent-700/20"
+
+// Card Component (Design System)
+<Card variant="default" size="md" hover>
+  <CardHeader noBorder>
+    <CardTitle>Title</CardTitle>
+  </CardHeader>
+  <CardContent>Content</CardContent>
+</Card>
 ```
 
 ### Zustand Store Pattern
@@ -365,9 +386,68 @@ const DEFAULT_CATEGORIES = [
 
 ---
 
+## v1.1 Professional Edition - Technical Setup
+
+### Hydration Fix Strategy: SSR Disabled
+**Problem:** Zustand persist middleware causes hydration mismatch (server: empty, client: localStorage data)
+
+**Solution:** Dynamic imports with `ssr: false` for all components using Zustand store
+
+```tsx
+// src/app/page.tsx
+const MainBalanceCard = dynamic(
+  () => import('@/components/features/income/MainBalanceCard')
+    .then(mod => ({ default: mod.MainBalanceCard })),
+  { ssr: false }
+);
+```
+
+**Result:**
+- ✅ No hydration errors
+- ✅ Bundle optimization: 119kB → 3.79kB (client-side only)
+- ✅ Faster page loads
+
+### Tab-Based Navigation Pattern
+**Architecture:** Single-page state management with conditional rendering
+
+```tsx
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
+const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+
+{activeTab === 'dashboard' && <DashboardContent />}
+{activeTab === 'transactions' && <TransactionsList />}
+```
+
+**Benefits:**
+- No route changes, instant tab switching
+- Shared state across tabs
+- Bottom navigation integration
+
+### Icon System: Lucide React (No Emojis)
+**v1.0:** Emoji icons (🍕, 💰, ➖)
+**v1.1:** Professional Lucide icons with Kral İndigo accent
+
+```tsx
+import { Wallet, TrendingUp, TrendingDown, Target } from 'lucide-react';
+
+<Wallet size={20} className="text-accent-700" strokeWidth={2.5} />
+```
+
+### Design System: 8px Grid + CSS Custom Properties
+All spacing follows 8px grid (`p-6`, `gap-6`, `space-y-6`)
+Premium shadow system: 6 levels + Kral İndigo glow variants
+
+```css
+/* globals.css */
+--spacing-6: 1.5rem;      /* 24px */
+--shadow-accent-lg: 0 8px 24px rgba(30, 64, 175, 0.25);
+```
+
+---
+
 ## Mevcut Durum ve İlerleme
 
-### Proje Durumu: **✅ PRODUCTION READY**
+### Proje Durumu: **🚀 v1.1 IN PROGRESS**
 
 | Faz | Durum | Açıklama |
 |-----|-------|----------|

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/Card';
 import type { IncomeCategory } from '@/types';
 import { INCOME_CATEGORIES } from '@/constants/categories';
+import { Wallet, Briefcase, Home, Laptop, Gift, TrendingUp, Package } from 'lucide-react';
 
 /**
  * MainSalaryForm - Ana Maaş Giriş Formu
@@ -76,10 +77,25 @@ export const MainSalaryForm = () => {
     }
   };
 
+  // Icon mapping for income categories
+  const categoryIcons: Record<string, React.ReactNode> = {
+    salary: <Briefcase size={16} className="text-accent-700" />,
+    rent: <Home size={16} className="text-accent-700" />,
+    freelance: <Laptop size={16} className="text-accent-700" />,
+    bonus: <Gift size={16} className="text-accent-700" />,
+    investment: <TrendingUp size={16} className="text-accent-700" />,
+    other: <Package size={16} className="text-accent-700" />,
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>💰 Gelir Ekle</CardTitle>
+    <Card variant="default" size="md">
+      <CardHeader noBorder>
+        <CardTitle className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent-600 to-accent-700 shadow-accent-sm">
+            <Wallet size={20} className="text-white" strokeWidth={2.5} />
+          </div>
+          <span>Gelir Ekle</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -105,18 +121,23 @@ export const MainSalaryForm = () => {
             >
               Kategori <span className="text-red-500">*</span>
             </label>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value as IncomeCategory)}
-              className="w-full rounded-xl border-2 border-slate-200 bg-white/50 px-4 py-3 text-slate-900 backdrop-blur-sm outline-none transition-all duration-200 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-            >
-              {INCOME_CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.emoji} {cat.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value as IncomeCategory)}
+                className="w-full rounded-xl border-2 border-slate-200 bg-white/50 px-4 py-3 text-slate-900 backdrop-blur-sm outline-none transition-all duration-200 hover:border-slate-300 focus:border-accent-700 focus:ring-2 focus:ring-accent-700/20"
+              >
+                {INCOME_CATEGORIES.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
+                {categoryIcons[category]}
+              </div>
+            </div>
           </div>
 
           {/* Description Input */}
@@ -150,11 +171,14 @@ export const MainSalaryForm = () => {
           </div>
 
           {/* Info Box */}
-          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-            <p className="text-xs text-blue-700">
-              <strong>💡 İpucu:</strong> Maaş, freelance ödemesi, kira geliri gibi tüm
-              gelirlerinizi ekleyebilirsiniz. Düzenli gelirler bütçe planlamanızda
-              dikkate alınır.
+          <div className="rounded-xl border border-accent-200 bg-accent-50 p-4">
+            <p className="text-xs text-accent-700 flex items-start gap-2">
+              <TrendingUp size={14} className="mt-0.5 flex-shrink-0" strokeWidth={2.5} />
+              <span>
+                <strong>İpucu:</strong> Maaş, freelance ödemesi, kira geliri gibi tüm
+                gelirlerinizi ekleyebilirsiniz. Düzenli gelirler bütçe planlamanızda
+                dikkate alınır.
+              </span>
             </p>
           </div>
         </form>
