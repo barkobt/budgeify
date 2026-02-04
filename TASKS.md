@@ -1,9 +1,9 @@
 # Budgeify - Development Tasks
 
-## Progress: 14/32 Tasks Complete (44%)
+## Progress: 15/32 Tasks Complete (47%)
 
 **Current Phase:** Expense Module (Milestone 5)
-**Next Task:** Task 5.3 - Category Autocomplete Component'i
+**Next Task:** Task 5.4 - Harcama Ekleme Formu Component'i
 
 ### Task 1.1: Next.js Proje Kurulumu ✅ TAMAMLANDI
 
@@ -292,18 +292,21 @@ Kontrol: Ana maaş girişi, görüntülenmesi ve güncellenmesi sorunsuz çalı�
 
 **Commit:** `feat(store): implement expense state management`
 
-### Task 5.3: Category Autocomplete Component'i
+### Task 5.3: Category Autocomplete Component'i ✅ TAMAMLANDI
 
-- [ ] Harcama ekleme formunda kullanılacak akıllı autocomplete özellikli bir kategori seçici component'i oluştur. `DEFAULT_CATEGORIES`'i kullanmalı.
+- [x] Harcama ekleme formunda kullanılacak akıllı autocomplete özellikli bir kategori seçici component'i oluştur. `DEFAULT_CATEGORIES`'i kullanmalı.
 
 **Dosya(lar):** `src/components/features/expenses/CategoryAutocomplete.tsx`
 **Bağımlılık:** Task 2.3, 5.1 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Input'a yazıldıkça kategoriler filtreleniyor.
-- [ ] Her kategorinin yanında emojisi görünüyor.
-- [ ] Bir kategori seçildiğinde değeri doğru şekilde ayarlanıyor.
+- [x] Input'a yazıldıkça kategoriler filtreleniyor.
+- [x] Her kategorinin yanında emojisi ve rengi görünüyor.
+- [x] Bir kategori seçildiğinde değeri doğru şekilde ayarlanıyor.
+- [x] Keyboard navigation (Arrow keys, Enter, Escape).
+- [x] Click outside to close dropdown.
+- [x] Accessible (ARIA labels, role attributes).
 
 **Styling Notes:** Standart Input component'i üzerine inşa et, dropdown stilleri UI Reference'a uygun.
 
