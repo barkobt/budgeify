@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background - Kral İndigo Gradient -->
+  <rect width="512" height="512" rx="110" fill="url(#gradient)"/>
+
+  <!-- Subtle glow -->
+  <rect width="512" height="512" rx="110" fill="url(#glow)" opacity="0.3"/>
+
+  <!-- Wallet Icon - Centered, White -->
+  <g transform="translate(156, 156)">
+    <path d="M170 42.5H30C18.954 42.5 10 51.454 10 62.5V137.5M170 42.5V137.5M170 42.5C181.046 42.5 190 51.454 190 62.5V137.5M170 137.5H190M170 137.5H10M190 137.5V162.5C190 173.546 181.046 182.5 170 182.5H30C18.954 182.5 10 173.546 10 162.5V137.5M150 100H150.1M130 100C130 111.046 138.954 120 150 120C161.046 120 170 111.046 170 100C170 88.954 161.046 80 150 80C138.954 80 130 88.954 130 100Z"
+          stroke="white"
+          stroke-width="12"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E40AF"/>
+      <stop offset="50%" stop-color="#3730A3"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+</svg>
