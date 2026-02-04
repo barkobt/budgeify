@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import type { Goal } from '@/types';
+import { Home, Car, Plane, Heart, GraduationCap, Laptop, Target, PiggyBank, Umbrella, Gift, Smartphone, Trophy } from 'lucide-react';
 
 /**
  * GoalForm - Tasarruf Hedefi Ekleme Formu
@@ -15,20 +16,20 @@ import type { Goal } from '@/types';
  * Hedef adı, tutar, emoji ve tarih bilgilerini alır.
  */
 
-// Yaygın hedef emojileri
+// Hedef ikonları - Lucide React
 const GOAL_ICONS = [
-  { emoji: '🏠', label: 'Ev' },
-  { emoji: '🚗', label: 'Araba' },
-  { emoji: '✈️', label: 'Tatil' },
-  { emoji: '💍', label: 'Düğün' },
-  { emoji: '🎓', label: 'Eğitim' },
-  { emoji: '💻', label: 'Teknoloji' },
-  { emoji: '🎯', label: 'Hedef' },
-  { emoji: '💰', label: 'Tasarruf' },
-  { emoji: '🏖️', label: 'Plaj' },
-  { emoji: '🎁', label: 'Hediye' },
-  { emoji: '📱', label: 'Telefon' },
-  { emoji: '⚽', label: 'Hobi' },
+  { Icon: Home, id: 'home', label: 'Ev', color: 'text-blue-600 bg-blue-50 border-blue-200 hover:border-blue-400' },
+  { Icon: Car, id: 'car', label: 'Araba', color: 'text-indigo-600 bg-indigo-50 border-indigo-200 hover:border-indigo-400' },
+  { Icon: Plane, id: 'plane', label: 'Tatil', color: 'text-cyan-600 bg-cyan-50 border-cyan-200 hover:border-cyan-400' },
+  { Icon: Heart, id: 'heart', label: 'Düğün', color: 'text-pink-600 bg-pink-50 border-pink-200 hover:border-pink-400' },
+  { Icon: GraduationCap, id: 'education', label: 'Eğitim', color: 'text-purple-600 bg-purple-50 border-purple-200 hover:border-purple-400' },
+  { Icon: Laptop, id: 'laptop', label: 'Teknoloji', color: 'text-slate-600 bg-slate-50 border-slate-200 hover:border-slate-400' },
+  { Icon: Target, id: 'target', label: 'Hedef', color: 'text-accent-700 bg-accent-50 border-accent-200 hover:border-accent-400' },
+  { Icon: PiggyBank, id: 'piggybank', label: 'Tasarruf', color: 'text-green-600 bg-green-50 border-green-200 hover:border-green-400' },
+  { Icon: Umbrella, id: 'umbrella', label: 'Tatil', color: 'text-teal-600 bg-teal-50 border-teal-200 hover:border-teal-400' },
+  { Icon: Gift, id: 'gift', label: 'Hediye', color: 'text-orange-600 bg-orange-50 border-orange-200 hover:border-orange-400' },
+  { Icon: Smartphone, id: 'phone', label: 'Telefon', color: 'text-violet-600 bg-violet-50 border-violet-200 hover:border-violet-400' },
+  { Icon: Trophy, id: 'trophy', label: 'Başarı', color: 'text-amber-600 bg-amber-50 border-amber-200 hover:border-amber-400' },
 ];
 
 export const GoalForm: React.FC = () => {
@@ -38,7 +39,7 @@ export const GoalForm: React.FC = () => {
   const [name, setName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [currentAmount, setCurrentAmount] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('🎯');
+  const [selectedIcon, setSelectedIcon] = useState('target');
   const [targetDate, setTargetDate] = useState('');
 
   // Error state
@@ -108,12 +109,15 @@ export const GoalForm: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 300));
 
       // Create new goal
+      // Find the selected icon emoji for backward compatibility
+      const selectedIconData = GOAL_ICONS.find(i => i.id === selectedIcon);
+
       const newGoal: Goal = {
         id: generateId(),
         name: name.trim(),
         targetAmount: parseFloat(targetAmount),
         currentAmount: currentAmount ? parseFloat(currentAmount) : 0,
-        icon: selectedIcon,
+        icon: selectedIconData?.label || '🎯', // Store label as fallback
         targetDate: targetDate || undefined,
         status: 'active',
         createdAt: getCurrentISODate(),
@@ -139,15 +143,20 @@ export const GoalForm: React.FC = () => {
     setName('');
     setTargetAmount('');
     setCurrentAmount('');
-    setSelectedIcon('🎯');
+    setSelectedIcon('target');
     setTargetDate('');
     setErrors({});
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>🎯 Yeni Tasarruf Hedefi</CardTitle>
+    <Card variant="default" size="md">
+      <CardHeader noBorder>
+        <CardTitle className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg shadow-green-500/30">
+            <Target size={20} className="text-white" strokeWidth={2.5} />
+          </div>
+          <span>Yeni Tasarruf Hedefi</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -198,26 +207,33 @@ export const GoalForm: React.FC = () => {
           />
 
           {/* Icon Selector */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <label className="text-sm font-medium text-slate-700">
               Hedef İkonu
             </label>
-            <div className="grid grid-cols-6 gap-2">
-              {GOAL_ICONS.map((icon) => (
-                <button
-                  key={icon.emoji}
-                  type="button"
-                  onClick={() => setSelectedIcon(icon.emoji)}
-                  className={`flex h-12 w-full items-center justify-center rounded-lg border-2 text-2xl transition-all hover:scale-110 ${
-                    selectedIcon === icon.emoji
-                      ? 'border-blue-500 bg-blue-50 shadow-md'
-                      : 'border-slate-200 bg-white hover:border-blue-300'
-                  }`}
-                  title={icon.label}
-                >
-                  {icon.emoji}
-                </button>
-              ))}
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+              {GOAL_ICONS.map(({ Icon, id, label, color }) => {
+                const isSelected = selectedIcon === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setSelectedIcon(id)}
+                    className={`flex h-14 w-full items-center justify-center rounded-xl border-2 transition-all ${
+                      isSelected
+                        ? 'border-accent-700 shadow-lg scale-105'
+                        : color
+                    }`}
+                    title={label}
+                  >
+                    <Icon
+                      size={24}
+                      strokeWidth={2}
+                      className={isSelected ? 'text-accent-700' : ''}
+                    />
+                  </button>
+                );
+              })}
             </div>
           </div>
 

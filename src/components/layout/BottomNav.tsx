@@ -19,7 +19,7 @@ const navItems = [
 
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 glass border-t border-slate-200">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-around h-16">
           {navItems.map((item) => {
@@ -30,31 +30,34 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
               <button
                 key={item.tab}
                 onClick={() => onTabChange(item.tab)}
-                className="flex flex-col items-center justify-center gap-1 min-w-[60px]
+                className="flex flex-col items-center justify-center gap-1.5 min-w-[70px] py-2
                            transition-all duration-200 relative group"
                 aria-label={item.name}
                 aria-current={isActive ? 'page' : undefined}
               >
-                {/* Active Indicator */}
+                {/* Active Indicator - Top line */}
                 {isActive && (
-                  <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-12 h-1
-                                  bg-gradient-to-r from-accent-600 to-accent-700 rounded-full" />
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5
+                                  bg-accent-700 rounded-full" />
                 )}
 
+                {/* Icon - Clean, no background */}
                 <Icon
-                  size={22}
-                  strokeWidth={2.5}
+                  size={24}
+                  strokeWidth={2}
                   className={`transition-all duration-200 ${
-                    isActive
-                      ? 'text-accent-700 scale-110'
-                      : 'text-slate-400 group-hover:text-slate-600'
-                  }`}
-                />
-                <span
-                  className={`text-[10px] font-semibold tracking-wide transition-all duration-200 ${
                     isActive
                       ? 'text-accent-700'
                       : 'text-slate-400 group-hover:text-slate-600'
+                  }`}
+                />
+
+                {/* Label */}
+                <span
+                  className={`text-[11px] font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'text-accent-700'
+                      : 'text-slate-500 group-hover:text-slate-700'
                   }`}
                 >
                   {item.name}

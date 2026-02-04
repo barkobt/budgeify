@@ -31,29 +31,26 @@ export const MainBalanceCard = () => {
 
   return (
     <section
-      className="relative overflow-hidden rounded-2xl gradient-accent text-white shadow-accent-lg"
+      className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-lg"
       aria-label="Finansal Özet Kartı"
     >
-      {/* Decorative Background Pattern */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20" aria-hidden="true" />
-
-      <div className="relative p-8 sm:p-10">
+      <div className="p-8 sm:p-10">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-              <DollarSign className="h-7 w-7" strokeWidth={2.5} />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-100">
+              <DollarSign className="h-6 w-6 text-accent-700" strokeWidth={2.5} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white/90">Mevcut Bakiye</p>
-              <p className="text-xs text-white/70">Bu ay</p>
+              <p className="text-sm font-semibold text-slate-700">Mevcut Bakiye</p>
+              <p className="text-xs text-slate-500">Bu ay</p>
             </div>
           </div>
 
           {/* Savings Rate Badge */}
           {totalIncome > 0 && (
-            <div className="rounded-full bg-white/25 px-4 py-1.5 backdrop-blur-sm border border-white/30">
-              <p className="text-xs font-bold flex items-center gap-1.5">
+            <div className="rounded-full bg-accent-50 px-4 py-1.5 border border-accent-200">
+              <p className="text-xs font-bold text-accent-700 flex items-center gap-1.5">
                 {savingsRate >= 0 ? (
                   <TrendingUp size={14} strokeWidth={2.5} />
                 ) : (
@@ -68,7 +65,7 @@ export const MainBalanceCard = () => {
         {/* Balance Amount */}
         <div className="mb-8">
           <h1
-            className="mb-3 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl"
+            className="mb-2 text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl"
             aria-label={`Mevcut bakiye ${formatCurrency(balance)}`}
           >
             {formatCurrency(balance)}
@@ -76,42 +73,42 @@ export const MainBalanceCard = () => {
           {balance !== 0 && (
             <div className="flex items-center gap-2" role="status" aria-live="polite">
               {isPositive ? (
-                <TrendingUp className="h-5 w-5 text-green-200" aria-hidden="true" strokeWidth={2.5} />
+                <TrendingUp className="h-5 w-5 text-green-600" aria-hidden="true" strokeWidth={2.5} />
               ) : (
-                <TrendingDown className="h-5 w-5 text-red-200" aria-hidden="true" strokeWidth={2.5} />
+                <TrendingDown className="h-5 w-5 text-red-600" aria-hidden="true" strokeWidth={2.5} />
               )}
-              <p className="text-sm font-medium text-white/90">
+              <p className="text-sm font-medium text-slate-600">
                 {isPositive ? 'Olumlu bakiye' : 'Dikkat: Eksi bakiye'}
               </p>
             </div>
           )}
         </div>
 
-        {/* Income & Expense Summary - FIXED EQUAL BOXES */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" role="group" aria-label="Gelir ve Gider Özeti">
-          {/* Income - EQUAL PADDING */}
-          <div className="rounded-xl bg-white/15 p-6 backdrop-blur-sm border border-white/20" role="article" aria-label="Toplam Gelir">
-            <div className="mb-3 flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-green-300" aria-hidden="true" />
-              <p className="text-xs font-semibold text-white/80 uppercase tracking-wide">Gelir</p>
+        {/* Income & Expense Summary */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="group" aria-label="Gelir ve Gider Özeti">
+          {/* Income */}
+          <div className="rounded-xl bg-green-50 p-5 border border-green-200" role="article" aria-label="Toplam Gelir">
+            <div className="mb-2 flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-green-500" aria-hidden="true" />
+              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide">Gelir</p>
             </div>
-            <p className="text-2xl font-bold">{formatCurrency(totalIncome)}</p>
+            <p className="text-2xl font-bold text-green-700">{formatCurrency(totalIncome)}</p>
           </div>
 
-          {/* Expense - EQUAL PADDING */}
-          <div className="rounded-xl bg-white/15 p-6 backdrop-blur-sm border border-white/20" role="article" aria-label="Toplam Gider">
-            <div className="mb-3 flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-red-300" aria-hidden="true" />
-              <p className="text-xs font-semibold text-white/80 uppercase tracking-wide">Gider</p>
+          {/* Expense */}
+          <div className="rounded-xl bg-red-50 p-5 border border-red-200" role="article" aria-label="Toplam Gider">
+            <div className="mb-2 flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-red-500" aria-hidden="true" />
+              <p className="text-xs font-semibold text-red-700 uppercase tracking-wide">Gider</p>
             </div>
-            <p className="text-2xl font-bold">{formatCurrency(totalExpenses)}</p>
+            <p className="text-2xl font-bold text-red-700">{formatCurrency(totalExpenses)}</p>
           </div>
         </div>
 
         {/* Empty State */}
         {totalIncome === 0 && totalExpenses === 0 && (
-          <div className="mt-6 rounded-xl bg-white/15 p-5 backdrop-blur-sm border border-white/20">
-            <p className="text-center text-sm text-white/90 font-medium">
+          <div className="mt-6 rounded-xl bg-accent-50 p-5 border border-accent-200">
+            <p className="text-center text-sm text-accent-700 font-medium">
               <strong>İpucu:</strong> Gelir ve giderlerinizi ekleyerek başlayın
             </p>
           </div>
