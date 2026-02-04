@@ -1,9 +1,9 @@
 # Budgeify - Development Tasks
 
-## Progress: 11/32 Tasks Complete (34%)
+## Progress: 14/32 Tasks Complete (44%)
 
-**Current Phase:** Income Module (Milestone 4)
-**Next Task:** Task 4.4 - Ana Sayfa (Dashboard) Düzenlemesi
+**Current Phase:** Expense Module (Milestone 5)
+**Next Task:** Task 5.3 - Category Autocomplete Component'i
 
 ### Task 1.1: Next.js Proje Kurulumu ✅ TAMAMLANDI
 
@@ -232,18 +232,19 @@ Kontrol: Temel layout (Header, BottomNav) hazır, sayfa iskeletleri işlevsel.
 
 **Commit:** `feat(income): develop MainSalaryForm for input`
 
-### Task 4.4: Ana Sayfa (Dashboard) Düzenlemesi
+### Task 4.4: Ana Sayfa (Dashboard) Düzenlemesi ✅ TAMAMLANDI
 
-- [ ] `MainBalanceCard` ve `MainSalaryForm`'u ana sayfaya (`src/app/page.tsx`) entegre et.
+- [x] `MainBalanceCard` ve `MainSalaryForm`'u ana sayfaya (`src/app/page.tsx`) entegre et.
 
 **Dosya(lar):** `src/app/page.tsx`
 **Bağımlılık:** Task 4.2, 4.3 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Ana sayfada ana para bloğu ve maaş giriş formu görünüyor.
-- [ ] Formdan girilen maaş değeri ana para bloğuna yansıyor.
-- [ ] Sayfa responsive prensiplere uygun.
+- [x] Ana sayfada ana para bloğu ve maaş giriş formu görünüyor.
+- [x] Formdan girilen gelir değeri ana para bloğuna real-time yansıyor.
+- [x] Sayfa responsive prensiplere uygun (max-w-2xl container).
+- [x] Store entegrasyonu çalışıyor (useBudgetStore).
 
 **Styling Notes:** Yok
 
@@ -254,36 +255,38 @@ Kontrol: Temel layout (Header, BottomNav) hazır, sayfa iskeletleri işlevsel.
 Kontrol: Ana maaş girişi, görüntülenmesi ve güncellenmesi sorunsuz çalışıyor.
 ---
 
-### Task 5.1: Kategori Verilerini Tanımlama
+### Task 5.1: Kategori Verilerini Tanımlama ✅ TAMAMLANDI (Task 1.2'de yapıldı)
 
-- [ ] PRD'deki varsayılan kategori listesini `src/constants/categories.ts` dosyasına tanımla.
-- [ ] `src/types/index.ts` dosyasına `Category` interface'ini ekle.
+- [x] PRD'deki varsayılan kategori listesini `src/constants/categories.ts` dosyasına tanımla.
+- [x] `src/types/index.ts` dosyasına `Category` interface'ini ekle.
 
 **Dosya(lar):** `src/constants/categories.ts`, `src/types/index.ts`
 **Bağımlılık:** Task 1.2 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] `DEFAULT_CATEGORIES` array'i doğru şekilde oluşturuldu.
-- [ ] `Category` interface'i JSON Schema'ya uygun.
-- [ ] TypeScript hatasız.
+- [x] `DEFAULT_CATEGORIES` array'i doğru şekilde oluşturuldu (18 kategori).
+- [x] `Category` interface'i JSON Schema'ya uygun.
+- [x] TypeScript hatasız.
+- [x] Helper fonksiyonlar: getCategoryById, getActiveCategories, INCOME_CATEGORIES.
 
 **Styling Notes:** Yok
 
 **Commit:** `feat(constants): define default categories and types`
 
-### Task 5.2: Harcama State'i Oluşturma
+### Task 5.2: Harcama State'i Oluşturma ✅ TAMAMLANDI (Task 1.3'te yapıldı)
 
-- [ ] `expenseStore.ts` içinde harcamaları yönetecek Zustand state'ini oluştur. `Expense` interface'ini kullan.
+- [x] `expenseStore.ts` içinde harcamaları yönetecek Zustand state'ini oluştur. `Expense` interface'ini kullan.
 
-**Dosya(lar):** `src/stores/expenseStore.ts`, `src/types/index.ts`
+**Dosya(lar):** `src/store/useBudgetStore.ts`, `src/types/index.ts`
 **Bağımlılık:** Task 5.1 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] `useExpenseStore` hook'u tanımlandı.
-- [ ] `expenses` array'i, `addExpense`, `updateExpense`, `deleteExpense` action'ları mevcut.
-- [ ] TypeScript tipleri doğru şekilde tanımlandı.
+- [x] `useBudgetStore` hook'u içinde expense state tanımlandı.
+- [x] `expenses` array'i, `addExpense`, `updateExpense`, `deleteExpense` action'ları mevcut.
+- [x] TypeScript tipleri doğru şekilde tanımlandı.
+- [x] Utility fonksiyonlar: getTotalExpenses, getExpensesByCategory, getExpensesByDateRange.
 
 **Styling Notes:** Yok
 
