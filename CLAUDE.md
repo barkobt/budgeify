@@ -15,15 +15,17 @@
 
 | Teknoloji | Versiyon | Kullanım Amacı |
 |-----------|----------|----------------|
-| Next.js | 16.1.6 | App Router, SSR |
-| React | 19.2.4 | UI Framework |
-| TypeScript | strict mode | Tip güvenliği |
-| Tailwind CSS | 4.1.18 | Styling |
-| Zustand | 5.0.11 | State management |
-| Recharts | 3.7.0 | Grafikler |
-| Framer Motion | 12.31.0 | Animasyonlar |
-| Zod | 4.3.6 | Veri doğrulama |
-| Lucide React | 0.563.0 | İkonlar |
+| Next.js | 14.2.x | App Router, SSR |
+| React | 18.3.x | UI Framework |
+| TypeScript | 5.7.x (strict mode) | Tip güvenliği |
+| Tailwind CSS | 4.0.x (CSS-first) | Styling |
+| Zustand | 5.0.x | State management |
+| Recharts | 2.14.x | Grafikler |
+| Framer Motion | 11.15.x | Animasyonlar |
+| Zod | 3.24.x | Veri doğrulama |
+| Lucide React | 0.460.x | İkonlar |
+
+> **Not:** Node.js 18 uyumluluğu için Next.js 14 kullanılıyor.
 
 ---
 
@@ -44,15 +46,6 @@ npm run build
 # Build'i test et
 npm run start
 ```
-
-> **Not:** `package.json`'da `dev`, `build`, `start` scriptleri tanımlı olmalı. Yoksa ekle:
-> ```json
-> "scripts": {
->   "dev": "next dev",
->   "build": "next build",
->   "start": "next start"
-> }
-> ```
 
 ### Geliştirme URL'i
 ```
@@ -374,25 +367,25 @@ const DEFAULT_CATEGORIES = [
 
 ## Mevcut Durum ve İlerleme
 
-### Proje Durumu: **Başlangıç Aşaması**
+### Proje Durumu: **Geliştirme Aşaması**
 
 | Faz | Durum | Açıklama |
 |-----|-------|----------|
-| Setup | Başlanmadı | Next.js kurulumu, klasör yapısı |
+| Setup | ✅ Task 1.1 Tamamlandı | Next.js kurulumu, Tailwind CSS |
 | UI Foundations | Başlanmadı | Button, Card, Input componentleri |
 | Layout | Başlanmadı | Header, BottomNav, Sidebar |
 | Income Module | Başlanmadı | Ana maaş girişi ve görüntüleme |
 | Expense Module | Başlanmadı | Harcama ekleme, listeleme |
 | Analytics & Goals | Başlanmadı | Grafikler, hedefler |
 
-### Toplam İlerleme: **0/31 Görev (%0)**
+### Toplam İlerleme: **1/31 Görev (~3%)**
 
 ### Sonraki Adım
 
-**Task 1.1: Next.js Proje Kurulumu**
-- Next.js projesi oluştur
-- Tailwind CSS entegrasyonu
-- `npm run dev` ile çalıştığını doğrula
+**Task 1.2: Klasör Yapısı ve Temel Dosyalar**
+- PRD'deki klasör yapısını oluştur
+- tsconfig.json yapılandır
+- src/types/index.ts oluştur
 
 Detaylı görev listesi için: `TASKS.md`
 

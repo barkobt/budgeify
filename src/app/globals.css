@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Budgeify Design System - Tailwind CSS 4 Theme */
+@theme {
+  /* Colors - PRD'den alınan renk paleti */
+  --color-primary: #1E40AF;
+  --color-primary-light: #3B82F6;
+  --color-accent: #14B8A6;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-background: #F8FAFC;
+  --color-card: #FFFFFF;
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #64748B;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Font Family */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism utility class */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient card utility */
+.gradient-primary {
+  background: linear-gradient(to bottom right, #1E40AF, #06B6D4);
+}
