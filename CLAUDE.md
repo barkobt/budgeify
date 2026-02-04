@@ -371,14 +371,14 @@ const DEFAULT_CATEGORIES = [
 
 | Faz | Durum | Açıklama |
 |-----|-------|----------|
-| Setup | 🔄 Task 1.2 Devam Ediyor | Klasör yapısı ve temel dosyalar |
-| UI Foundations | Başlanmadı | Button, Card, Input componentleri |
-| Layout | Başlanmadı | Header, BottomNav, Sidebar |
+| Setup | ✅ Task 1.1-1.2 Tamamlandı | Next.js kurulumu, Tailwind CSS, klasör yapısı |
+| UI Foundations | ✅ Task 2.1-2.3 Tamamlandı | Button, Card, Input componentleri |
+| Layout | ✅ Task 3.1 Tamamlandı | Header, BottomNav, Sidebar |
 | Income Module | Başlanmadı | Ana maaş girişi ve görüntüleme |
 | Expense Module | Başlanmadı | Harcama ekleme, listeleme |
 | Analytics & Goals | Başlanmadı | Grafikler, hedefler |
 
-### Toplam İlerleme: **1/31 Görev (~3%)**
+### Toplam İlerleme: **4/31 Görev (~13%)**
 
 ### Task 1.2 İlerleme ✅ TAMAMLANDI
 
@@ -425,25 +425,32 @@ const DEFAULT_CATEGORIES = [
 - page.tsx güncellendi (Input + Button demo)
 - Demo: Gelir Miktarı (₺ icon) ve Açıklama (error state)
 
-### Sonraki Adım
+### Task 3.1 İlerleme ✅ TAMAMLANDI
 
-**Task 3.1: Header Component'i Oluşturma**
-- Layout milestone'ına geç
-- Logo ve ayarlar ikonu
+✅ Tamamlanan:
+- Header Component oluşturuldu (`src/components/layout/Header.tsx`)
+  - Sol taraf: Budgeify logosu (gradient renk) ve metin
+  - Sağ taraf: User profil ikonu (hover efektiyle)
+  - Glassmorphism: `backdrop-blur-md bg-white/80` ile görünür arka plan, `shadow-sm`
+  - Fixed positioning: `top-0`, `z-50`, `w-full` ile sayfanın tamamını kaplama
+- Layout Entegrasyonu: `src/app/layout.tsx` güncellendi
+  - Header bileşeni import edildi ve `<body>` içinde `children`'ın üstünde konumlandırıldı
+  - `<body>` etiketine `pt-16` class'ı eklenerek fixed header'ın altında doğru boşluk sağlandı
+- Sayfa Yapısı Güncellemesi: `src/app/page.tsx` güncellendi
+  - Demo bileşenler `<main>` etiketi içine sarıldı
+  - `max-w-7xl mx-auto` ile içerik ortalandı
+  - `pb-8 px-4 sm:px-6 lg:px-8` ile responsive padding eklendi (Header'dan sonraki `pt-16` ile çakışmaması için `main`'den `pt` kaldırıldı)
+- Protokoller Applied: Token Protection (%90) ve Automatic Synchronization korundu.
+
+---
+
+## Sonraki Adım
+
+**Task 3.2: BottomNav Component'i Oluşturma**
+- Layout milestone'ına devam et
+- Mobil alt navigasyon menüsü
 
 Detaylı görev listesi için: `TASKS.md`
-## Proje Durumu: **Geliştirme Aşaması**
-
-| Faz | Durum | Açıklama |
-|-----|-------|----------|
-| Setup | ✅ Task 1.1-1.2 Tamamlandı | Next.js kurulumu, Tailwind CSS, klasör yapısı |
-| UI Foundations | ✅ Task 2.1-2.3 Tamamlandı | Button, Card, Input componentleri |
-| Layout | Başlanmadı | Header, BottomNav, Sidebar |
-| Income Module | Başlanmadı | Ana maaş girişi ve görüntüleme |
-| Expense Module | Başlanmadı | Harcama ekleme, listeleme |
-| Analytics & Goals | Başlanmadı | Grafikler, hedefler |
-
-### Toplam İlerleme: **3/31 Görev (~10%)**
 
 ---
 
