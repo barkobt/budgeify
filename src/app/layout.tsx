@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import Header from '@/components/layout/Header';
-import BottomNav from '@/components/layout/BottomNav';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import './globals.css';
 
@@ -55,12 +54,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className="min-h-screen bg-slate-50 antialiased pt-16 pb-24">
+      <body className="min-h-screen bg-slate-50 antialiased pt-16">
         <Header />
         <ErrorBoundary>
           {children}
         </ErrorBoundary>
-        <BottomNav />
       </body>
     </html>
   );

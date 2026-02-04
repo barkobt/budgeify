@@ -1,14 +1,13 @@
 
 'use client';
 
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Logo } from '@/components/ui/Logo';
-import { TrendingUp, BarChart3, Target } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { BottomNav } from '@/components/layout/BottomNav';
+import { Plus } from 'lucide-react';
 
-// FORCE CLIENT: Disable SSR for all components with dynamic data (store-based)
-// This eliminates hydration errors by preventing server/client mismatch
+// FORCE CLIENT: Disable SSR for all components with dynamic data
 const MainBalanceCard = dynamic(() => import('@/components/features/income/MainBalanceCard').then(mod => ({ default: mod.MainBalanceCard })), { ssr: false });
 const MainSalaryForm = dynamic(() => import('@/components/features/income/MainSalaryForm').then(mod => ({ default: mod.MainSalaryForm })), { ssr: false });
 const ExpenseForm = dynamic(() => import('@/components/features/expenses/ExpenseForm').then(mod => ({ default: mod.ExpenseForm })), { ssr: false });
@@ -18,119 +17,112 @@ const ExpenseChart = dynamic(() => import('@/components/features/analytics/Expen
 const GoalList = dynamic(() => import('@/components/features/goals/GoalCard').then(mod => ({ default: mod.GoalList })), { ssr: false });
 const GoalForm = dynamic(() => import('@/components/features/goals/GoalForm').then(mod => ({ default: mod.GoalForm })), { ssr: false });
 
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
+
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   return (
-    <main className="pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Main Balance Card - Hero */}
-        <div className="w-full max-w-3xl mx-auto">
-          <MainBalanceCard />
-        </div>
+    <>
+      <main className="min-h-screen pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto space-y-6">
+          {/* DASHBOARD TAB */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-6 animate-fadeIn">
+              {/* Hero Balance Card */}
+              <MainBalanceCard />
 
-        {/* Main Salary Form */}
-        <div className="w-full max-w-3xl mx-auto">
-          <MainSalaryForm />
-        </div>
+              {/* Quick Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card variant="default" hover>
+                  <CardHeader noBorder>
+                    <CardTitle className="text-base">Son İşlemler</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-bold text-slate-900">12</p>
+                    <p className="text-sm text-slate-500">Bu ay</p>
+                  </CardContent>
+                </Card>
 
-        {/* Expense Form */}
-        <div className="w-full max-w-3xl mx-auto">
-          <ExpenseForm />
-        </div>
+                <Card variant="default" hover>
+                  <CardHeader noBorder>
+                    <CardTitle className="text-base">Aktif Hedefler</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-bold text-slate-900">3</p>
+                    <p className="text-sm text-slate-500">Devam ediyor</p>
+                  </CardContent>
+                </Card>
 
-        {/* Expense List */}
-        <div className="w-full max-w-3xl mx-auto">
-          <ExpenseList />
-        </div>
-
-        {/* Analytics - 2 Column Grid on Desktop */}
-        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <CategoryChart />
-          <ExpenseChart />
-        </div>
-
-        {/* Goal Form */}
-        <div className="w-full max-w-3xl mx-auto">
-          <GoalForm />
-        </div>
-
-        {/* Goal List */}
-        <div className="w-full max-w-3xl mx-auto">
-          <GoalList />
-        </div>
-
-        {/* Welcome Card - Professional Fintech Style */}
-        <div className="w-full max-w-3xl mx-auto">
-          <Card variant="elevated" hover>
-            <CardHeader noBorder>
-              {/* Logo - Centered */}
-              <div className="flex justify-center mb-6">
-                <Logo size="lg" showText={true} />
+                <Card variant="default" hover>
+                  <CardHeader noBorder>
+                    <CardTitle className="text-base">Tasarruf Oranı</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-bold text-green-600">%25</p>
+                    <p className="text-sm text-slate-500">Hedef: %30</p>
+                  </CardContent>
+                </Card>
               </div>
-              <CardTitle as="h1" className="text-center text-2xl">
-                Hoş Geldiniz!
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600 mb-8 text-center leading-relaxed">
-                Budgeify ile gelir ve giderlerinizi profesyonelce takip edin,
-                harcama alışkanlıklarınızı analiz edin ve finansal
-                hedeflerinize ulaşın.
-              </p>
 
-              {/* Feature List - Professional Icons */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-accent-sm">
-                    <TrendingUp size={20} className="text-white" strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900">Gelir ve Gider Takibi</p>
-                    <p className="text-sm text-slate-500">Tüm finansal hareketlerinizi kaydedin</p>
-                  </div>
-                </div>
+              {/* Income Form */}
+              <MainSalaryForm />
+            </div>
+          )}
 
-                <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-accent-sm">
-                    <BarChart3 size={20} className="text-white" strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900">Detaylı Harcama Analizi</p>
-                    <p className="text-sm text-slate-500">Grafiklerle alışkanlıklarınızı görün</p>
-                  </div>
-                </div>
+          {/* TRANSACTIONS TAB */}
+          {activeTab === 'transactions' && (
+            <div className="space-y-6 animate-fadeIn">
+              <ExpenseList />
+            </div>
+          )}
 
-                <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-accent-sm">
-                    <Target size={20} className="text-white" strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900">Tasarruf Hedefleri</p>
-                    <p className="text-sm text-slate-500">Hedeflerinize adım adım ilerleyin</p>
-                  </div>
-                </div>
+          {/* GOALS TAB */}
+          {activeTab === 'goals' && (
+            <div className="space-y-6 animate-fadeIn">
+              <GoalForm />
+              <GoalList />
+            </div>
+          )}
+
+          {/* ANALYTICS TAB */}
+          {activeTab === 'analytics' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <CategoryChart />
+                <ExpenseChart />
               </div>
-            </CardContent>
-            <CardFooter noBorder className="flex-col sm:flex-row">
-              <Button variant="primary" isFullWidth>
-                Başlayalım
-              </Button>
-              <Button variant="ghost" isFullWidth>
-                Daha Sonra
-              </Button>
-            </CardFooter>
-          </Card>
+            </div>
+          )}
         </div>
+      </main>
 
-        {/* Footer - Professional */}
-        <div className="text-center pt-8 pb-4">
-          <p className="text-sm text-slate-400">
-            Budgeify v1.1.0 • Professional Edition
-          </p>
-          <p className="text-xs text-slate-300 mt-1">
-            Powered by Kral İndigo Design System
-          </p>
+      {/* FAB - Floating Action Button */}
+      {activeTab === 'transactions' && (
+        <button
+          onClick={() => setIsDrawerOpen(true)}
+          className="fixed bottom-24 right-6 w-14 h-14 bg-gradient-to-br from-accent-600 to-accent-700
+                     text-white rounded-full shadow-accent-lg hover:shadow-accent-md
+                     flex items-center justify-center transition-all duration-200
+                     hover:scale-110 active:scale-95 z-50"
+          aria-label="Gider Ekle"
+        >
+          <Plus size={28} strokeWidth={2.5} />
+        </button>
+      )}
+
+      {/* Simple Drawer (TODO: Replace with vaul in next step) */}
+      {isDrawerOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-end" onClick={() => setIsDrawerOpen(false)}>
+          <div className="w-full bg-white rounded-t-2xl p-6 animate-slideUp" onClick={(e) => e.stopPropagation()}>
+            <ExpenseForm />
+          </div>
         </div>
-      </div>
-    </main>
+      )}
+
+      {/* Bottom Navigation with Tab State */}
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+    </>
   );
 }
