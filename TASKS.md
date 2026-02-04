@@ -1,96 +1,118 @@
 # Budgeify - Development Tasks
 
-## Progress: 0/31 Tasks Complete (0%)
+## Progress: 8/32 Tasks Complete (25%)
 
-**Current Phase:** Setup
-**Next Task:** Task 1.1
+**Current Phase:** Income Module (Milestone 4)
+**Next Task:** Task 4.1 - Ana Maaş State'i Oluşturma
 
-### Task 1.1: Next.js Proje Kurulumu
+### Task 1.1: Next.js Proje Kurulumu ✅ TAMAMLANDI
 
-- [ ] Yeni bir Next.js projesi oluştur ve Tailwind CSS'i entegre et.
+- [x] Yeni bir Next.js projesi oluştur ve Tailwind CSS'i entegre et.
 
 **Dosya(lar):** `package.json`, `tailwind.config.js`, `postcss.config.js`, `globals.css`
 **Bağımlılık:** Yok
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Next.js projesi başarıyla oluşturuldu.
-- [ ] Tailwind CSS konfigürasyonu yapıldı ve çalışır durumda.
-- [ ] Proje `npm run dev` ile sorunsuz çalışıyor.
+- [x] Next.js projesi başarıyla oluşturuldu.
+- [x] Tailwind CSS konfigürasyonu yapıldı ve çalışır durumda.
+- [x] Proje `npm run dev` ile sorunsuz çalışıyor.
 
 **Styling Notes:** Modern ve minimalist estetiğe uygun temel kurulum.
 
 **Commit:** `feat(setup): initialize Next.js project with Tailwind CSS`
 
-### Task 1.2: Klasör Yapısı ve Temel Dosyalar
+### Task 1.2: Klasör Yapısı ve Temel Dosyalar ✅ TAMAMLANDI
 
-- [ ] PRD'de belirtilen klasör yapısını (src/app, src/components, src/stores, etc.) oluştur.
-- [ ] Temel `tsconfig.json` dosyasını yapılandır.
+- [x] PRD'de belirtilen klasör yapısını (src/app, src/components, src/stores, etc.) oluştur.
+- [x] Temel `tsconfig.json` dosyasını yapılandır.
 
 **Dosya(lar):** `src/app`, `src/components`, `src/stores`, `src/services`, `src/types`, `src/utils`, `src/constants`, `tsconfig.json`
 **Bağımlılık:** Task 1.1 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Belirtilen klasör yapısı oluşturuldu.
-- [ ] `tsconfig.json` güncel TypeScript ayarlarıyla yapılandırıldı.
-- [ ] Boş `src/types/index.ts` dosyası oluşturuldu.
+- [x] Belirtilen klasör yapısı oluşturuldu.
+- [x] `tsconfig.json` güncel TypeScript ayarlarıyla yapılandırıldı.
+- [x] Boş `src/types/index.ts` dosyası oluşturuldu.
 
 **Styling Notes:** Yok
 
 **Commit:** `chore(setup): create base folder structure and tsconfig`
 
---- 
+### Task 1.3: Integrated Zustand Store Schema ✅ TAMAMLANDI
+
+- [x] `src/store/useBudgetStore.ts` içinde merkezi Zustand store'u oluştur.
+- [x] Income, Expense, Goal, Category state'lerini persist middleware ile entegre et.
+- [x] CRUD action'ları ve utility fonksiyonları (getBalance, getSavingsRate) ekle.
+
+**Dosya(lar):** `src/store/useBudgetStore.ts`, `src/components/features/StoreTestPanel.tsx`
+**Bağımlılık:** Task 1.2 tamamlanmalı
+**Süre:** ~20-25 dk
+
+**Acceptance Criteria:**
+- [x] BudgetStoreState interface tanımlandı (Income, Expense, Goal, Category)
+- [x] Persist middleware ile localStorage entegrasyonu yapıldı
+- [x] CRUD action'ları (add, update, delete) her entity için mevcut
+- [x] Utility fonksiyonlar: getTotalIncome, getTotalExpenses, getBalance, getSavingsRate
+- [x] TypeScript tipleri @/types'dan import edildi
+- [x] Test panel oluşturuldu ve store fonksiyonları doğrulandı
+
+**Styling Notes:** Yok
+
+**Commit:** `feat(store): implement integrated Zustand store with persist middleware`
+
+---
 🎯 **Milestone: Setup Complete**
 Kontrol: Temel proje kurulumu ve klasör yapısı hazır, `npm run build` hatasız
 ---
 
-### Task 2.1: Button Component'i Oluşturma
+### Task 2.1: Button Component'i Oluşturma ✅ TAMAMLANDI
 
-- [ ] Reusable bir Button component'i oluştur. Primary, secondary, ghost varyantlarını desteklesin.
+- [x] Reusable bir Button component'i oluştur. Primary, secondary, ghost varyantlarını desteklesin.
 
 **Dosya(lar):** `src/components/ui/Button.tsx`
 **Bağımlılık:** Task 1.2 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Component renderlanıyor.
-- [ ] TypeScript hatasız.
-- [ ] UI Reference'taki stile (rounded-xl, blue-600) uygun.
+- [x] Component renderlanıyor.
+- [x] TypeScript hatasız.
+- [x] UI Reference'taki stile (rounded-xl, blue-600) uygun.
 
 **Styling Notes:** Primary butonlar: `bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3`. Ghost butonlar: `bg-transparent hover:bg-slate-100 text-slate-700 rounded-xl`.
 
 **Commit:** `feat(ui): add Button component with variants`
 
-### Task 2.2: Card Component'i Oluşturma
+### Task 2.2: Card Component'i Oluşturma ✅ TAMAMLANDI
 
-- [ ] Reusable bir Card component'i oluştur. Glassmorphism estetiğine uygun olsun.
+- [x] Reusable bir Card component'i oluştur. Glassmorphism estetiğine uygun olsun.
 
 **Dosya(lar):** `src/components/ui/Card.tsx`
 **Bağımlılık:** Task 1.2 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Component renderlanıyor.
-- [ ] TypeScript hatasız.
-- [ ] UI Reference'taki (rounded-2xl, glassmorphism) stile uygun.
+- [x] Component renderlanıyor.
+- [x] TypeScript hatasız.
+- [x] UI Reference'taki (rounded-2xl, glassmorphism) stile uygun.
 
 **Styling Notes:** `rounded-2xl bg-white/80 backdrop-blur-md shadow-xl shadow-black/5 border border-white/20`
 
 **Commit:** `feat(ui): add GlassCard component with blur effect`
 
-### Task 2.3: Input Component'i Oluşturma
+### Task 2.3: Input Component'i Oluşturma ✅ TAMAMLANDI
 
-- [ ] Reusable bir Input component'i oluştur. Standard text input ve numeric input varyantlarını desteklesin.
+- [x] Reusable bir Input component'i oluştur. Standard text input ve numeric input varyantlarını desteklesin.
 
 **Dosya(lar):** `src/components/ui/Input.tsx`
 **Bağımlılık:** Task 1.2 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Component renderlanıyor.
-- [ ] TypeScript hatasız.
-- [ ] UI Reference'taki stile uygun.
+- [x] Component renderlanıyor.
+- [x] TypeScript hatasız.
+- [x] UI Reference'taki stile uygun.
 
 **Styling Notes:** `rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20`
 
@@ -116,35 +138,35 @@ Kontrol: Tüm reusable component'lar hazır, `npm run build` hatasız
 
 **Commit:** `feat(layout): implement Header component`
 
-### Task 3.2: Bottom Navigation Component'i Oluşturma
+### Task 3.2: Bottom Navigation Component'i Oluşturma ✅ TAMAMLANDI
 
-- [ ] Mobil cihazlar için `BottomNav` component'ini oluştur. Ana sayfa, gelir, harcama ekle, analiz ve hedefler ikonlarını içersin.
+- [x] Mobil cihazlar için `BottomNav` component'ini oluştur. Ana sayfa, gelir, harcama ekle, analiz ve hedefler ikonlarını içersin.
 
 **Dosya(lar):** `src/components/layout/BottomNav.tsx`
 **Bağımlılık:** Task 2.1 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Bottom navigation mobil görünümde sayfada görünüyor.
-- [ ] İkonlar doğru yerleştirildi ve tıklanabilir durumda.
-- [ ] `+` butonu belirgin ve ortalanmış.
+- [x] Bottom navigation mobil görünümde sayfada görünüyor.
+- [x] İkonlar doğru yerleştirildi ve tıklanabilir durumda.
+- [x] `+` butonu belirgin ve ortalanmış.
 
 **Styling Notes:** `Floating Action Button (FAB)` ortada, aktif ikon belirgin.
 
 **Commit:** `feat(layout): implement mobile BottomNav`
 
-### Task 3.3: Temel Layout Yapısı
+### Task 3.3: Temel Layout Yapısı ✅ TAMAMLANDI
 
-- [ ] `Header` ve `BottomNav`'ı içeren temel sayfa layout'unu oluştur. Desktop için Sidebar entegrasyonuna uygun bir yapı sağla.
+- [x] `Header` ve `BottomNav`'ı içeren temel sayfa layout'unu oluştur. Desktop için Sidebar entegrasyonuna uygun bir yapı sağla.
 
 **Dosya(lar):** `src/app/layout.tsx`
 **Bağımlılık:** Task 3.1, 3.2 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Tüm sayfalarda header ve bottom nav görünüyor.
-- [ ] İçerik bu layout içinde doğru şekilde renderlanıyor.
-- [ ] Responsive geçişler sorunsuz çalışıyor.
+- [x] Tüm sayfalarda header ve bottom nav görünüyor.
+- [x] İçerik bu layout içinde doğru şekilde renderlanıyor.
+- [x] Responsive geçişler sorunsuz çalışıyor.
 
 **Styling Notes:** Genel responsive tasarım prensiplerine uygunluk.
 

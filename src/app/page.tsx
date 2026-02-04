@@ -4,6 +4,7 @@
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { StoreTestPanel } from '@/components/features/StoreTestPanel';
 
 export default function HomePage() {
   return (
@@ -114,6 +115,11 @@ export default function HomePage() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Store Test Panel */}
+        <div className="w-full max-w-4xl mt-8">
+          <StoreTestPanel />
         </div>
 
         {/* Footer */}
