@@ -3,6 +3,7 @@
 
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Logo } from '@/components/ui/Logo';
 import { MainBalanceCard } from '@/components/features/income/MainBalanceCard';
 import { MainSalaryForm } from '@/components/features/income/MainSalaryForm';
 import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
@@ -11,100 +12,101 @@ import { CategoryChart } from '@/components/features/analytics/CategoryChart';
 import { ExpenseChart } from '@/components/features/analytics/ExpenseChart';
 import { GoalList } from '@/components/features/goals/GoalCard';
 import { GoalForm } from '@/components/features/goals/GoalForm';
+import { TrendingUp, BarChart3, Target } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <main className="pb-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Main Balance Card */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
+    <main className="pb-24 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Main Balance Card - Hero */}
+        <div className="w-full max-w-3xl mx-auto">
           <MainBalanceCard />
         </div>
 
         {/* Main Salary Form */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        <div className="w-full max-w-3xl mx-auto">
           <MainSalaryForm />
         </div>
 
         {/* Expense Form */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        <div className="w-full max-w-3xl mx-auto">
           <ExpenseForm />
         </div>
 
         {/* Expense List */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        <div className="w-full max-w-3xl mx-auto">
           <ExpenseList />
         </div>
 
-        {/* Category Chart */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        {/* Analytics - 2 Column Grid on Desktop */}
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           <CategoryChart />
-        </div>
-
-        {/* Expense Chart */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
           <ExpenseChart />
         </div>
 
         {/* Goal Form */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        <div className="w-full max-w-3xl mx-auto">
           <GoalForm />
         </div>
 
         {/* Goal List */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
+        <div className="w-full max-w-3xl mx-auto">
           <GoalList />
         </div>
 
-        {/* Logo ve Başlık */}
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-xl shadow-blue-500/20">
-            <span className="text-4xl">💰</span>
-          </div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">
-            Budgeify
-          </h1>
-          <p className="text-lg text-slate-500">
-            Kişisel Finans Yönetimi
-          </p>
-        </div>
-
-        {/* Hoş Geldiniz Kartı - Card Component ile */}
-        <div className="w-full max-w-2xl mx-auto mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Hoş Geldiniz! 👋</CardTitle>
+        {/* Welcome Card - Professional Fintech Style */}
+        <div className="w-full max-w-3xl mx-auto">
+          <Card variant="elevated" hover>
+            <CardHeader noBorder>
+              {/* Logo - Centered */}
+              <div className="flex justify-center mb-6">
+                <Logo size="lg" showText={true} />
+              </div>
+              <CardTitle as="h1" className="text-center text-2xl">
+                Hoş Geldiniz!
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600 mb-6 leading-relaxed">
-                Budgeify ile gelir ve giderlerinizi kolayca takip edin,
+              <p className="text-slate-600 mb-8 text-center leading-relaxed">
+                Budgeify ile gelir ve giderlerinizi profesyonelce takip edin,
                 harcama alışkanlıklarınızı analiz edin ve finansal
                 hedeflerinize ulaşın.
               </p>
 
-              {/* Özellik Listesi */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-slate-700">
-                  <span className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-lg">
-                    📊
-                  </span>
-                  <span className="text-sm">Gelir ve gider takibi</span>
+              {/* Feature List - Professional Icons */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-accent-sm">
+                    <TrendingUp size={20} className="text-white" strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900">Gelir ve Gider Takibi</p>
+                    <p className="text-sm text-slate-500">Tüm finansal hareketlerinizi kaydedin</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-slate-700">
-                  <span className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center text-lg">
-                    📈
-                  </span>
-                  <span className="text-sm">Detaylı harcama analizi</span>
+
+                <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-accent-sm">
+                    <BarChart3 size={20} className="text-white" strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900">Detaylı Harcama Analizi</p>
+                    <p className="text-sm text-slate-500">Grafiklerle alışkanlıklarınızı görün</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-slate-700">
-                  <span className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-lg">
-                    🎯
-                  </span>
-                  <span className="text-sm">Tasarruf hedefleri</span>
+
+                <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-600 to-accent-700 flex items-center justify-center shadow-accent-sm">
+                    <Target size={20} className="text-white" strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900">Tasarruf Hedefleri</p>
+                    <p className="text-sm text-slate-500">Hedeflerinize adım adım ilerleyin</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter noBorder className="flex-col sm:flex-row">
               <Button variant="primary" isFullWidth>
                 Başlayalım
               </Button>
@@ -115,10 +117,15 @@ export default function HomePage() {
           </Card>
         </div>
 
-        {/* Footer */}
-        <p className="mt-8 text-sm text-slate-400">
-          Versiyon 1.0.0 • MVP
-        </p>
+        {/* Footer - Professional */}
+        <div className="text-center pt-8 pb-4">
+          <p className="text-sm text-slate-400">
+            Budgeify v1.1.0 • Professional Edition
+          </p>
+          <p className="text-xs text-slate-300 mt-1">
+            Powered by Kral İndigo Design System
+          </p>
+        </div>
       </div>
     </main>
   );
