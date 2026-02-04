@@ -1,9 +1,9 @@
 # Budgeify - Development Tasks
 
-## Progress: 10/32 Tasks Complete (31%)
+## Progress: 11/32 Tasks Complete (34%)
 
 **Current Phase:** Income Module (Milestone 4)
-**Next Task:** Task 4.3 - Ana Maaş Giriş Formu
+**Next Task:** Task 4.4 - Ana Sayfa (Dashboard) Düzenlemesi
 
 ### Task 1.1: Next.js Proje Kurulumu ✅ TAMAMLANDI
 
@@ -212,18 +212,21 @@ Kontrol: Temel layout (Header, BottomNav) hazır, sayfa iskeletleri işlevsel.
 
 **Commit:** `feat(income): create MainBalanceCard component`
 
-### Task 4.3: Ana Maaş Giriş Formu
+### Task 4.3: Ana Maaş Giriş Formu ✅ TAMAMLANDI
 
-- [ ] Kullanıcının ana maaşını girebileceği bir form component'i oluştur. Input validation içermeli.
+- [x] Kullanıcının ana maaşını girebileceği bir form component'i oluştur. Input validation içermeli.
 
 **Dosya(lar):** `src/components/features/income/MainSalaryForm.tsx`
 **Bağımlılık:** Task 2.1, 2.3, 4.1 tamamlanmalı
 **Süre:** ~15-20 dk
 
 **Acceptance Criteria:**
-- [ ] Form, `MainBalanceCard`'daki maaşı güncelleyebiliyor.
-- [ ] Tutar girişi için sadece sayısal değerler kabul ediliyor.
-- [ ] Hata mesajları doğru şekilde gösteriliyor (örn: boş bırakılamaz).
+- [x] Form, `useBudgetStore`'a gelir ekleyebiliyor ve MainBalanceCard otomatik güncelleniyor.
+- [x] Tutar girişi için sadece sayısal değerler kabul ediliyor (type="number").
+- [x] Hata mesajları doğru şekilde gösteriliyor (tutar kontrolü).
+- [x] Gelir kategorisi dropdown eklendi (INCOME_CATEGORIES).
+- [x] "Düzenli gelir" checkbox eklendi.
+- [x] Form temizleme butonu eklendi.
 
 **Styling Notes:** Standart Input component'i kullan.
 
