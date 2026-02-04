@@ -9,6 +9,7 @@ import { MainBalanceCard } from '@/components/features/income/MainBalanceCard';
 import { MainSalaryForm } from '@/components/features/income/MainSalaryForm';
 import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
 import { ExpenseList } from '@/components/features/expenses/ExpenseList';
+import { CategoryChart } from '@/components/features/analytics/CategoryChart';
 
 export default function HomePage() {
   return (
@@ -32,6 +33,11 @@ export default function HomePage() {
         {/* Expense List */}
         <div className="w-full max-w-2xl mx-auto mb-8">
           <ExpenseList />
+        </div>
+
+        {/* Category Chart */}
+        <div className="w-full max-w-2xl mx-auto mb-8">
+          <CategoryChart />
         </div>
 
         {/* Logo ve Başlık */}
