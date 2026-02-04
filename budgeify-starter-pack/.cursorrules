@@ -161,12 +161,39 @@ refactor(store): migrate income store to persist middleware
 
 ## Development Workflow
 
+### Token Koruma Protokolü (Token Protection Protocol)
+- Session token limit maximum: **%100**
+- **CRITICAL**: When token usage reaches **%90**, immediately STOP execution
+- Do NOT continue with new tasks when limit approaches
+- Save all progress before stopping
+
+### Otomatik Senkronizasyon (Automatic Synchronization)
+- After every successful task completion OR when stopping due to token limit
+- Automatically update `CLAUDE.md` and `TASKS.md` with:
+  - Current progress status
+  - Completed/in-progress/blocked tasks
+  - Latest file modifications
+  - Current session notes
+
+### Git Otomasyonu (Git Automation)
+- After each milestone (task block) completion:
+  - Commit changes using CLAUDE.md Conventional Commits standard
+  - Push to GitHub using: `git push origin main`
+  - Use descriptive commit messages following format: `feat(scope): description`
+
+### Devir Teslim (Handover Documentation)
+- When stopping due to token limit or session end:
+  - Add "Token Limit Summary" section to `CLAUDE.md`
+  - Document: What was completed, what's pending, next exact steps
+  - Include any blocking issues or dependencies
+  - Ensure next session can resume immediately without context loss
+
 ### After Each Task
 1. Ensure code compiles: `npm run build`
 2. Check for TypeScript errors
 3. Verify in browser (dev server should be running)
 4. Commit with conventional message
-5. DO NOT push - wait for batch review
+5. Update progress in CLAUDE.md synchronously
 
 ### Preview Requirement
 - Dev server must always be running (`npm run dev`)
