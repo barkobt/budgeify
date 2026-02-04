@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { formatCurrency } from '@/utils';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
@@ -16,14 +16,46 @@ import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
  * - Gelir/Gider trend göstergeleri
  * - Tasarruf oranı gösterimi
  * - Responsive tasarım
+ * - Hydration-safe (client-only rendering for dynamic data)
  */
 export const MainBalanceCard = () => {
   const { getTotalIncome, getTotalExpenses, getBalance, getSavingsRate } = useBudgetStore();
 
-  const totalIncome = getTotalIncome();
-  const totalExpenses = getTotalExpenses();
-  const balance = getBalance();
-  const savingsRate = getSavingsRate();
+  // HYDRATION FIX: Client-only rendering
+  const [isMounted, setIsMounted] = useState(false);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [balance, setBalance] = useState(0);
+  const [savingsRate, setSavingsRate] = useState(0);
+
+  useEffect(() => {
+    setIsMounted(true);
+    setTotalIncome(getTotalIncome());
+    setTotalExpenses(getTotalExpenses());
+    setBalance(getBalance());
+    setSavingsRate(getSavingsRate());
+  }, [getTotalIncome, getTotalExpenses, getBalance, getSavingsRate]);
+
+  // Show loading state during SSR
+  if (!isMounted) {
+    return (
+      <section
+        className="relative overflow-hidden rounded-2xl gradient-accent text-white shadow-accent-lg"
+        aria-label="Finansal Özet Kartı"
+      >
+        <div className="relative p-8 sm:p-10">
+          <div className="animate-pulse space-y-8">
+            <div className="h-12 bg-white/10 rounded-xl w-48"></div>
+            <div className="h-16 bg-white/10 rounded-xl w-64"></div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="h-24 bg-white/10 rounded-xl"></div>
+              <div className="h-24 bg-white/10 rounded-xl"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const isPositive = balance >= 0;
 
@@ -85,20 +117,20 @@ export const MainBalanceCard = () => {
           )}
         </div>
 
-        {/* Income & Expense Summary - 8px Grid Spacing */}
-        <div className="grid grid-cols-2 gap-6" role="group" aria-label="Gelir ve Gider Özeti">
-          {/* Income */}
-          <div className="rounded-xl bg-white/15 p-5 backdrop-blur-sm border border-white/20" role="article" aria-label="Toplam Gelir">
-            <div className="mb-2 flex items-center gap-2">
+        {/* Income & Expense Summary - FIXED EQUAL BOXES */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" role="group" aria-label="Gelir ve Gider Özeti">
+          {/* Income - EQUAL PADDING */}
+          <div className="rounded-xl bg-white/15 p-6 backdrop-blur-sm border border-white/20" role="article" aria-label="Toplam Gelir">
+            <div className="mb-3 flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-green-300" aria-hidden="true" />
               <p className="text-xs font-semibold text-white/80 uppercase tracking-wide">Gelir</p>
             </div>
             <p className="text-2xl font-bold">{formatCurrency(totalIncome)}</p>
           </div>
 
-          {/* Expense */}
-          <div className="rounded-xl bg-white/15 p-5 backdrop-blur-sm border border-white/20" role="article" aria-label="Toplam Gider">
-            <div className="mb-2 flex items-center gap-2">
+          {/* Expense - EQUAL PADDING */}
+          <div className="rounded-xl bg-white/15 p-6 backdrop-blur-sm border border-white/20" role="article" aria-label="Toplam Gider">
+            <div className="mb-3 flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-red-300" aria-hidden="true" />
               <p className="text-xs font-semibold text-white/80 uppercase tracking-wide">Gider</p>
             </div>
