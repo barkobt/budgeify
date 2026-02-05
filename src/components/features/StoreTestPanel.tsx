@@ -79,18 +79,18 @@ export const StoreTestPanel = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 rounded-xl bg-green-50 border border-green-200">
               <p className="text-sm text-green-600 font-medium">Toplam Gelir</p>
-              <p className="text-2xl font-bold text-green-700">{formatCurrency(totalIncome)}</p>
-              <p className="text-xs text-green-500 mt-1">{incomes.length} kayıt</p>
+              <p className="text-2xl font-bold text-green-700 tabular-nums">{formatCurrency(totalIncome)}</p>
+              <p className="text-xs text-green-500 mt-1 tabular-nums">{incomes.length} kayıt</p>
             </div>
             <div className="p-4 rounded-xl bg-red-50 border border-red-200">
               <p className="text-sm text-red-600 font-medium">Toplam Gider</p>
-              <p className="text-2xl font-bold text-red-700">{formatCurrency(totalExpenses)}</p>
-              <p className="text-xs text-red-500 mt-1">{expenses.length} kayıt</p>
+              <p className="text-2xl font-bold text-red-700 tabular-nums">{formatCurrency(totalExpenses)}</p>
+              <p className="text-xs text-red-500 mt-1 tabular-nums">{expenses.length} kayıt</p>
             </div>
             <div className="p-4 rounded-xl bg-blue-50 border border-blue-200">
               <p className="text-sm text-blue-600 font-medium">Bakiye</p>
-              <p className="text-2xl font-bold text-blue-700">{formatCurrency(balance)}</p>
-              <p className="text-xs text-blue-500 mt-1">Tasarruf: %{savingsRate}</p>
+              <p className="text-2xl font-bold text-blue-700 tabular-nums">{formatCurrency(balance)}</p>
+              <p className="text-xs text-blue-500 mt-1 tabular-nums">Tasarruf: %{savingsRate}</p>
             </div>
             <div className="p-4 rounded-xl bg-purple-50 border border-purple-200">
               <p className="text-sm text-purple-600 font-medium">Hedefler</p>

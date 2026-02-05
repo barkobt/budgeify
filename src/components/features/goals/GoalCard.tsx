@@ -89,7 +89,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-slate-900">{goal.name}</h3>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 tabular-nums">
               {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
             </p>
           </div>
@@ -140,7 +140,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
               <Target className="h-3.5 w-3.5" />
               <span className="text-xs font-medium">Kalan</span>
             </div>
-            <p className="text-sm font-bold text-slate-900">
+            <p className="text-sm font-bold text-slate-900 tabular-nums">
               {formatCurrency(remaining)}
             </p>
           </div>
@@ -151,14 +151,14 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
                   <Calendar className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium">Süre</span>
                 </div>
-                <p className="text-sm font-bold text-slate-900">{daysLeft} gün</p>
+                <p className="text-sm font-bold text-slate-900 tabular-nums">{daysLeft} gün</p>
               </div>
               <div className="rounded-xl bg-slate-50 p-3 transition-all hover:bg-slate-100">
                 <div className="mb-1 flex items-center gap-1 text-slate-500">
                   <TrendingUp className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium">Günlük</span>
                 </div>
-                <p className="text-sm font-bold text-slate-900">
+                <p className="text-sm font-bold text-slate-900 tabular-nums">
                   {formatCurrency(dailySavingsNeeded)}
                 </p>
               </div>

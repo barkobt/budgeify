@@ -42,15 +42,20 @@ async function getUserId(): Promise<string> {
  * Get All Expenses
  */
 export async function getExpenses() {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  const result = await db
-    .select()
-    .from(expenses)
-    .where(eq(expenses.userId, userId))
-    .orderBy(desc(expenses.date));
+    const result = await db
+      .select()
+      .from(expenses)
+      .where(eq(expenses.userId, userId))
+      .orderBy(desc(expenses.date));
 
-  return result;
+    return result;
+  } catch (error) {
+    console.error('getExpenses error:', error);
+    throw new Error('Giderler yüklenirken bir hata oluştu');
+  }
 }
 
 /**
@@ -77,23 +82,28 @@ export async function createExpense(data: {
   categoryId?: string;
   date?: Date;
 }) {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  const newExpense: NewExpense = {
-    userId,
-    amount: data.amount.toString(),
-    note: data.note ?? null,
-    categoryId: data.categoryId ?? null,
-    date: data.date ?? new Date(),
-  };
+    const newExpense: NewExpense = {
+      userId,
+      amount: data.amount.toString(),
+      note: data.note ?? null,
+      categoryId: data.categoryId ?? null,
+      date: data.date ?? new Date(),
+    };
 
-  const [created] = await db.insert(expenses).values(newExpense).returning();
+    const [created] = await db.insert(expenses).values(newExpense).returning();
 
-  revalidatePath('/dashboard');
-  revalidatePath('/expenses');
-  revalidatePath('/analytics');
+    revalidatePath('/dashboard');
+    revalidatePath('/expenses');
+    revalidatePath('/analytics');
 
-  return created;
+    return created;
+  } catch (error) {
+    console.error('createExpense error:', error);
+    throw new Error('Gider eklenirken bir hata oluştu');
+  }
 }
 
 /**
@@ -147,26 +157,34 @@ export async function updateExpense(
  * Delete Expense
  */
 export async function deleteExpense(id: string) {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  // Verify ownership
-  const existing = await db
-    .select()
-    .from(expenses)
-    .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
-    .limit(1);
+    // Verify ownership
+    const existing = await db
+      .select()
+      .from(expenses)
+      .where(and(eq(expenses.id, id), eq(expenses.userId, userId)))
+      .limit(1);
 
-  if (!existing[0]) {
-    throw new Error('Expense not found or unauthorized');
+    if (!existing[0]) {
+      throw new Error('Gider bulunamadı veya yetkiniz yok');
+    }
+
+    await db.delete(expenses).where(eq(expenses.id, id));
+
+    revalidatePath('/dashboard');
+    revalidatePath('/expenses');
+    revalidatePath('/analytics');
+
+    return { success: true };
+  } catch (error) {
+    console.error('deleteExpense error:', error);
+    if (error instanceof Error && error.message.includes('bulunamadı')) {
+      throw error;
+    }
+    throw new Error('Gider silinirken bir hata oluştu');
   }
-
-  await db.delete(expenses).where(eq(expenses.id, id));
-
-  revalidatePath('/dashboard');
-  revalidatePath('/expenses');
-  revalidatePath('/analytics');
-
-  return { success: true };
 }
 
 /**

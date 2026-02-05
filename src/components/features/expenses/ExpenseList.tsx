@@ -74,7 +74,7 @@ export const ExpenseList = () => {
                   <h3 className="text-sm font-semibold text-slate-700">
                     {formatDate(date)}
                   </h3>
-                  <span className="text-sm font-medium text-red-600">
+                  <span className="text-sm font-medium text-red-600 tabular-nums">
                     {formatCurrency(dayTotal)}
                   </span>
                 </div>
@@ -114,7 +114,7 @@ export const ExpenseList = () => {
                         </div>
 
                         {/* Amount */}
-                        <span className="text-sm font-semibold text-slate-900">
+                        <span className="text-sm font-semibold text-slate-900 tabular-nums">
                           {formatCurrency(expense.amount)}
                         </span>
 

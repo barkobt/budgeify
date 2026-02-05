@@ -71,7 +71,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   };
 
   return (
-    <span className={className}>
+    <span className={`tabular-nums ${className}`}>
       {prefix}{formatNumber(displayValue)}{suffix}
     </span>
   );

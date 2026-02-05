@@ -18,6 +18,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Drawer } from '@/components/ui/Drawer';
+import { PageWrapper } from '@/components/ui/PageWrapper';
 import {
   Plus,
   TrendingUp,
@@ -97,8 +98,9 @@ export default function DashboardPage() {
 
   return (
     <>
-      <main className="min-h-screen pb-24 px-4 sm:px-6">
-        <div className="mx-auto max-w-lg">
+      <PageWrapper>
+        <main className="min-h-screen pb-24 px-4 sm:px-6">
+          <div className="mx-auto max-w-lg">
           {/* ========================================
               DASHBOARD TAB
               ======================================== */}
@@ -227,6 +229,7 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
+      </PageWrapper>
 
       {/* FAB - Transactions Tab Only */}
       {activeTab === 'transactions' && (

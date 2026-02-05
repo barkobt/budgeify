@@ -1,9 +1,14 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Wallet } from 'lucide-react';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
   className?: string;
+  href?: string;
 }
 
 const sizeMap = {
@@ -15,11 +20,16 @@ const sizeMap = {
 export const Logo: React.FC<LogoProps> = ({
   size = 'md',
   showText = true,
-  className = ''
+  className = '',
+  href
 }) => {
+  const pathname = usePathname();
   const { icon, text, padding } = sizeMap[size];
 
-  return (
+  // Smart linking: if href is provided, use it; otherwise determine from pathname
+  const linkHref = href ?? (pathname?.startsWith('/dashboard') ? '/dashboard' : '/');
+
+  const logoContent = (
     <div className={`flex items-center gap-2.5 ${className}`}>
       {/* Wallet Icon - AI Gradient with glow */}
       <div className="relative">
@@ -40,5 +50,14 @@ export const Logo: React.FC<LogoProps> = ({
         </span>
       )}
     </div>
+  );
+
+  return (
+    <Link
+      href={linkHref}
+      className="transition-transform duration-200 hover:scale-105 active:scale-95"
+    >
+      {logoContent}
+    </Link>
   );
 };

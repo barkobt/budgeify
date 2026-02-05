@@ -67,12 +67,12 @@ interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 
 const variantStyles: Record<CardVariant, string> = {
-  default: 'card-surface', // Uses utility class from globals.css
-  glass: 'glass', // Refined glassmorphism
-  solid: 'bg-white border border-slate-200 shadow-md',
-  elevated: 'card-elevated', // More prominent depth
-  gradient: 'gradient-accent text-white border-none shadow-accent-lg',
-  outline: 'bg-transparent border-2 border-slate-200 shadow-none hover:border-accent-700',
+  default: 'card-solid', // Solid card for important content
+  glass: 'glass-card', // Glassmorphism level 2 for main containers
+  solid: 'card-white', // White card for maximum contrast
+  elevated: 'glass-elevated', // Glassmorphism level 3 for modals/dropdowns
+  gradient: 'card-gradient', // Premium gradient card
+  outline: 'glass-subtle border-2 border-white/10', // Minimal border-only
 };
 
 const sizeStyles: Record<CardSize, { padding: string; radius: string }> = {
@@ -105,7 +105,7 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ children, className = '', noBorder = false, ...props }, ref) => (
     <div
       ref={ref}
-      className={`px-6 py-5 ${!noBorder ? 'border-b border-slate-100' : ''} ${className}`}
+      className={`px-6 py-5 ${!noBorder ? 'border-b border-white/10' : ''} ${className}`}
       {...props}
     >
       {children}
@@ -147,7 +147,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ children, className = '', noBorder = false, ...props }, ref) => (
     <div
       ref={ref}
-      className={`px-6 py-5 ${!noBorder ? 'border-t border-slate-100' : ''} flex items-center gap-3 ${className}`}
+      className={`px-6 py-5 ${!noBorder ? 'border-t border-white/10' : ''} flex items-center gap-3 ${className}`}
       {...props}
     >
       {children}

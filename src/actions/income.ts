@@ -46,15 +46,20 @@ async function getUserId(): Promise<string> {
  * Kullanıcının tüm gelirlerini getir
  */
 export async function getIncomes() {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  const result = await db
-    .select()
-    .from(incomes)
-    .where(eq(incomes.userId, userId))
-    .orderBy(desc(incomes.date));
+    const result = await db
+      .select()
+      .from(incomes)
+      .where(eq(incomes.userId, userId))
+      .orderBy(desc(incomes.date));
 
-  return result;
+    return result;
+  } catch (error) {
+    console.error('getIncomes error:', error);
+    throw new Error('Gelirler yüklenirken bir hata oluştu');
+  }
 }
 
 /**
@@ -82,23 +87,28 @@ export async function createIncome(data: {
   date?: Date;
   isRecurring?: boolean;
 }) {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  const newIncome: NewIncome = {
-    userId,
-    amount: data.amount.toString(),
-    description: data.description ?? null,
-    categoryId: data.categoryId ?? null,
-    date: data.date ?? new Date(),
-    isRecurring: data.isRecurring ?? false,
-  };
+    const newIncome: NewIncome = {
+      userId,
+      amount: data.amount.toString(),
+      description: data.description ?? null,
+      categoryId: data.categoryId ?? null,
+      date: data.date ?? new Date(),
+      isRecurring: data.isRecurring ?? false,
+    };
 
-  const [created] = await db.insert(incomes).values(newIncome).returning();
+    const [created] = await db.insert(incomes).values(newIncome).returning();
 
-  revalidatePath('/dashboard');
-  revalidatePath('/income');
+    revalidatePath('/dashboard');
+    revalidatePath('/income');
 
-  return created;
+    return created;
+  } catch (error) {
+    console.error('createIncome error:', error);
+    throw new Error('Gelir eklenirken bir hata oluştu');
+  }
 }
 
 /**
@@ -153,25 +163,33 @@ export async function updateIncome(
  * Delete Income
  */
 export async function deleteIncome(id: string) {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  // Verify ownership
-  const existing = await db
-    .select()
-    .from(incomes)
-    .where(and(eq(incomes.id, id), eq(incomes.userId, userId)))
-    .limit(1);
+    // Verify ownership
+    const existing = await db
+      .select()
+      .from(incomes)
+      .where(and(eq(incomes.id, id), eq(incomes.userId, userId)))
+      .limit(1);
 
-  if (!existing[0]) {
-    throw new Error('Income not found or unauthorized');
+    if (!existing[0]) {
+      throw new Error('Gelir bulunamadı veya yetkiniz yok');
+    }
+
+    await db.delete(incomes).where(eq(incomes.id, id));
+
+    revalidatePath('/dashboard');
+    revalidatePath('/income');
+
+    return { success: true };
+  } catch (error) {
+    console.error('deleteIncome error:', error);
+    if (error instanceof Error && error.message.includes('bulunamadı')) {
+      throw error;
+    }
+    throw new Error('Gelir silinirken bir hata oluştu');
   }
-
-  await db.delete(incomes).where(eq(incomes.id, id));
-
-  revalidatePath('/dashboard');
-  revalidatePath('/income');
-
-  return { success: true };
 }
 
 /**

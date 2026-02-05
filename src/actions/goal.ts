@@ -44,15 +44,20 @@ async function getUserId(): Promise<string> {
  * Get All Goals
  */
 export async function getGoals() {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  const result = await db
-    .select()
-    .from(goals)
-    .where(eq(goals.userId, userId))
-    .orderBy(desc(goals.createdAt));
+    const result = await db
+      .select()
+      .from(goals)
+      .where(eq(goals.userId, userId))
+      .orderBy(desc(goals.createdAt));
 
-  return result;
+    return result;
+  } catch (error) {
+    console.error('getGoals error:', error);
+    throw new Error('Hedefler yüklenirken bir hata oluştu');
+  }
 }
 
 /**
@@ -94,24 +99,29 @@ export async function createGoal(data: {
   icon: string;
   targetDate?: Date;
 }) {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  const newGoal: NewGoal = {
-    userId,
-    name: data.name,
-    targetAmount: data.targetAmount.toString(),
-    currentAmount: '0',
-    icon: data.icon,
-    targetDate: data.targetDate ?? null,
-    status: 'active',
-  };
+    const newGoal: NewGoal = {
+      userId,
+      name: data.name,
+      targetAmount: data.targetAmount.toString(),
+      currentAmount: '0',
+      icon: data.icon,
+      targetDate: data.targetDate ?? null,
+      status: 'active',
+    };
 
-  const [created] = await db.insert(goals).values(newGoal).returning();
+    const [created] = await db.insert(goals).values(newGoal).returning();
 
-  revalidatePath('/dashboard');
-  revalidatePath('/goals');
+    revalidatePath('/dashboard');
+    revalidatePath('/goals');
 
-  return created;
+    return created;
+  } catch (error) {
+    console.error('createGoal error:', error);
+    throw new Error('Hedef eklenirken bir hata oluştu');
+  }
 }
 
 /**
@@ -207,25 +217,33 @@ export async function addToGoal(id: string, amount: number) {
  * Delete Goal
  */
 export async function deleteGoal(id: string) {
-  const userId = await getUserId();
+  try {
+    const userId = await getUserId();
 
-  // Verify ownership
-  const existing = await db
-    .select()
-    .from(goals)
-    .where(and(eq(goals.id, id), eq(goals.userId, userId)))
-    .limit(1);
+    // Verify ownership
+    const existing = await db
+      .select()
+      .from(goals)
+      .where(and(eq(goals.id, id), eq(goals.userId, userId)))
+      .limit(1);
 
-  if (!existing[0]) {
-    throw new Error('Goal not found or unauthorized');
+    if (!existing[0]) {
+      throw new Error('Hedef bulunamadı veya yetkiniz yok');
+    }
+
+    await db.delete(goals).where(eq(goals.id, id));
+
+    revalidatePath('/dashboard');
+    revalidatePath('/goals');
+
+    return { success: true };
+  } catch (error) {
+    console.error('deleteGoal error:', error);
+    if (error instanceof Error && error.message.includes('bulunamadı')) {
+      throw error;
+    }
+    throw new Error('Hedef silinirken bir hata oluştu');
   }
-
-  await db.delete(goals).where(eq(goals.id, id));
-
-  revalidatePath('/dashboard');
-  revalidatePath('/goals');
-
-  return { success: true };
 }
 
 /**

@@ -17,9 +17,14 @@
  * 1. Component mount → Server'dan veri çek
  * 2. Veriyi Zustand store'a yaz
  * 3. Kullanıcı değişiklik yapar → Store güncelle + Server'a gönder
+ *
+ * 🔧 BUG FIXES (Oracle + Neon):
+ * - Fixed "delete then reappear" bug with proper pendingDeletes tracking
+ * - Added operation locking to prevent race conditions
+ * - Improved error handling with user-friendly messages
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useAuth } from '@clerk/nextjs';
 import {
@@ -41,6 +46,8 @@ interface DataSyncContextType {
   isLoading: boolean;
   isSynced: boolean;
   error: string | null;
+  lastError: string | null;
+  clearError: () => void;
   syncData: () => Promise<void>;
   createIncome: (data: { amount: number; description?: string; categoryId?: string; isRecurring?: boolean }) => Promise<void>;
   createExpense: (data: { amount: number; note?: string; categoryId?: string }) => Promise<void>;
@@ -57,11 +64,22 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSynced, setIsSynced] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  // Track pending operations to prevent race conditions and "delete then reappear" bugs
+  const pendingDeletesRef = useRef<Set<string>>(new Set());
+  const operationLockRef = useRef<boolean>(false);
 
   const store = useBudgetStore();
 
+  // Clear error after display
+  const clearError = useCallback(() => {
+    setLastError(null);
+  }, []);
+
   /**
    * Sync data from server to local store
+   * 🔧 FIX: Filter out items that are pending deletion to prevent "reappear" bug
    */
   const syncData = useCallback(async () => {
     if (!isSignedIn) {
@@ -69,7 +87,13 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Prevent concurrent sync operations
+    if (operationLockRef.current) {
+      return;
+    }
+
     try {
+      operationLockRef.current = true;
       setIsLoading(true);
       setError(null);
 
@@ -88,37 +112,46 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       ]);
 
       // Transform server data to local format
-      const localIncomes = serverIncomes.map((income) => ({
-        id: income.id,
-        type: 'salary' as const,
-        category: 'salary' as const,
-        amount: parseFloat(income.amount),
-        description: income.description ?? undefined,
-        isRecurring: income.isRecurring,
-        createdAt: income.createdAt.toISOString(),
-        updatedAt: income.updatedAt.toISOString(),
-      }));
+      // 🔧 FIX: Filter out any items that are pending deletion
+      const pendingDeletes = pendingDeletesRef.current;
 
-      const localExpenses = serverExpenses.map((expense) => ({
-        id: expense.id,
-        categoryId: expense.categoryId ?? 'cat_other',
-        amount: parseFloat(expense.amount),
-        note: expense.note ?? undefined,
-        date: expense.date.toISOString().split('T')[0],
-        createdAt: expense.createdAt.toISOString(),
-        updatedAt: expense.updatedAt.toISOString(),
-      }));
+      const localIncomes = serverIncomes
+        .filter((income) => !pendingDeletes.has(income.id))
+        .map((income) => ({
+          id: income.id,
+          type: 'salary' as const,
+          category: 'salary' as const,
+          amount: parseFloat(income.amount),
+          description: income.description ?? undefined,
+          isRecurring: income.isRecurring,
+          createdAt: income.createdAt.toISOString(),
+          updatedAt: income.updatedAt.toISOString(),
+        }));
 
-      const localGoals = serverGoals.map((goal) => ({
-        id: goal.id,
-        name: goal.name,
-        targetAmount: parseFloat(goal.targetAmount),
-        currentAmount: parseFloat(goal.currentAmount),
-        icon: goal.icon,
-        targetDate: goal.targetDate?.toISOString().split('T')[0],
-        status: goal.status,
-        createdAt: goal.createdAt.toISOString(),
-      }));
+      const localExpenses = serverExpenses
+        .filter((expense) => !pendingDeletes.has(expense.id))
+        .map((expense) => ({
+          id: expense.id,
+          categoryId: expense.categoryId ?? 'cat_other',
+          amount: parseFloat(expense.amount),
+          note: expense.note ?? undefined,
+          date: expense.date.toISOString().split('T')[0],
+          createdAt: expense.createdAt.toISOString(),
+          updatedAt: expense.updatedAt.toISOString(),
+        }));
+
+      const localGoals = serverGoals
+        .filter((goal) => !pendingDeletes.has(goal.id))
+        .map((goal) => ({
+          id: goal.id,
+          name: goal.name,
+          targetAmount: parseFloat(goal.targetAmount),
+          currentAmount: parseFloat(goal.currentAmount),
+          icon: goal.icon,
+          targetDate: goal.targetDate?.toISOString().split('T')[0],
+          status: goal.status,
+          createdAt: goal.createdAt.toISOString(),
+        }));
 
       // Reset and update store with server data
       // We use direct state manipulation here
@@ -131,9 +164,12 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       setIsSynced(true);
     } catch (err) {
       console.error('Data sync error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to sync data');
+      const errorMessage = err instanceof Error ? err.message : 'Veri senkronizasyonu başarısız';
+      setError(errorMessage);
+      setLastError(errorMessage);
     } finally {
       setIsLoading(false);
+      operationLockRef.current = false;
     }
   }, [isSignedIn]);
 
@@ -150,6 +186,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
 
   /**
    * Create Income - Optimistic update + Server persist
+   * 🔧 FIX: Better error handling with user-friendly messages
    */
   const createIncome = useCallback(async (data: {
     amount: number;
@@ -188,12 +225,15 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       // Rollback on error
       store.deleteIncome(tempId);
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : 'Gelir eklenirken bir hata oluştu';
+      setLastError(errorMessage);
+      throw new Error(errorMessage);
     }
   }, [store]);
 
   /**
    * Create Expense - Optimistic update + Server persist
+   * 🔧 FIX: Better error handling with user-friendly messages
    */
   const createExpense = useCallback(async (data: {
     amount: number;
@@ -231,12 +271,15 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       // Rollback on error
       store.deleteExpense(tempId);
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : 'Gider eklenirken bir hata oluştu';
+      setLastError(errorMessage);
+      throw new Error(errorMessage);
     }
   }, [store]);
 
   /**
    * Create Goal - Optimistic update + Server persist
+   * 🔧 FIX: Better error handling with user-friendly messages
    */
   const createGoal = useCallback(async (data: {
     name: string;
@@ -275,17 +318,23 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       // Rollback on error
       store.deleteGoal(tempId);
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : 'Hedef eklenirken bir hata oluştu';
+      setLastError(errorMessage);
+      throw new Error(errorMessage);
     }
   }, [store]);
 
   /**
    * Remove Income
+   * 🔧 FIX: Track pending deletes to prevent "delete then reappear" bug
    */
   const removeIncome = useCallback(async (id: string) => {
     // Store current state for rollback
     const currentIncomes = useBudgetStore.getState().incomes;
     const incomeToDelete = currentIncomes.find((i) => i.id === id);
+
+    // 🔧 FIX: Mark as pending delete BEFORE removing from store
+    pendingDeletesRef.current.add(id);
 
     // Optimistic: Remove from local store immediately
     store.deleteIncome(id);
@@ -295,21 +344,31 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       if (!id.startsWith('temp_')) {
         await serverDeleteIncome(id);
       }
+      // 🔧 FIX: Only remove from pending after successful server delete
+      pendingDeletesRef.current.delete(id);
     } catch (err) {
+      // 🔧 FIX: Remove from pending deletes on error so item can reappear during rollback
+      pendingDeletesRef.current.delete(id);
       // Rollback on error
       if (incomeToDelete) {
         store.addIncome(incomeToDelete);
       }
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : 'Gelir silinirken bir hata oluştu';
+      setLastError(errorMessage);
+      throw new Error(errorMessage);
     }
   }, [store]);
 
   /**
    * Remove Expense
+   * 🔧 FIX: Track pending deletes to prevent "delete then reappear" bug
    */
   const removeExpense = useCallback(async (id: string) => {
     const currentExpenses = useBudgetStore.getState().expenses;
     const expenseToDelete = currentExpenses.find((e) => e.id === id);
+
+    // 🔧 FIX: Mark as pending delete BEFORE removing from store
+    pendingDeletesRef.current.add(id);
 
     store.deleteExpense(id);
 
@@ -317,20 +376,30 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       if (!id.startsWith('temp_')) {
         await serverDeleteExpense(id);
       }
+      // 🔧 FIX: Only remove from pending after successful server delete
+      pendingDeletesRef.current.delete(id);
     } catch (err) {
+      // 🔧 FIX: Remove from pending deletes on error so item can reappear during rollback
+      pendingDeletesRef.current.delete(id);
       if (expenseToDelete) {
         store.addExpense(expenseToDelete);
       }
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : 'Gider silinirken bir hata oluştu';
+      setLastError(errorMessage);
+      throw new Error(errorMessage);
     }
   }, [store]);
 
   /**
    * Remove Goal
+   * 🔧 FIX: Track pending deletes to prevent "delete then reappear" bug
    */
   const removeGoal = useCallback(async (id: string) => {
     const currentGoals = useBudgetStore.getState().goals;
     const goalToDelete = currentGoals.find((g) => g.id === id);
+
+    // 🔧 FIX: Mark as pending delete BEFORE removing from store
+    pendingDeletesRef.current.add(id);
 
     store.deleteGoal(id);
 
@@ -338,11 +407,17 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       if (!id.startsWith('temp_')) {
         await serverDeleteGoal(id);
       }
+      // 🔧 FIX: Only remove from pending after successful server delete
+      pendingDeletesRef.current.delete(id);
     } catch (err) {
+      // 🔧 FIX: Remove from pending deletes on error so item can reappear during rollback
+      pendingDeletesRef.current.delete(id);
       if (goalToDelete) {
         store.addGoal(goalToDelete);
       }
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : 'Hedef silinirken bir hata oluştu';
+      setLastError(errorMessage);
+      throw new Error(errorMessage);
     }
   }, [store]);
 
@@ -350,6 +425,8 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     isSynced,
     error,
+    lastError,
+    clearError,
     syncData,
     createIncome,
     createExpense,

@@ -6,11 +6,69 @@ import { useBudgetStore } from '@/store/useBudgetStore';
 import { groupExpensesByCategory } from '@/lib/analytics';
 import { formatCurrency } from '@/utils';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { EmptyState } from '@/components/ui/EmptyState';
+import {
+  PieChart as PieChartIcon,
+  Pizza,
+  Coffee,
+  ShoppingCart,
+  Car,
+  Lightbulb,
+  Home,
+  Heart,
+  Film,
+  Shirt,
+  Laptop,
+  Scissors,
+  BookOpen,
+  CreditCard,
+  Building2,
+  Gift,
+  Dumbbell,
+  Dog,
+  Package,
+  LucideIcon,
+} from 'lucide-react';
+
+// Category icon mapping - Lucide icons instead of emojis
+const categoryIconMap: Record<string, LucideIcon> = {
+  cat_food: Pizza,
+  cat_coffee: Coffee,
+  cat_market: ShoppingCart,
+  cat_transport: Car,
+  cat_bills: Lightbulb,
+  cat_rent: Home,
+  cat_health: Heart,
+  cat_entertainment: Film,
+  cat_clothing: Shirt,
+  cat_tech: Laptop,
+  cat_personal: Scissors,
+  cat_education: BookOpen,
+  cat_credit_card: CreditCard,
+  cat_loan: Building2,
+  cat_gift: Gift,
+  cat_sports: Dumbbell,
+  cat_pet: Dog,
+  cat_other: Package,
+};
+
+// Cosmic dark theme chart colors - Indigo & Slate palette
+const CHART_COLORS = [
+  '#3B82F6', // accent-500 (Indigo)
+  '#10B981', // emerald-500
+  '#F43F5E', // rose-500
+  '#8B5CF6', // violet-500
+  '#F59E0B', // amber-500
+  '#06B6D4', // cyan-500
+  '#EC4899', // pink-500
+  '#64748B', // slate-500
+];
 
 /**
- * CategoryChart - Kategori Bazlı Harcama Grafiği
+ * CategoryChart - Category-based Expense Analysis
  *
- * Recharts PieChart ile harcamaları kategori bazında görselleştirir.
+ * Visualizes expenses by category using Recharts PieChart.
+ * Uses Lucide icons and cosmic dark theme styling.
  */
 export const CategoryChart = () => {
   const { expenses, getActiveCategories } = useBudgetStore();
@@ -18,39 +76,42 @@ export const CategoryChart = () => {
 
   const categoryData = groupExpensesByCategory(expenses, categories);
 
-  // Prepare data for Recharts
-  const chartData = categoryData.map((item) => ({
+  // Prepare data for Recharts with custom colors
+  const chartData = categoryData.map((item, index) => ({
     name: item.categoryName,
     value: item.total,
     percentage: item.percentage,
-    color: item.color,
+    color: CHART_COLORS[index % CHART_COLORS.length],
+    categoryId: item.categoryId,
   }));
 
   if (expenses.length === 0) {
     return (
-      <Card>
+      <Card variant="glass">
         <CardHeader>
-          <CardTitle>📊 Kategori Analizi</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-slate-100">
+            <PieChartIcon className="h-5 w-5 text-accent-400" strokeWidth={2} />
+            Kategori Analizi
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="py-12 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-              <span className="text-3xl">📈</span>
-            </div>
-            <p className="text-slate-600 font-medium">Henüz harcama yok</p>
-            <p className="text-sm text-slate-400 mt-2">
-              Harcama eklediğinizde analiz görünecek
-            </p>
-          </div>
+          <EmptyState
+            variant="chart"
+            title="Henuz harcama yok"
+            description="Harcama eklediginizde kategori analizi burada gorunecek"
+          />
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card variant="glass">
       <CardHeader>
-        <CardTitle>📊 Kategori Analizi</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-slate-100">
+          <PieChartIcon className="h-5 w-5 text-accent-400" strokeWidth={2} />
+          Kategori Analizi
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -65,27 +126,36 @@ export const CategoryChart = () => {
                   labelLine={false}
                   label={({ percentage }) => `%${percentage}`}
                   outerRadius={80}
-                  fill="#8884d8"
+                  innerRadius={40}
+                  fill="#3B82F6"
                   dataKey="value"
+                  stroke="rgba(255,255,255,0.1)"
+                  strokeWidth={2}
                 >
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
+                  formatter={(value: number) => (
+                    <span className="tabular-nums">{formatCurrency(value)}</span>
+                  )}
                   contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    border: '1px solid #E2E8F0',
+                    backgroundColor: 'rgba(21, 30, 49, 0.95)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '12px',
                     padding: '8px 12px',
+                    color: '#E2E8F0',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                   }}
+                  itemStyle={{ color: '#E2E8F0' }}
+                  labelStyle={{ color: '#94A3B8' }}
                 />
                 <Legend
                   verticalAlign="bottom"
                   height={36}
                   formatter={(value) => (
-                    <span className="text-sm text-slate-700">{value}</span>
+                    <span className="text-sm text-slate-300">{value}</span>
                   )}
                 />
               </PieChart>
@@ -94,30 +164,41 @@ export const CategoryChart = () => {
 
           {/* Category List */}
           <div className="space-y-2">
-            {categoryData.slice(0, 5).map((item) => (
-              <div
-                key={item.categoryId}
-                className="flex items-center justify-between rounded-lg bg-slate-50 p-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-sm font-medium text-slate-700">
-                    {item.categoryName}
-                  </span>
+            {categoryData.slice(0, 5).map((item, index) => {
+              const IconComponent = categoryIconMap[item.categoryId] || Package;
+              const color = CHART_COLORS[index % CHART_COLORS.length];
+
+              return (
+                <div
+                  key={item.categoryId}
+                  className="flex items-center justify-between rounded-xl glass-subtle p-3 hover-lift"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="h-8 w-8 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: `${color}20` }}
+                    >
+                      <IconComponent
+                        className="h-4 w-4"
+                        style={{ color }}
+                        strokeWidth={2}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-slate-200">
+                      {item.categoryName}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-slate-400 tabular-nums">
+                      %{item.percentage}
+                    </span>
+                    <span className="text-sm font-bold text-slate-100 tabular-nums">
+                      {formatCurrency(item.total)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-slate-500">
-                    %{item.percentage}
-                  </span>
-                  <span className="text-sm font-bold text-slate-900">
-                    {formatCurrency(item.total)}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </CardContent>

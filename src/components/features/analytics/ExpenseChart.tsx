@@ -17,14 +17,23 @@ import { useBudgetStore } from '@/store/useBudgetStore';
 import { calculateMonthlyTrend } from '@/lib/analytics';
 import { formatCurrency, formatCompactNumber } from '@/utils';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { TrendingUp } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { TrendingUp, BarChart3, LineChart as LineChartIcon } from 'lucide-react';
 
 type ChartType = 'line' | 'bar';
 
+// Cosmic dark theme chart colors - Indigo & Slate palette
+const CHART_COLORS = [
+  '#3B82F6', // accent-500 (Indigo)
+  '#10B981', // emerald-500
+  '#F43F5E', // rose-500
+];
+
 /**
- * ExpenseChart - Harcama Trend Grafiği
+ * ExpenseChart - Expense Trend Analysis
  *
- * Aylık harcama trendini line veya bar chart ile gösterir.
+ * Shows monthly expense trends with line or bar chart.
+ * Uses cosmic dark theme styling with Lucide icons.
  */
 export const ExpenseChart = () => {
   const { expenses, getActiveCategories } = useBudgetStore();
@@ -43,7 +52,7 @@ export const ExpenseChart = () => {
     .map(([id]) => id);
 
   // Calculate trends for top categories
-  const chartData: any[] = [];
+  const chartData: Record<string, string | number>[] = [];
   const months = 6;
 
   for (let i = months - 1; i >= 0; i--) {
@@ -51,7 +60,7 @@ export const ExpenseChart = () => {
     date.setMonth(date.getMonth() - i);
     const monthName = date.toLocaleDateString('tr-TR', { month: 'short' });
 
-    const dataPoint: any = { month: monthName };
+    const dataPoint: Record<string, string | number> = { month: monthName };
 
     topCategories.forEach((categoryId) => {
       const trend = calculateMonthlyTrend(expenses, categoryId, months);
@@ -65,55 +74,55 @@ export const ExpenseChart = () => {
     chartData.push(dataPoint);
   }
 
-  const categoryColors = topCategories.map(
-    (id) => categories.find((c) => c.id === id)?.color || '#6B7280'
-  );
-
   if (expenses.length === 0) {
     return (
-      <Card>
+      <Card variant="glass">
         <CardHeader>
-          <CardTitle>📈 Harcama Trendi</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-slate-100">
+            <TrendingUp className="h-5 w-5 text-accent-400" strokeWidth={2} />
+            Harcama Trendi
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="py-12 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-              <TrendingUp className="h-8 w-8 text-slate-400" />
-            </div>
-            <p className="text-slate-600 font-medium">Trend verisi yok</p>
-            <p className="text-sm text-slate-400 mt-2">
-              Harcama ekledikçe trend grafiği oluşacak
-            </p>
-          </div>
+          <EmptyState
+            variant="trend"
+            title="Trend verisi yok"
+            description="Harcama ekledikce trend grafigi burada gorunecek"
+          />
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card variant="glass">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>📈 Harcama Trendi (Son 6 Ay)</CardTitle>
-          <div className="flex gap-2">
+          <CardTitle className="flex items-center gap-2 text-slate-100">
+            <TrendingUp className="h-5 w-5 text-accent-400" strokeWidth={2} />
+            Harcama Trendi (Son 6 Ay)
+          </CardTitle>
+          <div className="flex gap-1 p-1 rounded-lg glass-subtle">
             <button
               onClick={() => setChartType('bar')}
-              className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                 chartType === 'bar'
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-accent-600 text-white shadow-lg shadow-accent-500/25'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
               }`}
             >
+              <BarChart3 className="h-4 w-4" strokeWidth={2} />
               Bar
             </button>
             <button
               onClick={() => setChartType('line')}
-              className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                 chartType === 'line'
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-accent-600 text-white shadow-lg shadow-accent-500/25'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
               }`}
             >
+              <LineChartIcon className="h-4 w-4" strokeWidth={2} />
               Line
             </button>
           </div>
@@ -124,30 +133,43 @@ export const ExpenseChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'bar' ? (
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(255, 255, 255, 0.06)"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="month"
-                  tick={{ fill: '#64748B', fontSize: 12 }}
-                  tickLine={{ stroke: '#E2E8F0' }}
+                  tick={{ fill: '#94A3B8', fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={{ stroke: 'rgba(255, 255, 255, 0.1)' }}
                 />
                 <YAxis
-                  tick={{ fill: '#64748B', fontSize: 12 }}
-                  tickLine={{ stroke: '#E2E8F0' }}
+                  tick={{ fill: '#94A3B8', fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
                   tickFormatter={(value) => formatCompactNumber(value)}
                 />
                 <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
+                  formatter={(value: number) => (
+                    <span className="tabular-nums">{formatCurrency(value)}</span>
+                  )}
                   contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    border: '1px solid #E2E8F0',
+                    backgroundColor: 'rgba(21, 30, 49, 0.95)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '12px',
                     padding: '8px 12px',
+                    color: '#E2E8F0',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                   }}
+                  itemStyle={{ color: '#E2E8F0' }}
+                  labelStyle={{ color: '#94A3B8' }}
+                  cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
                 />
                 <Legend
                   wrapperStyle={{ paddingTop: '20px' }}
                   formatter={(value) => (
-                    <span className="text-sm text-slate-700">{value}</span>
+                    <span className="text-sm text-slate-300">{value}</span>
                   )}
                 />
                 {topCategories.map((categoryId, index) => {
@@ -156,51 +178,69 @@ export const ExpenseChart = () => {
                     <Bar
                       key={categoryId}
                       dataKey={category?.name || categoryId}
-                      fill={categoryColors[index]}
-                      radius={[8, 8, 0, 0]}
+                      fill={CHART_COLORS[index % CHART_COLORS.length]}
+                      radius={[6, 6, 0, 0]}
                     />
                   );
                 })}
               </BarChart>
             ) : (
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(255, 255, 255, 0.06)"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="month"
-                  tick={{ fill: '#64748B', fontSize: 12 }}
-                  tickLine={{ stroke: '#E2E8F0' }}
+                  tick={{ fill: '#94A3B8', fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={{ stroke: 'rgba(255, 255, 255, 0.1)' }}
                 />
                 <YAxis
-                  tick={{ fill: '#64748B', fontSize: 12 }}
-                  tickLine={{ stroke: '#E2E8F0' }}
+                  tick={{ fill: '#94A3B8', fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
                   tickFormatter={(value) => formatCompactNumber(value)}
                 />
                 <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
+                  formatter={(value: number) => (
+                    <span className="tabular-nums">{formatCurrency(value)}</span>
+                  )}
                   contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    border: '1px solid #E2E8F0',
+                    backgroundColor: 'rgba(21, 30, 49, 0.95)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '12px',
                     padding: '8px 12px',
+                    color: '#E2E8F0',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                   }}
+                  itemStyle={{ color: '#E2E8F0' }}
+                  labelStyle={{ color: '#94A3B8' }}
                 />
                 <Legend
                   wrapperStyle={{ paddingTop: '20px' }}
                   formatter={(value) => (
-                    <span className="text-sm text-slate-700">{value}</span>
+                    <span className="text-sm text-slate-300">{value}</span>
                   )}
                 />
                 {topCategories.map((categoryId, index) => {
                   const category = categories.find((c) => c.id === categoryId);
+                  const color = CHART_COLORS[index % CHART_COLORS.length];
                   return (
                     <Line
                       key={categoryId}
                       type="monotone"
                       dataKey={category?.name || categoryId}
-                      stroke={categoryColors[index]}
-                      strokeWidth={2}
-                      dot={{ fill: categoryColors[index], r: 4 }}
-                      activeDot={{ r: 6 }}
+                      stroke={color}
+                      strokeWidth={2.5}
+                      dot={{ fill: color, r: 4, strokeWidth: 2, stroke: '#151E31' }}
+                      activeDot={{
+                        r: 6,
+                        fill: color,
+                        stroke: '#151E31',
+                        strokeWidth: 2,
+                      }}
                     />
                   );
                 })}
@@ -208,8 +248,8 @@ export const ExpenseChart = () => {
             )}
           </ResponsiveContainer>
         </div>
-        <p className="mt-4 text-xs text-slate-500 text-center">
-          En çok harcama yapılan 3 kategorinin aylık trendi
+        <p className="mt-4 text-xs text-slate-400 text-center">
+          En cok harcama yapilan 3 kategorinin aylik trendi
         </p>
       </CardContent>
     </Card>
