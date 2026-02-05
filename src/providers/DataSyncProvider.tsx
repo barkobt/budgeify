@@ -27,6 +27,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useAuth } from '@clerk/nextjs';
+import { logger } from '@/lib/logger';
 import {
   getOrCreateUser,
   getIncomes,
@@ -104,12 +105,12 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       await seedDefaultCategories();
 
       // Fetch all data from server
-      const [serverIncomes, serverExpenses, serverGoals, serverCategories] = await Promise.all([
+      const [serverIncomes, serverExpenses, serverGoals] = await Promise.all([
         getIncomes(),
         getExpenses(),
         getGoals(),
         getCategories(),
-      ]);
+      ]) as [Awaited<ReturnType<typeof getIncomes>>, Awaited<ReturnType<typeof getExpenses>>, Awaited<ReturnType<typeof getGoals>>, unknown];
 
       // Transform server data to local format
       // 🔧 FIX: Filter out any items that are pending deletion
@@ -163,7 +164,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
 
       setIsSynced(true);
     } catch (err) {
-      console.error('Data sync error:', err);
+      logger.error('DataSync', 'Sync failed', err);
       const errorMessage = err instanceof Error ? err.message : 'Veri senkronizasyonu başarısız';
       setError(errorMessage);
       setLastError(errorMessage);

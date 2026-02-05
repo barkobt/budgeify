@@ -6,6 +6,7 @@ import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { generateId, getCurrentISODate, getTodayDate } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { logger } from '@/lib/logger';
 import { DEFAULT_CATEGORIES } from '@/constants/categories';
 import {
   Check,
@@ -127,7 +128,7 @@ export const ExpenseForm = () => {
 
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
-      console.error('Failed to save expense:', error);
+      logger.error('ExpenseForm', 'Failed to save expense', error);
       // Show error state here if needed
     } finally {
       setIsSubmitting(false);

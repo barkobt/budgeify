@@ -3,6 +3,7 @@
 import React from 'react';
 import { Button } from './Button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './Card';
+import { logger } from '@/lib/logger';
 
 /**
  * ErrorBoundary - React Error Boundary Component
@@ -40,7 +41,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console (can be sent to error tracking service)
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ErrorBoundary', 'Uncaught error', error, errorInfo);
   }
 
   handleReset = () => {
