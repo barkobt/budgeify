@@ -1,19 +1,21 @@
 'use client';
 
 /**
- * Dashboard Page - Main App View
+ * Dashboard Page — Sovereign v2.1
  *
- * Sovereign v2.0 — Scroll-aware storytelling with Framer Motion.
- * Protected route: unauthenticated users redirected to /sign-in.
+ * Hydration-safe: uses initial={false} on first render to prevent
+ * SSR opacity:0 white screen. Animations activate after mount.
+ * All data pulled from useBudgetStore — no hardcoded values.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Drawer } from '@/components/ui/Drawer';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { SkeletonCard, SkeletonList, SkeletonChart } from '@/components/ui/Skeleton';
+import { useBudgetStore } from '@/store/useBudgetStore';
 import {
   staggerContainer,
   staggerItem,
@@ -75,6 +77,23 @@ type DrawerType = 'income' | 'expense' | null;
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [openDrawer, setOpenDrawer] = useState<DrawerType>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Hydration guard: skip initial animations on SSR
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Live store data (replaces hardcoded values)
+  const expenses = useBudgetStore((s) => s.expenses);
+  const getSavingsRate = useBudgetStore((s) => s.getSavingsRate);
+  const getActiveGoals = useBudgetStore((s) => s.getActiveGoals);
+
+  const transactionCount = expenses.length;
+  const goalCount = getActiveGoals().length;
+  const savingsRate = getSavingsRate();
+  const savingsTarget = 30;
+  const savingsProgress = savingsTarget > 0 ? Math.min(Math.round((savingsRate / savingsTarget) * 100), 100) : 0;
 
   return (
     <>
@@ -88,7 +107,7 @@ export default function DashboardPage() {
             <motion.div
               className="space-y-4"
               variants={staggerContainer}
-              initial="hidden"
+              initial={isMounted ? 'hidden' : false}
               animate="visible"
             >
               {/* Hero Balance Card */}
@@ -96,13 +115,12 @@ export default function DashboardPage() {
                 <MainBalanceCard />
               </motion.div>
 
-              {/* Quick Actions - Glassmorphism 2.0 */}
+              {/* Quick Actions */}
               <motion.section
                 className="grid grid-cols-2 gap-3"
                 variants={staggerItem}
                 aria-label="Hizli islemler"
               >
-                {/* Gelir Ekle */}
                 <motion.button
                   onClick={() => setOpenDrawer('income')}
                   className="group glass-card hover-lift p-4 flex items-center gap-3 transition-all duration-300"
@@ -117,7 +135,6 @@ export default function DashboardPage() {
                   </div>
                 </motion.button>
 
-                {/* Gider Ekle */}
                 <motion.button
                   onClick={() => setOpenDrawer('expense')}
                   className="group glass-card hover-lift p-4 flex items-center gap-3 transition-all duration-300"
@@ -133,7 +150,7 @@ export default function DashboardPage() {
                 </motion.button>
               </motion.section>
 
-              {/* Stats Row - Glass Cards */}
+              {/* Stats Row — Live Data */}
               <motion.section
                 className="grid grid-cols-2 gap-3"
                 variants={staggerItem}
@@ -149,7 +166,7 @@ export default function DashboardPage() {
                       <TrendingUp size={18} className="text-accent-400" strokeWidth={2} />
                     </div>
                     <div className="text-left">
-                      <p className="text-lg font-bold text-white tabular-nums">12</p>
+                      <p className="text-lg font-bold text-white tabular-nums">{transactionCount}</p>
                       <p className="text-xs text-slate-400">Islem</p>
                     </div>
                   </div>
@@ -166,7 +183,7 @@ export default function DashboardPage() {
                       <Target size={18} className="text-accent-400" strokeWidth={2} />
                     </div>
                     <div className="text-left">
-                      <p className="text-lg font-bold text-white tabular-nums">3</p>
+                      <p className="text-lg font-bold text-white tabular-nums">{goalCount}</p>
                       <p className="text-xs text-slate-400">Hedef</p>
                     </div>
                   </div>
@@ -174,11 +191,11 @@ export default function DashboardPage() {
                 </motion.button>
               </motion.section>
 
-              {/* Savings Insight - AI Gradient with scroll reveal */}
+              {/* Savings Insight — Live Data */}
               <motion.section
                 className="rounded-2xl ai-gradient p-5 shadow-lg shadow-accent-500/20"
                 variants={revealOnScroll}
-                initial="offscreen"
+                initial={isMounted ? 'offscreen' : false}
                 whileInView="onscreen"
                 viewport={viewportConfig}
                 aria-label="Tasarruf durumu"
@@ -190,22 +207,33 @@ export default function DashboardPage() {
                   <div className="flex-1">
                     <p className="text-xs font-medium text-white/70 uppercase tracking-wide">Tasarruf Orani</p>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-2xl font-black text-white tabular-nums">%25</p>
-                      <p className="text-sm text-white/80">/ %30 hedef</p>
+                      <p className="text-2xl font-black text-white tabular-nums">%{savingsRate}</p>
+                      <p className="text-sm text-white/80">/ %{savingsTarget} hedef</p>
                     </div>
                   </div>
                 </div>
                 <div className="mt-4">
-                  <div className="h-1.5 rounded-full bg-white/20 overflow-hidden" role="progressbar" aria-valuenow={83} aria-valuemin={0} aria-valuemax={100} aria-label="Tasarruf ilerlemesi">
+                  <div
+                    className="h-1.5 rounded-full bg-white/20 overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={savingsProgress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label="Tasarruf ilerlemesi"
+                  >
                     <motion.div
                       className="h-full rounded-full bg-white"
                       initial={{ width: 0 }}
-                      whileInView={{ width: '83%' }}
+                      whileInView={{ width: `${savingsProgress}%` }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
                     />
                   </div>
-                  <p className="mt-2 text-right text-xs text-white/70">Hedefe %83 ulastin</p>
+                  <p className="mt-2 text-right text-xs text-white/70">
+                    {savingsProgress > 0
+                      ? `Hedefe %${savingsProgress} ulastin`
+                      : 'Gelir ekleyerek tasarruf takibini baslatin'}
+                  </p>
                 </div>
               </motion.section>
             </motion.div>
@@ -218,7 +246,7 @@ export default function DashboardPage() {
             <motion.div
               className="space-y-4"
               variants={fadeInUp}
-              initial="hidden"
+              initial={isMounted ? 'hidden' : false}
               animate="visible"
             >
               <ExpenseList />
@@ -232,7 +260,7 @@ export default function DashboardPage() {
             <motion.div
               className="space-y-4"
               variants={staggerContainer}
-              initial="hidden"
+              initial={isMounted ? 'hidden' : false}
               animate="visible"
             >
               <motion.div variants={staggerItem}>
@@ -251,7 +279,7 @@ export default function DashboardPage() {
             <motion.div
               className="space-y-4"
               variants={staggerContainer}
-              initial="hidden"
+              initial={isMounted ? 'hidden' : false}
               animate="visible"
             >
               <motion.div variants={staggerItem}>
@@ -301,7 +329,7 @@ export default function DashboardPage() {
         <ExpenseForm />
       </Drawer>
 
-      {/* AI Assistant - Floating Button & Chat Drawer */}
+      {/* AI Assistant */}
       <AIAssistant />
 
       {/* Bottom Navigation */}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Sparkles, Send, ChevronDown, Activity, Zap } from 'lucide-react';
+import { Sparkles, Send, ChevronDown, Activity, Zap, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   getFinancialSnapshot,
@@ -19,20 +19,65 @@ interface Message {
   insights?: Insight[];
 }
 
+type SuggestionContext = 'home' | 'spending' | 'health' | 'goals' | 'savings';
+
+/** Context-aware suggestion sets */
+const SUGGESTION_MAP: Record<SuggestionContext, string[]> = {
+  home: [
+    'Bu ay ne kadar harcadim?',
+    'Butce saglik puanim kac?',
+    'Hedeflerime ne kadar yakinim?',
+    'Tasarruf onerisi ver',
+  ],
+  spending: [
+    'En cok hangi kategoriye harcadim?',
+    'Gecen aya gore degisim ne?',
+    'Harcamalarimda anormal bir sey var mi?',
+  ],
+  health: [
+    'Puanimi nasil arttirabilirim?',
+    'En buyuk risk faktorum ne?',
+    'Tasarruf onerisi ver',
+  ],
+  goals: [
+    'Gunluk ne kadar biriktirmeliyim?',
+    'Hedefime ne zaman ulasabilirim?',
+    'Yeni hedef onerisi ver',
+  ],
+  savings: [
+    'Nerelerden kesinti yapabilirim?',
+    'Bu ay ne kadar harcadim?',
+    'Hedeflerime ne kadar yakinim?',
+  ],
+};
+
+/** Determine next suggestion context from the last query */
+function getNextContext(query: string): SuggestionContext {
+  const q = query.toLowerCase();
+  if (q.includes('harca') || q.includes('gider') || q.includes('kategori')) return 'spending';
+  if (q.includes('saglik') || q.includes('puan') || q.includes('skor')) return 'health';
+  if (q.includes('hedef') || q.includes('birikim') || q.includes('yakin')) return 'goals';
+  if (q.includes('tasarruf') || q.includes('kesinti') || q.includes('oneri')) return 'savings';
+  return 'home';
+}
+
 /**
- * AIAssistant — Oracle Financial Advisor
+ * AIAssistant — Oracle Financial Advisor v2.1
  *
- * Real data analysis using the heuristics engine.
- * No hardcoded responses. All answers come from actual user data.
+ * Contextual conversation flow: suggestions adapt to the topic.
+ * Ana Menü button always available to reset context.
  */
 export const AIAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [suggestionCtx, setSuggestionCtx] = useState<SuggestionContext>('home');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
+
+  const currentSuggestions = SUGGESTION_MAP[suggestionCtx];
 
   // Generate initial greeting with real insights
   const initializeChat = useCallback(() => {
@@ -45,14 +90,14 @@ export const AIAssistant: React.FC = () => {
 
     const hasData = snapshot.dataAvailability.hasExpenses || snapshot.dataAvailability.hasIncomes;
 
-    let greeting = 'Merhaba! Ben Budgeify Oracle, yapay zeka finansal danismaniniz.';
+    let greeting = 'Merhaba! Ben Oracle AI, finansal danismaniniz.';
 
     if (hasData && insights.length > 0) {
       const topInsight = insights[0];
       greeting += `\n\n${topInsight.title}: ${topInsight.content}`;
-      greeting += '\n\nBaska bir konu hakkinda sormak ister misiniz?';
+      greeting += '\n\nAlttan bir konu secin veya serbest soru sorun.';
     } else {
-      greeting += '\n\nGelir ve giderlerinizi kaydetmeye baslayin, size kisisel finansal analizler sunayim.';
+      greeting += '\n\nGelir ve giderlerinizi kaydetmeye baslayin, size kisisel analizler sunayim.';
     }
 
     setMessages([{
@@ -77,29 +122,20 @@ export const AIAssistant: React.FC = () => {
     }
   }, [messages]);
 
-  const suggestedActions = [
-    'Bu ay ne kadar harcadim?',
-    'Butce saglik puanim kac?',
-    'Hedeflerime ne kadar yakinim?',
-    'Tasarruf onerisi ver',
-  ];
-
-  const handleSend = useCallback(() => {
-    if (!inputValue.trim()) return;
-
+  const processQuery = useCallback((queryText: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue.trim(),
+      content: queryText,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    const queryText = inputValue.trim();
-    setInputValue('');
     setIsTyping(true);
 
-    // Simulate slight delay for natural feel, then compute real answer
+    // Update suggestion context based on query
+    setSuggestionCtx(getNextContext(queryText));
+
     setTimeout(() => {
       const snapshot = getFinancialSnapshot();
       const response = answerQuery(queryText, snapshot);
@@ -112,28 +148,28 @@ export const AIAssistant: React.FC = () => {
       };
       setMessages((prev) => [...prev, aiResponse]);
       setIsTyping(false);
-    }, 600);
-  }, [inputValue]);
+    }, 500);
+  }, []);
+
+  const handleSend = useCallback(() => {
+    if (!inputValue.trim()) return;
+    processQuery(inputValue.trim());
+    setInputValue('');
+  }, [inputValue, processQuery]);
 
   const handleSuggestedAction = (action: string) => {
-    setInputValue(action);
-    setTimeout(() => {
-      const snapshot = getFinancialSnapshot();
-      const response = answerQuery(action, snapshot);
+    processQuery(action);
+  };
 
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now().toString(), role: 'user', content: action, timestamp: new Date() },
-      ]);
-
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          { id: (Date.now() + 1).toString(), role: 'assistant', content: response, timestamp: new Date() },
-        ]);
-      }, 400);
-    }, 100);
-    setInputValue('');
+  const handleResetContext = () => {
+    setSuggestionCtx('home');
+    const resetMsg: Message = {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content: 'Ana menuye dondum. Size nasil yardimci olabilirim?',
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, resetMsg]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -206,7 +242,6 @@ export const AIAssistant: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
-                // Refresh insights
                 const snapshot = getFinancialSnapshot();
                 const insights = generateInsights(snapshot);
                 storeInsights(insights);
@@ -297,25 +332,42 @@ export const AIAssistant: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Suggested Actions */}
-        {messages.length <= 2 && (
-          <div className="px-4 pb-2">
-            <div className="flex flex-wrap gap-2">
-              {suggestedActions.map((action, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => handleSuggestedAction(action)}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium
-                             bg-white/5 text-slate-300 border border-white/10
-                             transition-all hover:bg-white/10 hover:border-white/20"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {action}
-                </motion.button>
-              ))}
-            </div>
+        {/* Contextual Suggestions — always visible */}
+        <div className="px-4 pb-2">
+          <div className="flex flex-wrap gap-2">
+            {/* Ana Menü button — always present unless already on home */}
+            {suggestionCtx !== 'home' && (
+              <motion.button
+                onClick={handleResetContext}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
+                           bg-accent-500/10 text-accent-400 border border-accent-500/20
+                           transition-all hover:bg-accent-500/20"
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+              >
+                <RotateCcw size={12} />
+                Ana Menu
+              </motion.button>
+            )}
+
+            {currentSuggestions.map((action) => (
+              <motion.button
+                key={action}
+                onClick={() => handleSuggestedAction(action)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium
+                           bg-white/5 text-slate-300 border border-white/10
+                           transition-all hover:bg-white/10 hover:border-white/20"
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {action}
+              </motion.button>
+            ))}
           </div>
-        )}
+        </div>
 
         {/* Input Area */}
         <div className="p-4 border-t border-white/10">

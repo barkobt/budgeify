@@ -4,11 +4,12 @@
  * PageWrapper Component
  *
  * Apple-style page transitions with Framer Motion.
- * Provides smooth fade + slide animations for page content.
+ * Uses initial={false} to prevent SSR rendering with opacity:0
+ * which causes white screen before JS hydration.
  */
 
 import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 
 interface PageWrapperProps {
   children: ReactNode;
@@ -18,30 +19,32 @@ interface PageWrapperProps {
 const pageVariants = {
   initial: {
     opacity: 0,
-    y: 20,
+    y: 12,
   },
   animate: {
     opacity: 1,
     y: 0,
   },
-  exit: {
-    opacity: 0,
-    y: -20,
-  },
 };
 
 const pageTransition = {
-  type: 'tween',
-  ease: [0.16, 1, 0.3, 1], // easeOutExpo
-  duration: 0.3,
+  type: 'spring',
+  stiffness: 260,
+  damping: 25,
+  mass: 0.8,
 };
 
 export function PageWrapper({ children, className = '' }: PageWrapperProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <motion.div
-      initial="initial"
+      initial={isMounted ? 'initial' : false}
       animate="animate"
-      exit="exit"
       variants={pageVariants}
       transition={pageTransition}
       className={className}

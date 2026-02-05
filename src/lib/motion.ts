@@ -1,20 +1,24 @@
 /**
- * Framer Motion Presets — Budgeify Sovereign v2.0
+ * Framer Motion Presets — Budgeify Sovereign v2.1
  *
- * Centralized animation variants for consistent,
- * premium motion across the app.
+ * Apple/Stripe-grade motion: tok (weighty), akıcı (fluid).
+ * Springs tuned for 60fps on mobile. No overshoot on data surfaces.
  */
 import type { Variants, Transition } from 'framer-motion';
 
 // ========================================
-// SPRING CONFIGS
+// SPRING CONFIGS — Apple-grade
 // ========================================
 
 export const springs = {
-  gentle: { type: 'spring', stiffness: 120, damping: 14 } as Transition,
-  snappy: { type: 'spring', stiffness: 300, damping: 20 } as Transition,
-  bouncy: { type: 'spring', stiffness: 400, damping: 10 } as Transition,
-  smooth: { type: 'spring', stiffness: 200, damping: 24 } as Transition,
+  /** Smooth entrance. No overshoot. Great for content reveals. */
+  gentle: { type: 'spring', stiffness: 170, damping: 26, mass: 1 } as Transition,
+  /** Quick interaction feedback (taps, toggles). Slight snap. */
+  snappy: { type: 'spring', stiffness: 400, damping: 30, mass: 0.8 } as Transition,
+  /** Bouncy micro-interactions (FABs, badges). Controlled overshoot. */
+  bouncy: { type: 'spring', stiffness: 500, damping: 15, mass: 0.6 } as Transition,
+  /** Heavy, deliberate movement (drawers, sheets). Tok = weighty. */
+  heavy: { type: 'spring', stiffness: 200, damping: 28, mass: 1.2 } as Transition,
 } as const;
 
 // ========================================
@@ -23,16 +27,16 @@ export const springs = {
 
 export const fadeIn: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.4 } },
+  visible: { opacity: 1, transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] } },
 };
 
 export const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: springs.gentle },
 };
 
 export const fadeInScale: Variants = {
-  hidden: { opacity: 0, scale: 0.95 },
+  hidden: { opacity: 0, scale: 0.96 },
   visible: { opacity: 1, scale: 1, transition: springs.gentle },
 };
 
@@ -45,14 +49,14 @@ export const staggerContainer: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.1,
+      staggerChildren: 0.07,
+      delayChildren: 0.05,
     },
   },
 };
 
 export const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
@@ -67,22 +71,19 @@ export const staggerItem: Variants = {
 export const revealOnScroll: Variants = {
   offscreen: {
     opacity: 0,
-    y: 30,
+    y: 24,
   },
   onscreen: {
     opacity: 1,
     y: 0,
-    transition: {
-      ...springs.gentle,
-      duration: 0.5,
-    },
+    transition: springs.heavy,
   },
 };
 
 export const scaleOnScroll: Variants = {
   offscreen: {
     opacity: 0,
-    scale: 0.92,
+    scale: 0.94,
   },
   onscreen: {
     opacity: 1,
@@ -97,8 +98,8 @@ export const scaleOnScroll: Variants = {
 
 export const viewportConfig = {
   once: true,
-  amount: 0.2,
-  margin: '-50px',
+  amount: 0.25,
+  margin: '-40px',
 } as const;
 
 // ========================================
@@ -106,12 +107,12 @@ export const viewportConfig = {
 // ========================================
 
 export const slideInLeft: Variants = {
-  hidden: { opacity: 0, x: -30 },
+  hidden: { opacity: 0, x: -24 },
   visible: { opacity: 1, x: 0, transition: springs.gentle },
 };
 
 export const slideInRight: Variants = {
-  hidden: { opacity: 0, x: 30 },
+  hidden: { opacity: 0, x: 24 },
   visible: { opacity: 1, x: 0, transition: springs.gentle },
 };
 
@@ -125,11 +126,11 @@ export const tapScale = {
 };
 
 export const hoverLift = {
-  whileHover: { y: -4, transition: springs.gentle },
+  whileHover: { y: -3, transition: springs.gentle },
 };
 
 export const pressable = {
-  whileHover: { scale: 1.02 },
+  whileHover: { scale: 1.015 },
   whileTap: { scale: 0.97 },
   transition: springs.snappy,
 };

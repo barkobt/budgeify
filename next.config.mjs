@@ -1,9 +1,3 @@
-import bundleAnalyzer from '@next/bundle-analyzer';
-
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -23,10 +17,6 @@ const nextConfig = {
             value: 'DENY',
           },
           {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
@@ -44,4 +34,13 @@ const nextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+// Bundle analyzer only when ANALYZE=true (dev-only tool)
+let config = nextConfig;
+if (process.env.ANALYZE === 'true') {
+  const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
+    enabled: true,
+  });
+  config = withBundleAnalyzer(nextConfig);
+}
+
+export default config;
