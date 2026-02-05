@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { generateId, getCurrentISODate, getTodayDate } from '@/utils';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -25,7 +26,11 @@ import {
 /**
  * GoalForm - Drawer-optimized Goal Form
  *
- * Kral İndigo Strategy: Apple-like clean design with visible icon names
+ * 🎓 MENTOR NOTU - Hybrid Persistence:
+ * ------------------------------------
+ * Bu form hem localStorage (Zustand) hem de server (Neon) ile çalışır.
+ * - Auth varsa: DataSyncProvider kullanır (server persistence)
+ * - Auth yoksa: Sadece Zustand kullanır (localStorage demo mode)
  */
 
 // Goal icons with labels
@@ -46,6 +51,7 @@ const GOAL_ICONS = [
 
 export const GoalForm: React.FC = () => {
   const { addGoal } = useBudgetStore();
+  const dataSync = useDataSyncOptional();
 
   // Form state
   const [name, setName] = useState('');
@@ -114,19 +120,30 @@ export const GoalForm: React.FC = () => {
 
     try {
       const selectedIconData = GOAL_ICONS.find(i => i.id === selectedIcon);
+      const iconLabel = selectedIconData?.label || 'Hedef';
 
-      const newGoal: Goal = {
-        id: generateId(),
-        name: name.trim(),
-        targetAmount: parseFloat(targetAmount),
-        currentAmount: currentAmount ? parseFloat(currentAmount) : 0,
-        icon: selectedIconData?.label || 'Hedef',
-        targetDate: targetDate || undefined,
-        status: 'active',
-        createdAt: getCurrentISODate(),
-      };
-
-      addGoal(newGoal);
+      // Use server persistence if available, otherwise fall back to local storage
+      if (dataSync) {
+        await dataSync.createGoal({
+          name: name.trim(),
+          targetAmount: parseFloat(targetAmount),
+          icon: iconLabel,
+          targetDate: targetDate ? new Date(targetDate) : undefined,
+        });
+      } else {
+        // Demo mode: Local storage only
+        const newGoal: Goal = {
+          id: generateId(),
+          name: name.trim(),
+          targetAmount: parseFloat(targetAmount),
+          currentAmount: currentAmount ? parseFloat(currentAmount) : 0,
+          icon: iconLabel,
+          targetDate: targetDate || undefined,
+          status: 'active',
+          createdAt: getCurrentISODate(),
+        };
+        addGoal(newGoal);
+      }
 
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
@@ -138,6 +155,9 @@ export const GoalForm: React.FC = () => {
       setSelectedIcon('target');
       setTargetDate('');
       setErrors({});
+    } catch (error) {
+      console.error('Failed to save goal:', error);
+      // Show error state here if needed
     } finally {
       setIsSubmitting(false);
     }

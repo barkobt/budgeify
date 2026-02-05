@@ -10,19 +10,10 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { SignUp } from '@clerk/nextjs';
 import { Logo } from '@/components/ui/Logo';
 import { GlowButton, FloatingElement } from '@/components/ui/MotionElements';
 import { Rocket, ArrowLeft, Sparkles } from 'lucide-react';
-
-// Check if Clerk is configured
-const isClerkConfigured = !!(
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-);
-
-// Dynamically import SignUp only if Clerk is configured
-const ClerkSignUp = isClerkConfigured
-  ? require('@clerk/nextjs').SignUp
-  : null;
 
 export default function SignUpPage() {
   return (
@@ -75,66 +66,38 @@ export default function SignUpPage() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          {ClerkSignUp ? (
-            <ClerkSignUp
-              appearance={{
-                elements: {
-                  rootBox: 'w-full',
-                  card: 'glass-card rounded-2xl border-0 shadow-2xl shadow-black/30 !bg-white/[0.03]',
-                  headerTitle: 'text-white text-xl font-semibold',
-                  headerSubtitle: 'text-slate-400',
-                  socialButtonsBlockButton:
-                    'glass-subtle hover:!bg-white/10 text-white border-white/10 rounded-xl transition-all duration-300',
-                  socialButtonsBlockButtonText: 'font-medium text-white',
-                  dividerLine: 'bg-white/10',
-                  dividerText: 'text-slate-500',
-                  formFieldLabel: 'text-slate-300 font-medium',
-                  formFieldInput:
-                    '!bg-white/5 border-white/10 text-white rounded-xl focus:border-accent-500 focus:ring-accent-500/20 placeholder:text-slate-500',
-                  formFieldInputShowPasswordButton: 'text-slate-400 hover:text-white',
-                  formButtonPrimary:
-                    'ai-gradient hover:opacity-90 rounded-xl font-semibold h-12 text-base shadow-lg shadow-accent-500/20',
-                  footerActionLink: 'text-accent-400 hover:text-accent-300',
-                  footer: 'hidden',
-                  identityPreviewEditButton: 'text-accent-400 hover:text-accent-300',
-                  formFieldAction: 'text-accent-400 hover:text-accent-300',
-                },
-                variables: {
-                  colorPrimary: '#3B82F6',
-                  colorBackground: 'transparent',
-                  colorText: '#E2E8F0',
-                  colorTextSecondary: '#94A3B8',
-                  borderRadius: '1rem',
-                },
-              }}
-            />
-          ) : (
-            <div className="glass-card rounded-2xl p-8 text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-                className="flex items-center justify-center w-16 h-16 rounded-2xl ai-gradient mx-auto mb-6"
-              >
-                <Rocket size={32} className="text-white" />
-              </motion.div>
-              <h2 className="text-xl font-semibold text-white mb-2">
-                Hesap Oluştur
-              </h2>
-              <p className="text-slate-400 mb-6 text-sm">
-                Clerk credentials <code className="text-accent-400 bg-white/5 px-1.5 py-0.5 rounded">.env.local</code> dosyasına eklenmeli.
-              </p>
-              <Link href="/dashboard">
-                <GlowButton
-                  className="w-full py-3 ai-gradient text-white font-semibold rounded-xl flex items-center justify-center gap-2"
-                  glowColor="rgba(139, 92, 246, 0.5)"
-                >
-                  <Sparkles size={18} />
-                  Demo Dashboard
-                </GlowButton>
-              </Link>
-            </div>
-          )}
+          <SignUp
+            appearance={{
+              elements: {
+                rootBox: 'w-full',
+                card: 'glass-card rounded-2xl border-0 shadow-2xl shadow-black/30 !bg-white/[0.03]',
+                headerTitle: 'text-white text-xl font-semibold',
+                headerSubtitle: 'text-slate-400',
+                socialButtonsBlockButton:
+                  'glass-subtle hover:!bg-white/10 text-white border-white/10 rounded-xl transition-all duration-300',
+                socialButtonsBlockButtonText: 'font-medium text-white',
+                dividerLine: 'bg-white/10',
+                dividerText: 'text-slate-500',
+                formFieldLabel: 'text-slate-300 font-medium',
+                formFieldInput:
+                  '!bg-white/5 border-white/10 text-white rounded-xl focus:border-accent-500 focus:ring-accent-500/20 placeholder:text-slate-500',
+                formFieldInputShowPasswordButton: 'text-slate-400 hover:text-white',
+                formButtonPrimary:
+                  'ai-gradient hover:opacity-90 rounded-xl font-semibold h-12 text-base shadow-lg shadow-accent-500/20',
+                footerActionLink: 'text-accent-400 hover:text-accent-300',
+                footer: 'hidden',
+                identityPreviewEditButton: 'text-accent-400 hover:text-accent-300',
+                formFieldAction: 'text-accent-400 hover:text-accent-300',
+              },
+              variables: {
+                colorPrimary: '#3B82F6',
+                colorBackground: 'transparent',
+                colorText: '#E2E8F0',
+                colorTextSecondary: '#94A3B8',
+                borderRadius: '1rem',
+              },
+            }}
+          />
         </motion.div>
 
         {/* Back to home */}

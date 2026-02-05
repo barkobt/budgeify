@@ -12,8 +12,6 @@ import './globals.css';
  * - useUser(), useAuth() hook'ları çalışsın
  * - <SignIn/>, <UserButton/> bileşenleri çalışsın
  * - Session yönetimi otomatik olsun
- *
- * NOT: Clerk credentials olmadan build için dynamic: 'force-dynamic' kullanıyoruz.
  */
 
 // Inter Variable Font - Premium Typography
@@ -22,12 +20,6 @@ const inter = Inter({
   display: 'swap',
   variable: '--font-inter',
 });
-
-// Check if Clerk is configured
-const isClerkConfigured = !!(
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-  process.env.CLERK_SECRET_KEY
-);
 
 export const metadata: Metadata = {
   title: 'Budgeify - AI-Powered Kişisel Finans',
@@ -74,24 +66,20 @@ export const viewport: Viewport = {
 };
 
 /**
- * 🎓 MENTOR NOTU - Conditional Provider:
- * -------------------------------------
- * Development'ta Clerk credentials olmayabilir.
- * Bu durumda uygulamayı ClerkProvider olmadan render ediyoruz.
- * Bu "graceful degradation" pattern'idir - eksik dependency'lerde
- * uygulama çökmez, sınırlı modda çalışır.
+ * 🎓 MENTOR NOTU - Root Layout:
+ * ----------------------------
+ * ClerkProvider tüm uygulamayı sarmalıyor.
+ * Bu sayede useAuth(), useUser() hook'ları her yerde çalışır.
  */
 
-function Providers({ children }: { children: React.ReactNode }) {
-  // Clerk yapılandırılmamışsa, provider olmadan render et
-  if (!isClerkConfigured) {
-    return <>{children}</>;
-  }
-
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <ClerkProvider
       appearance={{
-        // Global Clerk tema ayarları
         variables: {
           colorPrimary: '#3B82F6',
           colorBackground: '#0D1321',
@@ -101,25 +89,13 @@ function Providers({ children }: { children: React.ReactNode }) {
         },
       }}
     >
-      {children}
-    </ClerkProvider>
-  );
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="tr" className={inter.variable}>
-      <body className="min-h-screen antialiased font-sans">
-        <Providers>
+      <html lang="tr" className={inter.variable}>
+        <body className="min-h-screen antialiased font-sans">
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
-        </Providers>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { generateId, getCurrentISODate } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -12,10 +13,15 @@ import { Briefcase, Home, Laptop, Gift, TrendingUp, Package, Check } from 'lucid
 /**
  * MainSalaryForm - Drawer-optimized Income Form
  *
- * Streamlined design for bottom sheet usage.
+ * 🎓 MENTOR NOTU - Hybrid Persistence:
+ * ------------------------------------
+ * Bu form hem localStorage (Zustand) hem de server (Neon) ile çalışır.
+ * - Auth varsa: DataSyncProvider kullanır (server persistence)
+ * - Auth yoksa: Sadece Zustand kullanır (localStorage demo mode)
  */
 export const MainSalaryForm = () => {
   const { addIncome } = useBudgetStore();
+  const dataSync = useDataSyncOptional();
 
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -50,16 +56,28 @@ export const MainSalaryForm = () => {
     setIsSubmitting(true);
 
     try {
-      addIncome({
-        id: generateId(),
-        type: category === 'salary' ? 'salary' : 'additional',
-        category,
+      const incomeData = {
         amount: parseFloat(amount),
         description: description.trim() || undefined,
         isRecurring,
-        createdAt: getCurrentISODate(),
-        updatedAt: getCurrentISODate(),
-      });
+      };
+
+      // Use server persistence if available, otherwise fall back to local storage
+      if (dataSync) {
+        await dataSync.createIncome(incomeData);
+      } else {
+        // Demo mode: Local storage only
+        addIncome({
+          id: generateId(),
+          type: category === 'salary' ? 'salary' : 'additional',
+          category,
+          amount: parseFloat(amount),
+          description: description.trim() || undefined,
+          isRecurring,
+          createdAt: getCurrentISODate(),
+          updatedAt: getCurrentISODate(),
+        });
+      }
 
       setShowSuccess(true);
       setAmount('');
@@ -68,6 +86,9 @@ export const MainSalaryForm = () => {
       setIsRecurring(true);
 
       setTimeout(() => setShowSuccess(false), 2000);
+    } catch (error) {
+      console.error('Failed to save income:', error);
+      // Show error state here if needed
     } finally {
       setIsSubmitting(false);
     }

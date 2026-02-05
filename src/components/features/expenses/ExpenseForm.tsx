@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { generateId, getCurrentISODate, getTodayDate } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -31,10 +32,15 @@ import {
 /**
  * ExpenseForm - Drawer-optimized Expense Form
  *
- * Kral İndigo Strategy: Clean, minimal, professional
+ * 🎓 MENTOR NOTU - Hybrid Persistence:
+ * ------------------------------------
+ * Bu form hem localStorage (Zustand) hem de server (Neon) ile çalışır.
+ * - Auth varsa: DataSyncProvider kullanır (server persistence)
+ * - Auth yoksa: Sadece Zustand kullanır (localStorage demo mode)
  */
 export const ExpenseForm = () => {
   const { addExpense } = useBudgetStore();
+  const dataSync = useDataSyncOptional();
 
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -91,15 +97,27 @@ export const ExpenseForm = () => {
     setIsSubmitting(true);
 
     try {
-      addExpense({
-        id: generateId(),
-        categoryId,
+      const expenseData = {
         amount: parseFloat(amount),
         note: note.trim() || undefined,
-        date,
-        createdAt: getCurrentISODate(),
-        updatedAt: getCurrentISODate(),
-      });
+        categoryId,
+      };
+
+      // Use server persistence if available, otherwise fall back to local storage
+      if (dataSync) {
+        await dataSync.createExpense(expenseData);
+      } else {
+        // Demo mode: Local storage only
+        addExpense({
+          id: generateId(),
+          categoryId,
+          amount: parseFloat(amount),
+          note: note.trim() || undefined,
+          date,
+          createdAt: getCurrentISODate(),
+          updatedAt: getCurrentISODate(),
+        });
+      }
 
       setShowSuccess(true);
       setAmount('');
@@ -108,6 +126,9 @@ export const ExpenseForm = () => {
       setDate(getTodayDate());
 
       setTimeout(() => setShowSuccess(false), 2000);
+    } catch (error) {
+      console.error('Failed to save expense:', error);
+      // Show error state here if needed
     } finally {
       setIsSubmitting(false);
     }
