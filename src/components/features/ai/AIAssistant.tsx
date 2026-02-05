@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Sparkles, Send, ChevronDown, Activity, Zap, RotateCcw } from 'lucide-react';
+import { Sparkles, Send, ChevronDown, Activity, Zap, RotateCcw, BarChart3, Target, PiggyBank, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   getFinancialSnapshot,
@@ -78,6 +78,16 @@ export const AIAssistant: React.FC = () => {
   const initializedRef = useRef(false);
 
   const currentSuggestions = SUGGESTION_MAP[suggestionCtx];
+
+  /** Context-specific chip icon */
+  const contextIcons: Record<SuggestionContext, typeof BarChart3> = {
+    home: Sparkles,
+    spending: BarChart3,
+    health: Activity,
+    goals: Target,
+    savings: PiggyBank,
+  };
+  const ContextIcon = contextIcons[suggestionCtx];
 
   // Generate initial greeting with real insights
   const initializeChat = useCallback(() => {
@@ -332,37 +342,57 @@ export const AIAssistant: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Contextual Suggestions — always visible */}
+        {/* Contextual Pill Chips — always visible */}
         <div className="px-4 pb-2">
-          <div className="flex flex-wrap gap-2">
-            {/* Ana Menü button — always present unless already on home */}
+          <div className="flex flex-wrap gap-1.5">
+            {/* Ana Menu chip — accent style, always visible unless home */}
             {suggestionCtx !== 'home' && (
               <motion.button
                 onClick={handleResetContext}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
-                           bg-accent-500/10 text-accent-400 border border-accent-500/20
-                           transition-all hover:bg-accent-500/20"
-                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold
+                           bg-accent-500/15 text-accent-300 border border-accent-500/25
+                           backdrop-blur-sm transition-all hover:bg-accent-500/25 hover:border-accent-400/40"
+                whileTap={{ scale: 0.93 }}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
               >
-                <RotateCcw size={12} />
+                <RotateCcw size={11} strokeWidth={2.5} />
                 Ana Menu
               </motion.button>
             )}
 
-            {currentSuggestions.map((action) => (
+            {/* Analiz Et chip — contextual quick action */}
+            {suggestionCtx !== 'home' && (
+              <motion.button
+                onClick={() => handleSuggestedAction('Detayli analiz goster')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold
+                           bg-emerald-500/15 text-emerald-300 border border-emerald-500/25
+                           backdrop-blur-sm transition-all hover:bg-emerald-500/25 hover:border-emerald-400/40"
+                whileTap={{ scale: 0.93 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.05 }}
+              >
+                <TrendingUp size={11} strokeWidth={2.5} />
+                Analiz Et
+              </motion.button>
+            )}
+
+            {/* Suggestion pills */}
+            {currentSuggestions.map((action, i) => (
               <motion.button
                 key={action}
                 onClick={() => handleSuggestedAction(action)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium
-                           bg-white/5 text-slate-300 border border-white/10
-                           transition-all hover:bg-white/10 hover:border-white/20"
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 5 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium
+                           bg-zinc-900/60 text-slate-300 border border-white/8
+                           backdrop-blur-sm transition-all
+                           hover:bg-zinc-800/80 hover:border-white/15 hover:text-white"
+                whileTap={{ scale: 0.93 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.2, delay: i * 0.04 }}
               >
+                <ContextIcon size={11} strokeWidth={2} className="text-accent-400/70" />
                 {action}
               </motion.button>
             ))}

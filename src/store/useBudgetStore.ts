@@ -192,8 +192,25 @@ export const useBudgetStore = create<BudgetStoreState>()(
         })),
     }),
     {
-      name: 'budgeify-store', // localStorage key
-      version: 1, // versioning for migrations
+      name: 'budgeify-store',
+      version: 2,
+      migrate: (persistedState: unknown, version: number) => {
+        const state = persistedState as Record<string, unknown>;
+        if (version < 2) {
+          // v2: Migrate Category.emoji → Category.icon
+          const cats = state.categories as Array<Record<string, unknown>> | undefined;
+          if (cats) {
+            state.categories = cats.map((cat) => {
+              if ('emoji' in cat && !('icon' in cat)) {
+                const { emoji, ...rest } = cat;
+                return { ...rest, icon: emoji };
+              }
+              return cat;
+            });
+          }
+        }
+        return state as unknown as BudgetStoreState;
+      },
     }
   )
 );

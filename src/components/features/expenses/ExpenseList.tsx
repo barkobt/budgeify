@@ -3,13 +3,15 @@
 import React from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { formatCurrency, formatDate } from '@/utils';
-import { Trash2 } from 'lucide-react';
+import { getCategoryIcon } from '@/lib/category-icons';
+import { Trash2, ClipboardList, FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 
 /**
  * ExpenseList - Harcama Listesi
  *
- * Harcamaları tarih bazlı gruplandırarak gösterir.
+ * Harcamalari tarih bazli gruplandirarak gosterir.
+ * Uses Lucide icons for all categories.
  */
 export const ExpenseList = () => {
   const { expenses, deleteExpense, getCategoryById } = useBudgetStore();
@@ -30,7 +32,7 @@ export const ExpenseList = () => {
   );
 
   const handleDelete = (id: string) => {
-    if (confirm('Bu harcamayı silmek istediğinize emin misiniz?')) {
+    if (confirm('Bu harcamayi silmek istediginize emin misiniz?')) {
       deleteExpense(id);
     }
   };
@@ -39,16 +41,19 @@ export const ExpenseList = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>📋 Harcamalarım</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <ClipboardList className="h-5 w-5 text-accent-400" strokeWidth={2} />
+            Harcamalarim
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="py-12 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-              <span className="text-3xl">📝</span>
+              <FileText size={32} className="text-slate-400" />
             </div>
-            <p className="text-slate-600 font-medium">Henüz harcama eklenmemiş</p>
+            <p className="text-slate-600 font-medium">Henuz harcama eklenmemis</p>
             <p className="text-sm text-slate-400 mt-2">
-              İlk harcamanızı ekleyerek başlayın
+              Ilk harcamanizi ekleyerek baslayin
             </p>
           </div>
         </CardContent>
@@ -59,7 +64,10 @@ export const ExpenseList = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>📋 Harcamalarım ({expenses.length})</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <ClipboardList className="h-5 w-5 text-accent-400" strokeWidth={2} />
+          Harcamalarim ({expenses.length})
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -83,6 +91,7 @@ export const ExpenseList = () => {
                 <div className="space-y-2">
                   {dayExpenses.map((expense) => {
                     const category = getCategoryById(expense.categoryId);
+                    const IconComponent = getCategoryIcon(expense.categoryId);
 
                     return (
                       <div
@@ -92,10 +101,14 @@ export const ExpenseList = () => {
                         {/* Category Icon */}
                         {category && (
                           <div
-                            className="flex h-10 w-10 items-center justify-center rounded-lg text-xl"
+                            className="flex h-10 w-10 items-center justify-center rounded-lg"
                             style={{ backgroundColor: `${category.color}15` }}
                           >
-                            {category.emoji}
+                            <IconComponent
+                              size={18}
+                              style={{ color: category.color }}
+                              strokeWidth={2}
+                            />
                           </div>
                         )}
 

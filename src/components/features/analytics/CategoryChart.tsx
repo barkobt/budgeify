@@ -7,50 +7,8 @@ import { groupExpensesByCategory } from '@/lib/analytics';
 import { formatCurrency } from '@/utils';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
-import {
-  PieChart as PieChartIcon,
-  Pizza,
-  Coffee,
-  ShoppingCart,
-  Car,
-  Lightbulb,
-  Home,
-  Heart,
-  Film,
-  Shirt,
-  Laptop,
-  Scissors,
-  BookOpen,
-  CreditCard,
-  Building2,
-  Gift,
-  Dumbbell,
-  Dog,
-  Package,
-  LucideIcon,
-} from 'lucide-react';
-
-// Category icon mapping - Lucide icons instead of emojis
-const categoryIconMap: Record<string, LucideIcon> = {
-  cat_food: Pizza,
-  cat_coffee: Coffee,
-  cat_market: ShoppingCart,
-  cat_transport: Car,
-  cat_bills: Lightbulb,
-  cat_rent: Home,
-  cat_health: Heart,
-  cat_entertainment: Film,
-  cat_clothing: Shirt,
-  cat_tech: Laptop,
-  cat_personal: Scissors,
-  cat_education: BookOpen,
-  cat_credit_card: CreditCard,
-  cat_loan: Building2,
-  cat_gift: Gift,
-  cat_sports: Dumbbell,
-  cat_pet: Dog,
-  cat_other: Package,
-};
+import { PieChart as PieChartIcon } from 'lucide-react';
+import { getCategoryIcon } from '@/lib/category-icons';
 
 // Cosmic dark theme chart colors - Indigo & Slate palette
 const CHART_COLORS = [
@@ -165,7 +123,7 @@ export const CategoryChart = () => {
           {/* Category List */}
           <div className="space-y-2">
             {categoryData.slice(0, 5).map((item, index) => {
-              const IconComponent = categoryIconMap[item.categoryId] || Package;
+              const IconComponent = getCategoryIcon(item.categoryId);
               const color = CHART_COLORS[index % CHART_COLORS.length];
 
               return (

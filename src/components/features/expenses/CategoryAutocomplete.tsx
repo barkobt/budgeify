@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { getCategoryIcon } from '@/lib/category-icons';
+import { AlertTriangle, Search, Check as CheckIcon } from 'lucide-react';
 import type { Category } from '@/types';
 
 interface CategoryAutocompleteProps {
@@ -12,15 +14,10 @@ interface CategoryAutocompleteProps {
 }
 
 /**
- * CategoryAutocomplete - Akıllı Kategori Seçici
+ * CategoryAutocomplete - Akilli Kategori Secici
  *
- * Harcama formunda kullanılacak autocomplete/dropdown özellikli kategori seçici.
- * Features:
- * - Filtreleme (arama)
- * - Emoji + kategori adı
- * - Keyboard navigation (arrow keys, enter, escape)
- * - Click outside to close
- * - Accessible (ARIA labels)
+ * Harcama formunda kullanilacak autocomplete/dropdown ozellikli kategori secici.
+ * Uses Lucide icons instead of emojis.
  */
 export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
   value,
@@ -115,7 +112,7 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
   };
 
   const displayValue = selectedCategory
-    ? `${selectedCategory.emoji} ${selectedCategory.name}`
+    ? selectedCategory.name
     : searchQuery;
 
   return (
@@ -134,14 +131,14 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
           onChange={handleInputChange}
           onClick={handleInputClick}
           onKeyDown={handleKeyDown}
-          placeholder="Kategori seç veya ara..."
+          placeholder="Kategori sec veya ara..."
           disabled={disabled}
           className={`w-full rounded-xl border-2 bg-white/50 px-4 py-3 text-slate-900 backdrop-blur-sm outline-none transition-all duration-200 ${
             error
               ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
               : 'border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
           } ${disabled ? 'cursor-not-allowed bg-slate-50 text-slate-400' : ''}`}
-          aria-label="Kategori seçimi"
+          aria-label="Kategori secimi"
           aria-expanded={isOpen}
           aria-controls="category-listbox"
           aria-autocomplete="list"
@@ -171,7 +168,7 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
       {/* Error Message */}
       {error && (
         <p className="mt-2 flex items-center gap-1 text-sm text-red-500">
-          <span>⚠</span>
+          <AlertTriangle size={14} />
           {error}
         </p>
       )}
@@ -181,42 +178,46 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
         <div className="absolute z-50 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-slate-200 bg-white shadow-xl backdrop-blur-sm">
           {filteredCategories.length > 0 ? (
             <ul id="category-listbox" role="listbox" className="py-2">
-              {filteredCategories.map((category, index) => (
-                <li
-                  key={category.id}
-                  role="option"
-                  aria-selected={category.id === value}
-                  className={`cursor-pointer px-4 py-3 transition-colors duration-150 ${
-                    index === focusedIndex
-                      ? 'bg-blue-50'
-                      : category.id === value
-                      ? 'bg-slate-50'
-                      : 'hover:bg-slate-50'
-                  }`}
-                  onClick={() => handleCategorySelect(category)}
-                  onMouseEnter={() => setFocusedIndex(index)}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="flex h-10 w-10 items-center justify-center rounded-lg text-2xl"
-                      style={{ backgroundColor: `${category.color}15` }}
-                    >
-                      {category.emoji}
-                    </span>
-                    <span className="text-sm font-medium text-slate-700">
-                      {category.name}
-                    </span>
-                    {category.id === value && (
-                      <span className="ml-auto text-blue-600">✓</span>
-                    )}
-                  </div>
-                </li>
-              ))}
+              {filteredCategories.map((category, index) => {
+                const IconComponent = getCategoryIcon(category.id);
+                return (
+                  <li
+                    key={category.id}
+                    role="option"
+                    aria-selected={category.id === value}
+                    className={`cursor-pointer px-4 py-3 transition-colors duration-150 ${
+                      index === focusedIndex
+                        ? 'bg-blue-50'
+                        : category.id === value
+                        ? 'bg-slate-50'
+                        : 'hover:bg-slate-50'
+                    }`}
+                    onClick={() => handleCategorySelect(category)}
+                    onMouseEnter={() => setFocusedIndex(index)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="flex h-10 w-10 items-center justify-center rounded-lg"
+                        style={{ backgroundColor: `${category.color}15` }}
+                      >
+                        <IconComponent size={20} style={{ color: category.color }} strokeWidth={2} />
+                      </span>
+                      <span className="text-sm font-medium text-slate-700">
+                        {category.name}
+                      </span>
+                      {category.id === value && (
+                        <CheckIcon size={16} className="ml-auto text-blue-600" />
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <div className="px-4 py-8 text-center text-sm text-slate-500">
-              <p>🔍 Kategori bulunamadı</p>
-              <p className="mt-1 text-xs">&quot;{searchQuery}&quot; için sonuç yok</p>
+              <Search size={20} className="mx-auto mb-2 text-slate-400" />
+              <p>Kategori bulunamadi</p>
+              <p className="mt-1 text-xs">&quot;{searchQuery}&quot; icin sonuc yok</p>
             </div>
           )}
         </div>
@@ -224,8 +225,9 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
 
       {/* Helper Text */}
       {!error && (
-        <p className="mt-2 text-xs text-slate-500">
-          💡 Kategorilerde arama yapabilirsiniz
+        <p className="mt-2 flex items-center gap-1 text-xs text-slate-500">
+          <Search size={12} />
+          Kategorilerde arama yapabilirsiniz
         </p>
       )}
     </div>

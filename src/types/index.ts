@@ -41,7 +41,7 @@ export interface Expense {
 export interface Category {
   id: string;
   name: string;
-  emoji: string;
+  icon: string;
   color: string;
   isDefault: boolean;
   isActive: boolean;

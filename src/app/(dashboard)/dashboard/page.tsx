@@ -70,6 +70,10 @@ const AIAssistant = dynamic(
   () => import('@/components/features/ai/AIAssistant').then((mod) => ({ default: mod.AIAssistant })),
   { ssr: false }
 );
+const OracleHero = dynamic(
+  () => import('@/components/features/oracle/OracleHero').then((mod) => ({ default: mod.OracleHero })),
+  { ssr: false }
+);
 
 type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
 type DrawerType = 'income' | 'expense' | null;
@@ -110,6 +114,11 @@ export default function DashboardPage() {
               initial={isMounted ? 'hidden' : false}
               animate="visible"
             >
+              {/* Oracle Core Hero */}
+              <motion.div variants={staggerItem}>
+                <OracleHero />
+              </motion.div>
+
               {/* Hero Balance Card */}
               <motion.div variants={staggerItem}>
                 <MainBalanceCard />

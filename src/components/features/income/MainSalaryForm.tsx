@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/Input';
 import { reportError } from '@/lib/error-reporting';
 import type { IncomeCategory } from '@/types';
 import { INCOME_CATEGORIES } from '@/constants/categories';
-import { Briefcase, Home, Laptop, Gift, TrendingUp, Package, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { INCOME_ICON_MAP } from '@/lib/category-icons';
 
 /**
  * MainSalaryForm - Drawer-optimized Income Form
@@ -32,14 +33,7 @@ export const MainSalaryForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const categoryIcons: Record<string, React.ReactNode> = {
-    salary: <Briefcase size={18} />,
-    rent: <Home size={18} />,
-    freelance: <Laptop size={18} />,
-    bonus: <Gift size={18} />,
-    investment: <TrendingUp size={18} />,
-    other: <Package size={18} />,
-  };
+  // Removed inline icon map — using shared INCOME_ICON_MAP
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -140,7 +134,7 @@ export const MainSalaryForm = () => {
                   : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
               }`}
             >
-              {categoryIcons[cat.id]}
+              {(() => { const Icon = INCOME_ICON_MAP[cat.id]; return Icon ? <Icon size={18} /> : null; })()}
               <span className="text-xs font-medium">{cat.name}</span>
             </button>
           ))}

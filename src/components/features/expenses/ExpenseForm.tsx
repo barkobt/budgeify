@@ -8,27 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { reportError } from '@/lib/error-reporting';
 import { DEFAULT_CATEGORIES } from '@/constants/categories';
-import {
-  Check,
-  Pizza,
-  Coffee,
-  ShoppingCart,
-  Car,
-  Lightbulb,
-  Home,
-  Heart,
-  Film,
-  Shirt,
-  Laptop,
-  Scissors,
-  BookOpen,
-  CreditCard,
-  Building2,
-  Gift,
-  Dumbbell,
-  Dog,
-  Package,
-} from 'lucide-react';
+import { Check } from 'lucide-react';
+import { getCategoryIcon } from '@/lib/category-icons';
 
 /**
  * ExpenseForm - Drawer-optimized Expense Form
@@ -54,27 +35,7 @@ export const ExpenseForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Category icons mapping
-  const categoryIcons: Record<string, React.ReactNode> = {
-    cat_food: <Pizza size={18} />,
-    cat_coffee: <Coffee size={18} />,
-    cat_market: <ShoppingCart size={18} />,
-    cat_transport: <Car size={18} />,
-    cat_bills: <Lightbulb size={18} />,
-    cat_rent: <Home size={18} />,
-    cat_health: <Heart size={18} />,
-    cat_entertainment: <Film size={18} />,
-    cat_clothing: <Shirt size={18} />,
-    cat_tech: <Laptop size={18} />,
-    cat_personal: <Scissors size={18} />,
-    cat_education: <BookOpen size={18} />,
-    cat_credit_card: <CreditCard size={18} />,
-    cat_loan: <Building2 size={18} />,
-    cat_gift: <Gift size={18} />,
-    cat_sports: <Dumbbell size={18} />,
-    cat_pet: <Dog size={18} />,
-    cat_other: <Package size={18} />,
-  };
+  // Removed inline icon map — using shared getCategoryIcon utility
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -183,7 +144,7 @@ export const ExpenseForm = () => {
                   : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
               }`}
             >
-              {categoryIcons[cat.id]}
+              {(() => { const Icon = getCategoryIcon(cat.id); return <Icon size={18} />; })()}
               <span className="text-xs font-medium truncate w-full text-center">{cat.name}</span>
             </button>
           ))}
@@ -205,7 +166,7 @@ export const ExpenseForm = () => {
                     : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                 }`}
               >
-                {categoryIcons[cat.id]}
+                {(() => { const Icon = getCategoryIcon(cat.id); return <Icon size={18} />; })()}
                 <span className="text-xs font-medium truncate w-full text-center">{cat.name}</span>
               </button>
             ))}
