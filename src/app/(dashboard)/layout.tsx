@@ -18,6 +18,7 @@
 
 import Header from '@/components/layout/Header';
 import { DataSyncProvider } from '@/providers/DataSyncProvider';
+import { SkipNav } from '@/components/ui/SkipNav';
 
 export default function DashboardLayout({
   children,
@@ -26,6 +27,7 @@ export default function DashboardLayout({
 }) {
   return (
     <DataSyncProvider>
+      <SkipNav />
       <div className="min-h-screen pt-16 pb-24">
         <Header />
         {children}
