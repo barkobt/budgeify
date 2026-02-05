@@ -54,7 +54,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className="min-h-screen bg-slate-50 antialiased pt-16">
+      <body className="min-h-screen antialiased pt-16">
         <Header />
         <ErrorBoundary>
           {children}

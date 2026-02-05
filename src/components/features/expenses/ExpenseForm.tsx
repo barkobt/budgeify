@@ -5,15 +5,33 @@ import { useBudgetStore } from '@/store/useBudgetStore';
 import { generateId, getCurrentISODate, getTodayDate } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/Card';
-import { CategoryAutocomplete } from './CategoryAutocomplete';
-import { TrendingDown, Lightbulb } from 'lucide-react';
+import { DEFAULT_CATEGORIES } from '@/constants/categories';
+import {
+  Check,
+  Pizza,
+  Coffee,
+  ShoppingCart,
+  Car,
+  Lightbulb,
+  Home,
+  Heart,
+  Film,
+  Shirt,
+  Laptop,
+  Scissors,
+  BookOpen,
+  CreditCard,
+  Building2,
+  Gift,
+  Dumbbell,
+  Dog,
+  Package,
+} from 'lucide-react';
 
 /**
- * ExpenseForm - Harcama Ekleme Formu
+ * ExpenseForm - Drawer-optimized Expense Form
  *
- * Kullanıcının harcama eklemesini sağlar.
- * CategoryAutocomplete ile kategori seçimi yapar.
+ * Kral İndigo Strategy: Clean, minimal, professional
  */
 export const ExpenseForm = () => {
   const { addExpense } = useBudgetStore();
@@ -25,9 +43,31 @@ export const ExpenseForm = () => {
   const [errors, setErrors] = useState<{
     amount?: string;
     categoryId?: string;
-    date?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Category icons mapping
+  const categoryIcons: Record<string, React.ReactNode> = {
+    cat_food: <Pizza size={18} />,
+    cat_coffee: <Coffee size={18} />,
+    cat_market: <ShoppingCart size={18} />,
+    cat_transport: <Car size={18} />,
+    cat_bills: <Lightbulb size={18} />,
+    cat_rent: <Home size={18} />,
+    cat_health: <Heart size={18} />,
+    cat_entertainment: <Film size={18} />,
+    cat_clothing: <Shirt size={18} />,
+    cat_tech: <Laptop size={18} />,
+    cat_personal: <Scissors size={18} />,
+    cat_education: <BookOpen size={18} />,
+    cat_credit_card: <CreditCard size={18} />,
+    cat_loan: <Building2 size={18} />,
+    cat_gift: <Gift size={18} />,
+    cat_sports: <Dumbbell size={18} />,
+    cat_pet: <Dog size={18} />,
+    cat_other: <Package size={18} />,
+  };
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -40,171 +80,152 @@ export const ExpenseForm = () => {
       newErrors.categoryId = 'Kategori seçimi zorunludur';
     }
 
-    if (!date) {
-      newErrors.date = 'Tarih seçimi zorunludur';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      const numericAmount = parseFloat(amount);
-
       addExpense({
         id: generateId(),
         categoryId,
-        amount: numericAmount,
+        amount: parseFloat(amount),
         note: note.trim() || undefined,
         date,
         createdAt: getCurrentISODate(),
         updatedAt: getCurrentISODate(),
       });
 
-      // Reset form
+      setShowSuccess(true);
       setAmount('');
       setCategoryId('');
       setNote('');
       setDate(getTodayDate());
-      setErrors({});
 
-      // Success feedback
-      alert('✅ Harcama başarıyla eklendi!');
-    } catch (error) {
-      console.error('Error adding expense:', error);
-      alert('❌ Harcama eklenirken hata oluştu.');
+      setTimeout(() => setShowSuccess(false), 2000);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleClear = () => {
-    setAmount('');
-    setCategoryId('');
-    setNote('');
-    setDate(getTodayDate());
-    setErrors({});
-  };
+  if (showSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 mb-4">
+          <Check size={32} className="text-emerald-600" strokeWidth={3} />
+        </div>
+        <p className="text-lg font-semibold text-slate-900">Gider Eklendi</p>
+        <p className="text-sm text-slate-500 mt-1">Başarıyla kaydedildi</p>
+      </div>
+    );
+  }
 
   return (
-    <Card variant="default" size="md">
-      <CardHeader noBorder>
-        <CardTitle className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/30">
-            <TrendingDown size={20} className="text-white" strokeWidth={2.5} />
-          </div>
-          <span>Harcama Ekle</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Category Autocomplete */}
-          <CategoryAutocomplete
-            value={categoryId}
-            onChange={setCategoryId}
-            error={errors.categoryId}
-            disabled={isSubmitting}
-          />
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Amount */}
+      <Input
+        label="Tutar"
+        type="number"
+        placeholder="0.00"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        iconLeft="₺"
+        error={errors.amount}
+        isRequired
+        step="0.01"
+        min="0"
+      />
 
-          {/* Amount Input */}
-          <Input
-            label="Tutar"
-            type="number"
-            placeholder="0.00"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            iconLeft="₺"
-            error={errors.amount}
-            isRequired
-            step="0.01"
-            min="0"
-            disabled={isSubmitting}
-          />
-
-          {/* Date Input */}
-          <div>
-            <label
-              htmlFor="date"
-              className="mb-2 block text-sm font-medium text-slate-700"
+      {/* Category Grid */}
+      <div>
+        <label className="mb-3 block text-sm font-medium text-slate-700">
+          Kategori <span className="text-rose-500">*</span>
+        </label>
+        {errors.categoryId && (
+          <p className="mb-2 text-sm text-rose-500">{errors.categoryId}</p>
+        )}
+        <div className="grid grid-cols-3 gap-2 max-h-[280px] overflow-y-auto pr-1">
+          {DEFAULT_CATEGORIES.slice(0, 12).map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setCategoryId(cat.id)}
+              className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all ${
+                categoryId === cat.id
+                  ? 'border-accent-700 bg-accent-50 text-accent-700'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+              }`}
             >
-              Tarih <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              max={getTodayDate()}
-              disabled={isSubmitting}
-              className={`w-full rounded-xl border-2 bg-white/50 px-4 py-3 text-slate-900 backdrop-blur-sm outline-none transition-all duration-200 ${
-                errors.date
-                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
-                  : 'border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-              } ${isSubmitting ? 'cursor-not-allowed bg-slate-50 text-slate-400' : ''}`}
-            />
-            {errors.date && (
-              <p className="mt-2 flex items-center gap-1 text-sm text-red-500">
-                <span>⚠</span>
-                {errors.date}
-              </p>
-            )}
+              {categoryIcons[cat.id]}
+              <span className="text-xs font-medium truncate w-full text-center">{cat.name}</span>
+            </button>
+          ))}
+        </div>
+        {/* Show More Categories */}
+        <details className="mt-2">
+          <summary className="text-xs text-slate-500 cursor-pointer hover:text-accent-700">
+            Daha fazla kategori göster
+          </summary>
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            {DEFAULT_CATEGORIES.slice(12).map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setCategoryId(cat.id)}
+                className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all ${
+                  categoryId === cat.id
+                    ? 'border-accent-700 bg-accent-50 text-accent-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                }`}
+              >
+                {categoryIcons[cat.id]}
+                <span className="text-xs font-medium truncate w-full text-center">{cat.name}</span>
+              </button>
+            ))}
           </div>
+        </details>
+      </div>
 
-          {/* Note Input */}
-          <Input
-            label="Not (Opsiyonel)"
-            type="text"
-            placeholder="Örn: Market alışverişi, restoran"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            helperText="Harcama hakkında ek bilgi ekleyin"
-            maxLength={200}
-            disabled={isSubmitting}
-          />
+      {/* Date */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-slate-700">
+          Tarih
+        </label>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          max={getTodayDate()}
+          className="w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition-all focus:border-accent-700 focus:ring-2 focus:ring-accent-700/20"
+        />
+      </div>
 
-          {/* Info Box */}
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-            <p className="text-xs text-amber-700 flex items-start gap-2">
-              <Lightbulb size={14} className="mt-0.5 flex-shrink-0" strokeWidth={2.5} />
-              <span>
-                <strong>İpucu:</strong> Tüm harcamalarınızı kategorize ederek
-                ekleyin. Bu sayede nereye ne kadar harcadığınızı kolayca görebilirsiniz.
-              </span>
-            </p>
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Button
-          type="submit"
-          variant="primary"
-          isFullWidth
-          isLoading={isSubmitting}
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Ekleniyor...' : 'Harcama Ekle'}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          isFullWidth
-          onClick={handleClear}
-          disabled={isSubmitting}
-        >
-          Temizle
-        </Button>
-      </CardFooter>
-    </Card>
+      {/* Note */}
+      <Input
+        label="Not (Opsiyonel)"
+        type="text"
+        placeholder="Örn: Market alışverişi"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        maxLength={200}
+      />
+
+      {/* Submit */}
+      <Button
+        type="submit"
+        variant="primary"
+        isFullWidth
+        isLoading={isSubmitting}
+        size="lg"
+      >
+        Gider Ekle
+      </Button>
+    </form>
   );
 };
 

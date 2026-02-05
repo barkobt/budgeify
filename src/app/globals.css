@@ -4,6 +4,7 @@
    Budgeify v1.1 - Professional Fintech Design System
    Tailwind CSS v4 - CSS-First Configuration
    Motto: "İndigo bir kraldır, her yerde görünmez ama göründüğü yerde otorite kurar."
+   Theme: Deep Slate with Indigo Accents (Apple-like Professional)
    ======================================== */
 
 /* ========================================
@@ -23,22 +24,31 @@
   --color-accent-800: #1E3A8A;
   --color-accent-900: #172554;
 
+  /* 🌙 Deep Slate - Professional Dark Palette */
+  --color-deep-950: #0A0E1A;
+  --color-deep-900: #0F1629;
+  --color-deep-800: #151D35;
+  --color-deep-700: #1C2541;
+  --color-deep-600: #243352;
+
   /* Premium Shadows - Kral İndigo Glow */
   --shadow-accent-sm: 0 2px 8px rgba(30, 64, 175, 0.15);
   --shadow-accent-md: 0 4px 12px rgba(30, 64, 175, 0.20);
   --shadow-accent-lg: 0 8px 24px rgba(30, 64, 175, 0.25);
+  --shadow-glow: 0 0 40px rgba(30, 64, 175, 0.15);
 
   /* Animation Timing */
   --transition-fast: 150ms;
   --transition-base: 200ms;
   --transition-slow: 300ms;
+  --transition-silky: 400ms;
 
   /* Font Family */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* ========================================
-   BASE STYLES
+   BASE STYLES - Deep Slate Theme
    ======================================== */
 
 @layer base {
@@ -53,6 +63,9 @@
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "cv11", "ss01";
     text-rendering: optimizeLegibility;
+    background: linear-gradient(180deg, #0F1629 0%, #151D35 50%, #1C2541 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 }
 
@@ -61,25 +74,23 @@
    ======================================== */
 
 @layer components {
-  /* Glassmorphism */
+  /* Glassmorphism - Dark Theme Optimized */
   .glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07),
-                0 2px 4px -2px rgba(15, 23, 42, 0.04),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
   .glass-strong {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08),
-                0 4px 6px -4px rgba(15, 23, 42, 0.04),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px -3px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
   }
 
   /* Gradient - Kral İndigo */
@@ -88,31 +99,36 @@
   }
 
   .gradient-accent-subtle {
-    background: linear-gradient(135deg, rgba(30, 64, 175, 0.05) 0%, rgba(79, 70, 229, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.12) 0%, rgba(79, 70, 229, 0.15) 100%);
   }
 
-  /* Premium Card Surface */
+  /* Gradient Background - Deep Space */
+  .gradient-deep {
+    background: linear-gradient(180deg, #0F1629 0%, #151D35 50%, #1C2541 100%);
+  }
+
+  /* Premium Card Surface - Dark Theme */
   .card-surface {
-    background: white;
-    border: 1px solid #F1F5F9;
-    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06),
-                0 1px 2px -1px rgba(15, 23, 42, 0.04);
-    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15),
+                0 2px 8px -2px rgba(0, 0, 0, 0.1);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 1rem;
   }
 
   .card-surface:hover {
-    border-color: #E2E8F0;
-    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07),
-                0 2px 4px -2px rgba(15, 23, 42, 0.04);
-    transform: translateY(-1px);
+    box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.2),
+                0 4px 12px -4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
   }
 
   /* Elevated Card */
   .card-elevated {
     background: white;
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08),
-                0 4px 6px -4px rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.2),
+                0 8px 16px -8px rgba(0, 0, 0, 0.1);
   }
 
   /* Focus Ring - Kral İndigo */
@@ -122,7 +138,7 @@
   }
 
   .focus-ring:focus-visible {
-    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.25);
     border-color: #1E40AF;
   }
 
@@ -138,10 +154,35 @@
   .shadow-accent-lg {
     box-shadow: var(--shadow-accent-lg);
   }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Micro-animation utilities */
+  .hover-lift {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .hover-scale {
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  .hover-scale:active {
+    transform: scale(0.98);
+  }
 }
 
 /* ========================================
-   SCROLLBAR - Premium styling
+   SCROLLBAR - Premium Dark Theme
    ======================================== */
 
 ::-webkit-scrollbar {
@@ -150,12 +191,12 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: rgba(30, 41, 59, 0.5);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94A3B8;
+  background: rgba(148, 163, 184, 0.4);
   border-radius: 9999px;
   transition: background 200ms;
 }
@@ -169,23 +210,23 @@
    ======================================== */
 
 ::selection {
-  background-color: rgba(30, 64, 175, 0.15);
-  color: #0F172A;
+  background-color: rgba(30, 64, 175, 0.3);
+  color: white;
 }
 
 ::-moz-selection {
-  background-color: rgba(30, 64, 175, 0.15);
-  color: #0F172A;
+  background-color: rgba(30, 64, 175, 0.3);
+  color: white;
 }
 
 /* ========================================
-   ANIMATIONS
+   ANIMATIONS - Silky Smooth
    ======================================== */
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -196,35 +237,82 @@
 @keyframes slideUp {
   from {
     transform: translateY(100%);
+    opacity: 0;
   }
   to {
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
 @keyframes slideDown {
   from {
     transform: translateY(0);
+    opacity: 1;
   }
   to {
     transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
   }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 300ms ease-out;
+  animation: fadeIn 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animate-slideUp {
-  animation: slideUp 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideUp 350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animate-slideDown {
-  animation: slideDown 200ms ease-out;
+  animation: slideDown 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-scaleIn {
+  animation: scaleIn 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
 /* ========================================
-   VAUL DRAWER OVERRIDES
+   VAUL DRAWER OVERRIDES - Premium Dark
    ======================================== */
 
 [vaul-drawer] {
@@ -232,20 +320,31 @@
 }
 
 [vaul-drawer-overlay] {
-  background: rgba(15, 23, 42, 0.5) !important;
-  backdrop-filter: blur(4px);
+  background: rgba(10, 14, 26, 0.75) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 [vaul-drawer-content] {
   background: white !important;
   border-top-left-radius: 1.5rem !important;
   border-top-right-radius: 1.5rem !important;
+  box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.3) !important;
 }
 
 [vaul-handle] {
   width: 48px !important;
-  height: 4px !important;
+  height: 5px !important;
   background: #CBD5E1 !important;
   border-radius: 9999px !important;
-  margin: 12px auto !important;
+  margin: 14px auto !important;
+}
+
+/* ========================================
+   UTILITY OVERRIDES
+   ======================================== */
+
+/* Ensure white cards pop on dark background */
+.bg-white {
+  background-color: rgba(255, 255, 255, 0.98);
 }

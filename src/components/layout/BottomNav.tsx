@@ -17,9 +17,14 @@ const navItems = [
   { name: 'Analiz', icon: BarChart3, tab: 'analytics' as TabType },
 ];
 
+/**
+ * BottomNav - Premium Dark Theme Bottom Navigation
+ *
+ * Glassmorphism navigation with silky micro-animations.
+ */
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-100 shadow-sm">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 glass-strong safe-area-pb">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-around h-16">
           {navItems.map((item) => {
@@ -31,30 +36,40 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
                 key={item.tab}
                 onClick={() => onTabChange(item.tab)}
                 className="flex flex-col items-center justify-center gap-1.5 min-w-[70px] py-2
-                           transition-all duration-200 relative group"
+                           transition-all duration-300 relative group"
                 aria-label={item.name}
                 aria-current={isActive ? 'page' : undefined}
               >
-                {/* Active Indicator - Top line */}
-                {isActive && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5
-                                  bg-accent-700 rounded-full" />
-                )}
-
-                {/* Icon - Clean, no background */}
-                <Icon
-                  size={24}
-                  strokeWidth={2}
-                  className={`transition-all duration-200 ${
-                    isActive
-                      ? 'text-accent-700'
-                      : 'text-slate-400 group-hover:text-slate-600'
-                  }`}
+                {/* Active Indicator - Top line with glow */}
+                <div
+                  className={`absolute top-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full
+                              transition-all duration-300 ${
+                                isActive
+                                  ? 'w-10 bg-gradient-to-r from-accent-500 to-accent-700 shadow-lg shadow-accent-500/50'
+                                  : 'w-0 bg-transparent'
+                              }`}
                 />
 
-                {/* Label */}
+                {/* Icon - Clean with scale animation */}
+                <div
+                  className={`transition-all duration-300 ${
+                    isActive ? 'scale-110' : 'scale-100 group-hover:scale-105'
+                  }`}
+                >
+                  <Icon
+                    size={24}
+                    strokeWidth={2}
+                    className={`transition-all duration-300 ${
+                      isActive
+                        ? 'text-accent-700'
+                        : 'text-slate-400 group-hover:text-slate-600'
+                    }`}
+                  />
+                </div>
+
+                {/* Label with fade animation */}
                 <span
-                  className={`text-[11px] font-medium transition-all duration-200 ${
+                  className={`text-[11px] font-semibold transition-all duration-300 ${
                     isActive
                       ? 'text-accent-700'
                       : 'text-slate-500 group-hover:text-slate-700'

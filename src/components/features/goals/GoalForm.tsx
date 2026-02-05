@@ -3,33 +3,45 @@
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { generateId, getCurrentISODate, getTodayDate } from '@/utils';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import type { Goal } from '@/types';
-import { Home, Car, Plane, Heart, GraduationCap, Laptop, Target, PiggyBank, Umbrella, Gift, Smartphone, Trophy } from 'lucide-react';
+import {
+  Home,
+  Car,
+  Plane,
+  Heart,
+  GraduationCap,
+  Laptop,
+  Target,
+  PiggyBank,
+  Umbrella,
+  Gift,
+  Smartphone,
+  Trophy,
+  Check,
+} from 'lucide-react';
 
 /**
- * GoalForm - Tasarruf Hedefi Ekleme Formu
+ * GoalForm - Drawer-optimized Goal Form
  *
- * Kullanıcıların yeni tasarruf hedefi oluşturmasını sağlar.
- * Hedef adı, tutar, emoji ve tarih bilgilerini alır.
+ * Kral İndigo Strategy: Apple-like clean design with visible icon names
  */
 
-// Hedef ikonları - Lucide React
+// Goal icons with labels
 const GOAL_ICONS = [
-  { Icon: Home, id: 'home', label: 'Ev', color: 'text-blue-600 bg-blue-50 border-blue-200 hover:border-blue-400' },
-  { Icon: Car, id: 'car', label: 'Araba', color: 'text-indigo-600 bg-indigo-50 border-indigo-200 hover:border-indigo-400' },
-  { Icon: Plane, id: 'plane', label: 'Tatil', color: 'text-cyan-600 bg-cyan-50 border-cyan-200 hover:border-cyan-400' },
-  { Icon: Heart, id: 'heart', label: 'Düğün', color: 'text-pink-600 bg-pink-50 border-pink-200 hover:border-pink-400' },
-  { Icon: GraduationCap, id: 'education', label: 'Eğitim', color: 'text-purple-600 bg-purple-50 border-purple-200 hover:border-purple-400' },
-  { Icon: Laptop, id: 'laptop', label: 'Teknoloji', color: 'text-slate-600 bg-slate-50 border-slate-200 hover:border-slate-400' },
-  { Icon: Target, id: 'target', label: 'Hedef', color: 'text-accent-700 bg-accent-50 border-accent-200 hover:border-accent-400' },
-  { Icon: PiggyBank, id: 'piggybank', label: 'Tasarruf', color: 'text-green-600 bg-green-50 border-green-200 hover:border-green-400' },
-  { Icon: Umbrella, id: 'umbrella', label: 'Tatil', color: 'text-teal-600 bg-teal-50 border-teal-200 hover:border-teal-400' },
-  { Icon: Gift, id: 'gift', label: 'Hediye', color: 'text-orange-600 bg-orange-50 border-orange-200 hover:border-orange-400' },
-  { Icon: Smartphone, id: 'phone', label: 'Telefon', color: 'text-violet-600 bg-violet-50 border-violet-200 hover:border-violet-400' },
-  { Icon: Trophy, id: 'trophy', label: 'Başarı', color: 'text-amber-600 bg-amber-50 border-amber-200 hover:border-amber-400' },
+  { Icon: Home, id: 'home', label: 'Ev' },
+  { Icon: Car, id: 'car', label: 'Araba' },
+  { Icon: Plane, id: 'plane', label: 'Tatil' },
+  { Icon: Heart, id: 'heart', label: 'Sağlık' },
+  { Icon: GraduationCap, id: 'education', label: 'Eğitim' },
+  { Icon: Laptop, id: 'laptop', label: 'Teknoloji' },
+  { Icon: Target, id: 'target', label: 'Hedef' },
+  { Icon: PiggyBank, id: 'piggybank', label: 'Tasarruf' },
+  { Icon: Umbrella, id: 'umbrella', label: 'Acil Durum' },
+  { Icon: Gift, id: 'gift', label: 'Hediye' },
+  { Icon: Smartphone, id: 'phone', label: 'Telefon' },
+  { Icon: Trophy, id: 'trophy', label: 'Başarı' },
 ];
 
 export const GoalForm: React.FC = () => {
@@ -57,14 +69,12 @@ export const GoalForm: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Name validation
     if (!name.trim()) {
       newErrors.name = 'Hedef adı gereklidir';
     } else if (name.length > 50) {
       newErrors.name = 'Hedef adı en fazla 50 karakter olabilir';
     }
 
-    // Target amount validation
     const targetAmountNum = parseFloat(targetAmount);
     if (!targetAmount || isNaN(targetAmountNum)) {
       newErrors.targetAmount = 'Hedef tutar gereklidir';
@@ -72,7 +82,6 @@ export const GoalForm: React.FC = () => {
       newErrors.targetAmount = 'Hedef tutar 0\'dan büyük olmalıdır';
     }
 
-    // Current amount validation (optional)
     if (currentAmount) {
       const currentAmountNum = parseFloat(currentAmount);
       if (isNaN(currentAmountNum) || currentAmountNum < 0) {
@@ -80,7 +89,6 @@ export const GoalForm: React.FC = () => {
       }
     }
 
-    // Target date validation (optional)
     if (targetDate) {
       const today = getTodayDate();
       if (targetDate < today) {
@@ -105,11 +113,6 @@ export const GoalForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate async operation (for better UX with loading state)
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Create new goal
-      // Find the selected icon emoji for backward compatibility
       const selectedIconData = GOAL_ICONS.find(i => i.id === selectedIcon);
 
       const newGoal: Goal = {
@@ -117,7 +120,7 @@ export const GoalForm: React.FC = () => {
         name: name.trim(),
         targetAmount: parseFloat(targetAmount),
         currentAmount: currentAmount ? parseFloat(currentAmount) : 0,
-        icon: selectedIconData?.label || '🎯', // Store label as fallback
+        icon: selectedIconData?.label || 'Hedef',
         targetDate: targetDate || undefined,
         status: 'active',
         createdAt: getCurrentISODate(),
@@ -125,49 +128,49 @@ export const GoalForm: React.FC = () => {
 
       addGoal(newGoal);
 
-      // Show success message
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      setTimeout(() => setShowSuccess(false), 2000);
 
       // Reset form
-      handleReset();
+      setName('');
+      setTargetAmount('');
+      setCurrentAmount('');
+      setSelectedIcon('target');
+      setTargetDate('');
+      setErrors({});
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  /**
-   * Reset form
-   */
-  const handleReset = () => {
-    setName('');
-    setTargetAmount('');
-    setCurrentAmount('');
-    setSelectedIcon('target');
-    setTargetDate('');
-    setErrors({});
-  };
+  if (showSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 mb-4">
+          <Check size={32} className="text-emerald-600" strokeWidth={3} />
+        </div>
+        <p className="text-lg font-semibold text-slate-900">Hedef Eklendi</p>
+        <p className="text-sm text-slate-500 mt-1">Başarıyla kaydedildi</p>
+      </div>
+    );
+  }
 
   return (
-    <Card variant="default" size="md">
-      <CardHeader noBorder>
-        <CardTitle className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg shadow-green-500/30">
+    <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-700">
             <Target size={20} className="text-white" strokeWidth={2.5} />
           </div>
-          <span>Yeni Tasarruf Hedefi</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Success Message */}
-          {showSuccess && (
-            <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-sm text-green-800">
-              ✓ Hedef başarıyla eklendi!
-            </div>
-          )}
+          <div>
+            <p className="text-lg font-semibold text-slate-900">Yeni Hedef</p>
+            <p className="text-xs text-slate-500">Tasarruf hedefinizi belirleyin</p>
+          </div>
+        </div>
 
-          {/* Hedef Adı */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Goal Name */}
           <Input
             label="Hedef Adı"
             type="text"
@@ -175,10 +178,11 @@ export const GoalForm: React.FC = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             error={errors.name}
+            isRequired
             maxLength={50}
           />
 
-          {/* Hedef Tutar */}
+          {/* Target Amount */}
           <Input
             label="Hedef Tutar"
             type="number"
@@ -187,12 +191,12 @@ export const GoalForm: React.FC = () => {
             onChange={(e) => setTargetAmount(e.target.value)}
             error={errors.targetAmount}
             iconLeft="₺"
-            helperText="Ulaşmak istediğiniz tutar"
+            isRequired
             min={0}
             step={0.01}
           />
 
-          {/* Mevcut Birikim */}
+          {/* Current Amount */}
           <Input
             label="Mevcut Birikim (Opsiyonel)"
             type="number"
@@ -201,73 +205,67 @@ export const GoalForm: React.FC = () => {
             onChange={(e) => setCurrentAmount(e.target.value)}
             error={errors.currentAmount}
             iconLeft="₺"
-            helperText="Şu anki birikim miktarınız"
             min={0}
             step={0.01}
           />
 
-          {/* Icon Selector */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-slate-700">
-              Hedef İkonu
+          {/* Icon Selector - Apple-like Grid with Names */}
+          <div>
+            <label className="mb-3 block text-sm font-medium text-slate-700">
+              Hedef Simgesi
             </label>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-              {GOAL_ICONS.map(({ Icon, id, label, color }) => {
+            <div className="grid grid-cols-4 gap-2">
+              {GOAL_ICONS.map(({ Icon, id, label }) => {
                 const isSelected = selectedIcon === id;
                 return (
                   <button
                     key={id}
                     type="button"
                     onClick={() => setSelectedIcon(id)}
-                    className={`flex h-14 w-full items-center justify-center rounded-xl border-2 transition-all ${
+                    className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all ${
                       isSelected
-                        ? 'border-accent-700 shadow-lg scale-105'
-                        : color
+                        ? 'border-accent-700 bg-accent-50 text-accent-700'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                     }`}
-                    title={label}
                   >
-                    <Icon
-                      size={24}
-                      strokeWidth={2}
-                      className={isSelected ? 'text-accent-700' : ''}
-                    />
+                    <Icon size={20} strokeWidth={2} />
+                    <span className="text-[10px] font-medium">{label}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Hedef Tarihi */}
-          <Input
-            label="Hedef Tarihi (Opsiyonel)"
-            type="date"
-            value={targetDate}
-            onChange={(e) => setTargetDate(e.target.value)}
-            error={errors.targetDate}
-            helperText="Bu tarihe kadar hedefinize ulaşmak istiyorsunuz"
-            min={getTodayDate()}
-          />
+          {/* Target Date */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Hedef Tarihi (Opsiyonel)
+            </label>
+            <input
+              type="date"
+              value={targetDate}
+              onChange={(e) => setTargetDate(e.target.value)}
+              min={getTodayDate()}
+              className="w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition-all focus:border-accent-700 focus:ring-2 focus:ring-accent-700/20"
+            />
+            {errors.targetDate && (
+              <p className="mt-2 text-sm text-rose-500">{errors.targetDate}</p>
+            )}
+          </div>
+
+          {/* Submit */}
+          <Button
+            type="submit"
+            variant="primary"
+            isFullWidth
+            isLoading={isSubmitting}
+            size="lg"
+          >
+            Hedef Oluştur
+          </Button>
         </form>
-      </CardContent>
-      <CardFooter>
-        <Button
-          variant="primary"
-          isFullWidth
-          onClick={handleSubmit}
-          isLoading={isSubmitting}
-        >
-          {isSubmitting ? 'Ekleniyor...' : 'Hedef Ekle'}
-        </Button>
-        <Button
-          variant="ghost"
-          isFullWidth
-          onClick={handleReset}
-          disabled={isSubmitting}
-        >
-          Temizle
-        </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };
 
