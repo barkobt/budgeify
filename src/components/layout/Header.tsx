@@ -5,29 +5,31 @@ import { Logo } from '@/components/ui/Logo';
 import { User } from 'lucide-react';
 
 /**
- * Header - Premium Dark Theme Header
+ * Header - Cosmic Indigo Theme Header
  *
- * Glassmorphism header optimized for dark background.
+ * Glassmorphism 2.0 header for dark backgrounds.
  */
 export const Header = () => {
   return (
-    <header className="w-full fixed top-0 left-0 right-0 z-50 glass-strong">
+    <header className="w-full fixed top-0 left-0 right-0 z-50
+                       bg-cosmic-900/80 backdrop-blur-xl border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left Side - Professional Logo */}
+          {/* Left Side - Logo */}
           <Logo size="sm" showText={true} />
 
-          {/* Right Side - User Profile (subtle, professional) */}
+          {/* Right Side - User Profile */}
           <button
-            className="group relative w-9 h-9 rounded-full bg-white/90 border border-slate-200/50
+            className="group relative w-9 h-9 rounded-full
+                       bg-white/5 border border-white/10
                        flex items-center justify-center transition-all duration-200
-                       hover:border-accent-700 hover:shadow-accent-sm hover:scale-105 active:scale-95 focus-ring"
-            aria-label="User profile"
+                       hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95"
+            aria-label="Kullanıcı profili"
           >
             <User
               size={18}
-              className="text-slate-600 group-hover:text-accent-700 transition-colors duration-200"
-              strokeWidth={2}
+              className="text-slate-400 group-hover:text-white transition-colors duration-200"
+              strokeWidth={1.5}
             />
           </button>
         </div>

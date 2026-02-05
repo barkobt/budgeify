@@ -18,13 +18,14 @@ const navItems = [
 ];
 
 /**
- * BottomNav - Premium Dark Theme Bottom Navigation
+ * BottomNav - Cosmic Indigo Bottom Navigation
  *
- * Glassmorphism navigation with silky micro-animations.
+ * Glassmorphism 2.0 with premium micro-animations.
  */
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 glass-strong safe-area-pb">
+    <nav className="fixed bottom-0 left-0 right-0 z-40
+                    bg-cosmic-900/90 backdrop-blur-xl border-t border-white/5 safe-area-pb">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-around h-16">
           {navItems.map((item) => {
@@ -40,39 +41,39 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
                 aria-label={item.name}
                 aria-current={isActive ? 'page' : undefined}
               >
-                {/* Active Indicator - Top line with glow */}
+                {/* Active Indicator - Top glow line */}
                 <div
                   className={`absolute top-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full
                               transition-all duration-300 ${
                                 isActive
-                                  ? 'w-10 bg-gradient-to-r from-accent-500 to-accent-700 shadow-lg shadow-accent-500/50'
+                                  ? 'w-10 bg-gradient-to-r from-accent-400 to-violet-500 shadow-lg shadow-accent-500/50'
                                   : 'w-0 bg-transparent'
                               }`}
                 />
 
-                {/* Icon - Clean with scale animation */}
+                {/* Icon with scale animation */}
                 <div
                   className={`transition-all duration-300 ${
                     isActive ? 'scale-110' : 'scale-100 group-hover:scale-105'
                   }`}
                 >
                   <Icon
-                    size={24}
-                    strokeWidth={2}
+                    size={22}
+                    strokeWidth={1.5}
                     className={`transition-all duration-300 ${
                       isActive
-                        ? 'text-accent-700'
-                        : 'text-slate-400 group-hover:text-slate-600'
+                        ? 'text-accent-400'
+                        : 'text-slate-500 group-hover:text-slate-300'
                     }`}
                   />
                 </div>
 
-                {/* Label with fade animation */}
+                {/* Label */}
                 <span
-                  className={`text-[11px] font-semibold transition-all duration-300 ${
+                  className={`text-[11px] font-medium transition-all duration-300 ${
                     isActive
-                      ? 'text-accent-700'
-                      : 'text-slate-500 group-hover:text-slate-700'
+                      ? 'text-accent-400'
+                      : 'text-slate-500 group-hover:text-slate-300'
                   }`}
                 >
                   {item.name}
