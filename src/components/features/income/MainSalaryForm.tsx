@@ -6,7 +6,7 @@ import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { generateId, getCurrentISODate } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { logger } from '@/lib/logger';
+import { reportError } from '@/lib/error-reporting';
 import type { IncomeCategory } from '@/types';
 import { INCOME_CATEGORIES } from '@/constants/categories';
 import { Briefcase, Home, Laptop, Gift, TrendingUp, Package, Check } from 'lucide-react';
@@ -88,7 +88,7 @@ export const MainSalaryForm = () => {
 
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
-      logger.error('MainSalaryForm', 'Failed to save income', error);
+      reportError(error instanceof Error ? error : new Error(String(error)), { context: 'MainSalaryForm' });
       // Show error state here if needed
     } finally {
       setIsSubmitting(false);

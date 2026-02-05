@@ -27,7 +27,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useAuth } from '@clerk/nextjs';
-import { logger } from '@/lib/logger';
+import { reportError } from '@/lib/error-reporting';
 import {
   getOrCreateUser,
   getIncomes,
@@ -164,7 +164,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
 
       setIsSynced(true);
     } catch (err) {
-      logger.error('DataSync', 'Sync failed', err);
+      reportError(err instanceof Error ? err : new Error(String(err)), { context: 'DataSync' });
       const errorMessage = err instanceof Error ? err.message : 'Veri senkronizasyonu başarısız';
       setError(errorMessage);
       setLastError(errorMessage);

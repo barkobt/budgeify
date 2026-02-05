@@ -6,7 +6,7 @@ import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { generateId, getCurrentISODate, getTodayDate } from '@/utils';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { logger } from '@/lib/logger';
+import { reportError } from '@/lib/error-reporting';
 import type { Goal } from '@/types';
 import {
   Home,
@@ -157,7 +157,7 @@ export const GoalForm: React.FC = () => {
       setTargetDate('');
       setErrors({});
     } catch (error) {
-      logger.error('GoalForm', 'Failed to save goal', error);
+      reportError(error instanceof Error ? error : new Error(String(error)), { context: 'GoalForm' });
       // Show error state here if needed
     } finally {
       setIsSubmitting(false);

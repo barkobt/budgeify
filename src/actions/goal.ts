@@ -16,7 +16,7 @@ import { goals, NewGoal, users } from '@/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { logger } from '@/lib/logger';
+import { reportError } from '@/lib/error-reporting';
 
 /**
  * Helper: Get user ID from Clerk session
@@ -56,7 +56,7 @@ export async function getGoals() {
 
     return result;
   } catch (error) {
-    logger.error('goal', 'getGoals failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'goal.getGoals' });
     throw new Error('Hedefler yüklenirken bir hata oluştu');
   }
 }
@@ -120,7 +120,7 @@ export async function createGoal(data: {
 
     return created;
   } catch (error) {
-    logger.error('goal', 'createGoal failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'goal.createGoal' });
     throw new Error('Hedef eklenirken bir hata oluştu');
   }
 }
@@ -239,7 +239,7 @@ export async function deleteGoal(id: string) {
 
     return { success: true };
   } catch (error) {
-    logger.error('goal', 'deleteGoal failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'goal.deleteGoal' });
     if (error instanceof Error && error.message.includes('bulunamadı')) {
       throw error;
     }

@@ -17,7 +17,7 @@ import { incomes, NewIncome, users } from '@/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { logger } from '@/lib/logger';
+import { reportError } from '@/lib/error-reporting';
 
 /**
  * Helper: Get user ID from Clerk session
@@ -58,7 +58,7 @@ export async function getIncomes() {
 
     return result;
   } catch (error) {
-    logger.error('income', 'getIncomes failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'income.getIncomes' });
     throw new Error('Gelirler yüklenirken bir hata oluştu');
   }
 }
@@ -107,7 +107,7 @@ export async function createIncome(data: {
 
     return created;
   } catch (error) {
-    logger.error('income', 'createIncome failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'income.createIncome' });
     throw new Error('Gelir eklenirken bir hata oluştu');
   }
 }
@@ -185,7 +185,7 @@ export async function deleteIncome(id: string) {
 
     return { success: true };
   } catch (error) {
-    logger.error('income', 'deleteIncome failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'income.deleteIncome' });
     if (error instanceof Error && error.message.includes('bulunamadı')) {
       throw error;
     }

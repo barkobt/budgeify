@@ -3,13 +3,14 @@
 import React from 'react';
 import { Button } from './Button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './Card';
-import { logger } from '@/lib/logger';
+import { reportError, addBreadcrumb } from '@/lib/error-reporting';
 
 /**
  * ErrorBoundary - React Error Boundary Component
  *
  * Production'da beklenmeyen hataları yakalar ve kullanıcıya fallback UI gösterir.
  * Development'ta hatalar console'da görünür.
+ * Error reporting abstraction aracılığıyla Sentry-ready.
  */
 
 interface ErrorBoundaryProps {
@@ -40,8 +41,18 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error to console (can be sent to error tracking service)
-    logger.error('ErrorBoundary', 'Uncaught error', error, errorInfo);
+    addBreadcrumb({
+      category: 'react',
+      message: 'Component stack trace available',
+      level: 'error',
+      data: { componentStack: errorInfo.componentStack },
+    });
+
+    reportError(error, {
+      context: 'ErrorBoundary',
+      extra: { componentStack: errorInfo.componentStack },
+      level: 'fatal',
+    });
   }
 
   handleReset = () => {

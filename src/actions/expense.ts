@@ -14,7 +14,7 @@ import { expenses, NewExpense, users } from '@/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { logger } from '@/lib/logger';
+import { reportError } from '@/lib/error-reporting';
 
 /**
  * Helper: Get user ID from Clerk session
@@ -54,7 +54,7 @@ export async function getExpenses() {
 
     return result;
   } catch (error) {
-    logger.error('expense', 'getExpenses failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'expense.getExpenses' });
     throw new Error('Giderler yüklenirken bir hata oluştu');
   }
 }
@@ -102,7 +102,7 @@ export async function createExpense(data: {
 
     return created;
   } catch (error) {
-    logger.error('expense', 'createExpense failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'expense.createExpense' });
     throw new Error('Gider eklenirken bir hata oluştu');
   }
 }
@@ -180,7 +180,7 @@ export async function deleteExpense(id: string) {
 
     return { success: true };
   } catch (error) {
-    logger.error('expense', 'deleteExpense failed', error);
+    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'expense.deleteExpense' });
     if (error instanceof Error && error.message.includes('bulunamadı')) {
       throw error;
     }
