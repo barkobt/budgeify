@@ -123,9 +123,9 @@ export const StoreTestPanel = () => {
           </details>
 
           <p className="text-xs text-slate-400 italic mt-4 border-t border-slate-200 pt-4">
-            ⚠️ Bu panel sadece test amaçlıdır. Production'a geçmeden önce silinecektir.
-            LocalStorage'a kaydedilen veriler tarayıcı geliştirici araçlarından kontrol edilebilir
-            (Application → Local Storage → budgeify-store).
+            Bu panel sadece test amaciyla olusturulmustur. Production a gecmeden once silinecektir.
+            LocalStorage a kaydedilen veriler tarayici gelistirici araclarindan kontrol edilebilir
+            (Application - Local Storage - budgeify-store).
           </p>
         </div>
       </CardContent>

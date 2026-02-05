@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { calculateSavingsGoal } from '@/lib/analytics';
 import { formatCurrency, formatDate } from '@/utils';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Target, TrendingUp, Calendar, Trash2, Check, X } from 'lucide-react';
 import type { Goal } from '@/types';
 

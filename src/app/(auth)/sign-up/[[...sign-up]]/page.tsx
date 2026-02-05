@@ -12,8 +12,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { SignUp } from '@clerk/nextjs';
 import { Logo } from '@/components/ui/Logo';
-import { GlowButton, FloatingElement } from '@/components/ui/MotionElements';
-import { Rocket, ArrowLeft, Sparkles } from 'lucide-react';
+import { FloatingElement } from '@/components/ui/MotionElements';
+import { ArrowLeft } from 'lucide-react';
 
 export default function SignUpPage() {
   return (

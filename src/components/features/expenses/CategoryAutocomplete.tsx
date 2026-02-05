@@ -143,6 +143,7 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
           } ${disabled ? 'cursor-not-allowed bg-slate-50 text-slate-400' : ''}`}
           aria-label="Kategori seçimi"
           aria-expanded={isOpen}
+          aria-controls="category-listbox"
           aria-autocomplete="list"
           role="combobox"
         />
@@ -179,7 +180,7 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
       {isOpen && (
         <div className="absolute z-50 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-slate-200 bg-white shadow-xl backdrop-blur-sm">
           {filteredCategories.length > 0 ? (
-            <ul role="listbox" className="py-2">
+            <ul id="category-listbox" role="listbox" className="py-2">
               {filteredCategories.map((category, index) => (
                 <li
                   key={category.id}
@@ -215,7 +216,7 @@ export const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
           ) : (
             <div className="px-4 py-8 text-center text-sm text-slate-500">
               <p>🔍 Kategori bulunamadı</p>
-              <p className="mt-1 text-xs">"{searchQuery}" için sonuç yok</p>
+              <p className="mt-1 text-xs">&quot;{searchQuery}&quot; için sonuç yok</p>
             </div>
           )}
         </div>

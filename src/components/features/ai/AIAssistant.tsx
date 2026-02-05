@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, X, Send, ChevronDown } from 'lucide-react';
+import { Sparkles, Send, ChevronDown } from 'lucide-react';
 
 interface Message {
   id: string;

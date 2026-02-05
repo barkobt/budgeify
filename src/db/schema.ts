@@ -20,7 +20,6 @@ import {
   pgTable,
   text,
   timestamp,
-  integer,
   boolean,
   decimal,
   uuid,

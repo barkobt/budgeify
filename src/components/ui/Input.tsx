@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'date';
 type InputSize = 'sm' | 'md' | 'lg';
 
 interface InputProps

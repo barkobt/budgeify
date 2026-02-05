@@ -14,7 +14,7 @@
 
 import { db } from '@/db';
 import { categories, NewCategory, users } from '@/db/schema';
-import { eq, and, or, isNull } from 'drizzle-orm';
+import { eq, and, or } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
@@ -108,7 +108,7 @@ export async function seedDefaultCategories() {
 export async function getCategories(type?: 'income' | 'expense') {
   const userId = await getUserId();
 
-  let query = db
+  const query = db
     .select()
     .from(categories)
     .where(

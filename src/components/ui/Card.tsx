@@ -118,7 +118,7 @@ CardHeader.displayName = 'CardHeader';
 export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ children, className = '', as: Component = 'h2', ...props }, ref) => (
     <Component
-      ref={ref as any}
+      ref={ref as React.Ref<HTMLHeadingElement>}
       className={`text-xl font-semibold text-slate-900 tracking-tight ${className}`}
       {...props}
     >
