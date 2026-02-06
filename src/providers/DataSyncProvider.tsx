@@ -105,12 +105,15 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       await seedDefaultCategories();
 
       // Fetch all data from server
-      const [serverIncomes, serverExpenses, serverGoals] = await Promise.all([
+      const [serverIncomes, serverExpenses, goalsResult] = await Promise.all([
         getIncomes(),
         getExpenses(),
         getGoals(),
         getCategories(),
       ]) as [Awaited<ReturnType<typeof getIncomes>>, Awaited<ReturnType<typeof getExpenses>>, Awaited<ReturnType<typeof getGoals>>, unknown];
+
+      // Extract goals from ActionResult
+      const serverGoals = goalsResult.success ? goalsResult.data : [];
 
       // Transform server data to local format
       // 🔧 FIX: Filter out any items that are pending deletion
@@ -305,20 +308,27 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     store.addGoal(localGoal);
 
     try {
-      // Persist to server
-      const serverGoal = await serverCreateGoal(data);
+      // Persist to server (ActionResult pattern)
+      const result = await serverCreateGoal(data);
+      if (!result.success) {
+        store.deleteGoal(tempId);
+        setLastError(result.error);
+        throw new Error(result.error);
+      }
 
       // Update local store with real ID
       useBudgetStore.setState((state) => ({
         goals: state.goals.map((g) =>
           g.id === tempId
-            ? { ...g, id: serverGoal.id }
+            ? { ...g, id: result.data.id }
             : g
         ),
       }));
     } catch (err) {
-      // Rollback on error
-      store.deleteGoal(tempId);
+      // Rollback on error (only if not already handled above)
+      if (useBudgetStore.getState().goals.some((g) => g.id === tempId)) {
+        store.deleteGoal(tempId);
+      }
       const errorMessage = err instanceof Error ? err.message : 'Hedef eklenirken bir hata oluştu';
       setLastError(errorMessage);
       throw new Error(errorMessage);
@@ -406,14 +416,20 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
 
     try {
       if (!id.startsWith('temp_')) {
-        await serverDeleteGoal(id);
+        const result = await serverDeleteGoal(id);
+        if (!result.success) {
+          pendingDeletesRef.current.delete(id);
+          if (goalToDelete) store.addGoal(goalToDelete);
+          setLastError(result.error);
+          throw new Error(result.error);
+        }
       }
       // 🔧 FIX: Only remove from pending after successful server delete
       pendingDeletesRef.current.delete(id);
     } catch (err) {
       // 🔧 FIX: Remove from pending deletes on error so item can reappear during rollback
       pendingDeletesRef.current.delete(id);
-      if (goalToDelete) {
+      if (goalToDelete && !useBudgetStore.getState().goals.some((g) => g.id === id)) {
         store.addGoal(goalToDelete);
       }
       const errorMessage = err instanceof Error ? err.message : 'Hedef silinirken bir hata oluştu';

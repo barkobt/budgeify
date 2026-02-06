@@ -664,6 +664,7 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | Date | Milestone | Status | Notes |
 |------|-----------|--------|-------|
 | 2026-02-06 | M1: Skill Manifest | Completed | `skills/ui/styles.md` created, CONVENTIONS.md synced |
+| 2026-02-06 | M2: Infrastructure Repair | Completed | middleware optimized, goal.ts refactored to ActionResult+Zod |
 
 ---
 
