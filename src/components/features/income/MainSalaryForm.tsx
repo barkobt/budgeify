@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
-import { generateId, getCurrentISODate } from '@/utils';
+import { generateId, getCurrentISODate, getCurrencySymbol } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { reportError } from '@/lib/error-reporting';
@@ -22,8 +22,9 @@ import { INCOME_ICON_MAP } from '@/lib/category-icons';
  * - Auth yoksa: Sadece Zustand kullanır (localStorage demo mode)
  */
 export const MainSalaryForm = () => {
-  const { addIncome } = useBudgetStore();
+  const { addIncome, currency } = useBudgetStore();
   const dataSync = useDataSyncOptional();
+  const symbol = getCurrencySymbol(currency);
 
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -32,6 +33,7 @@ export const MainSalaryForm = () => {
   const [errors, setErrors] = useState<{ amount?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   // Removed inline icon map — using shared INCOME_ICON_MAP
 
@@ -49,6 +51,7 @@ export const MainSalaryForm = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setServerError(null);
 
     try {
       const incomeData = {
@@ -83,7 +86,7 @@ export const MainSalaryForm = () => {
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
       reportError(error instanceof Error ? error : new Error(String(error)), { context: 'MainSalaryForm' });
-      // Show error state here if needed
+      setServerError(error instanceof Error ? error.message : 'Gelir eklenirken bir hata olustu');
     } finally {
       setIsSubmitting(false);
     }
@@ -103,6 +106,13 @@ export const MainSalaryForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Server error banner */}
+      {serverError && (
+        <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3">
+          <p className="text-sm text-rose-400">{serverError}</p>
+        </div>
+      )}
+
       {/* Amount */}
       <Input
         label="Tutar"
@@ -110,7 +120,7 @@ export const MainSalaryForm = () => {
         placeholder="0.00"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        iconLeft="₺"
+        iconLeft={symbol}
         error={errors.amount}
         isRequired
         step="0.01"

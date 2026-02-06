@@ -7,7 +7,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Income, Expense, Goal, Category } from '@/types';
+import type { Income, Expense, Goal, Category, CurrencyCode } from '@/types';
 import { DEFAULT_CATEGORIES } from '@/constants/categories';
 
 /**
@@ -44,6 +44,10 @@ interface BudgetStoreState {
   getCategoryById: (id: string) => Category | undefined;
   getActiveCategories: () => Category[];
 
+  // ==================== CURRENCY STATE ====================
+  currency: CurrencyCode;
+  setCurrency: (currency: CurrencyCode) => void;
+
   // ==================== UTILITY ACTIONS ====================
   getBalance: () => number;
   getSavingsRate: () => number;
@@ -58,6 +62,7 @@ const initialState = {
   expenses: [],
   goals: [],
   categories: DEFAULT_CATEGORIES,
+  currency: 'TRY' as CurrencyCode,
 };
 
 /**
@@ -171,6 +176,10 @@ export const useBudgetStore = create<BudgetStoreState>()(
         const { categories } = get();
         return categories.filter((category) => category.isActive);
       },
+
+      // ==================== CURRENCY ACTIONS ====================
+      setCurrency: (currency) =>
+        set(() => ({ currency })),
 
       // ==================== UTILITY ACTIONS ====================
       getBalance: () => {

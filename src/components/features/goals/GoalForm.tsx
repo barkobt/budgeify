@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
-import { generateId, getCurrentISODate, getTodayDate } from '@/utils';
+import { generateId, getCurrentISODate, getTodayDate, getCurrencySymbol } from '@/utils';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { reportError } from '@/lib/error-reporting';
@@ -51,8 +51,9 @@ const GOAL_ICONS = [
 ];
 
 export const GoalForm: React.FC = () => {
-  const { addGoal } = useBudgetStore();
+  const { addGoal, currency } = useBudgetStore();
   const dataSync = useDataSyncOptional();
+  const symbol = getCurrencySymbol(currency);
 
   // Form state
   const [name, setName] = useState('');
@@ -69,6 +70,9 @@ export const GoalForm: React.FC = () => {
 
   // Loading state
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Server error state
+  const [serverError, setServerError] = useState<string | null>(null);
 
   /**
    * Form validation
@@ -118,6 +122,7 @@ export const GoalForm: React.FC = () => {
     }
 
     setIsSubmitting(true);
+    setServerError(null);
 
     try {
       const selectedIconData = GOAL_ICONS.find(i => i.id === selectedIcon);
@@ -158,7 +163,7 @@ export const GoalForm: React.FC = () => {
       setErrors({});
     } catch (error) {
       reportError(error instanceof Error ? error : new Error(String(error)), { context: 'GoalForm' });
-      // Show error state here if needed
+      setServerError(error instanceof Error ? error.message : 'Hedef eklenirken bir hata olustu');
     } finally {
       setIsSubmitting(false);
     }
@@ -190,6 +195,13 @@ export const GoalForm: React.FC = () => {
           </div>
         </div>
 
+        {/* Server error banner */}
+        {serverError && (
+          <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 mb-4">
+            <p className="text-sm text-rose-400">{serverError}</p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Goal Name */}
           <Input
@@ -211,7 +223,7 @@ export const GoalForm: React.FC = () => {
             value={targetAmount}
             onChange={(e) => setTargetAmount(e.target.value)}
             error={errors.targetAmount}
-            iconLeft="₺"
+            iconLeft={symbol}
             isRequired
             min={0}
             step={0.01}
@@ -225,7 +237,7 @@ export const GoalForm: React.FC = () => {
             value={currentAmount}
             onChange={(e) => setCurrentAmount(e.target.value)}
             error={errors.currentAmount}
-            iconLeft="₺"
+            iconLeft={symbol}
             min={0}
             step={0.01}
           />

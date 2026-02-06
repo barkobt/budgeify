@@ -2,19 +2,9 @@
 
 /**
  * Landing Page - Public Homepage with Motion Design
- *
- * 🎓 MENTOR NOTU - Scroll Animations:
- * -----------------------------------
- * "Scroll-triggered" animasyonlar kullanıcı deneyimini zenginleştirir.
- *
- * Neden önemli?
- * 1. Dikkat çeker - Hareket eden şeyler fark edilir
- * 2. Hikaye anlatır - Scroll = Journey
- * 3. Premium his verir - Statik = Ucuz, Animasyonlu = Premium
- *
- * Golden Rule: "If it moves, it should have a purpose"
  */
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
 import {
@@ -37,7 +27,79 @@ import {
   BarChart3,
   ArrowRight,
   CheckCircle2,
+  LayoutDashboard,
 } from 'lucide-react';
+
+/**
+ * LandingAuthNav — Auth-aware nav buttons
+ * Signed-in → "Dashboard'a Git"
+ * Signed-out → "Giriş Yap" + "Ücretsiz Başla"
+ */
+function LandingAuthNav() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [authHook, setAuthHook] = useState<(() => { isSignedIn?: boolean }) | null>(null);
+  const [clerkFailed, setClerkFailed] = useState(false);
+
+  useEffect(() => {
+    import('@clerk/nextjs')
+      .then((clerk) => setAuthHook(() => clerk.useAuth))
+      .catch(() => setClerkFailed(true));
+  }, []);
+
+  if (clerkFailed) {
+    return <GuestNavButtons />;
+  }
+
+  if (!authHook) {
+    return <GuestNavButtons />;
+  }
+
+  return <AuthAwareButtons useAuth={authHook} />;
+}
+
+function AuthAwareButtons({ useAuth }: { useAuth: () => { isSignedIn?: boolean } }) {
+  let isSignedIn: boolean | undefined;
+  try {
+    const auth = useAuth();
+    isSignedIn = auth.isSignedIn;
+  } catch {
+    isSignedIn = undefined;
+  }
+
+  if (isSignedIn === true) {
+    return (
+      <Link
+        href="/dashboard"
+        className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white ai-gradient rounded-lg
+                   shadow-lg shadow-accent-500/20"
+      >
+        <LayoutDashboard size={16} />
+        Dashboard&apos;a Git
+      </Link>
+    );
+  }
+
+  return <GuestNavButtons />;
+}
+
+function GuestNavButtons() {
+  return (
+    <>
+      <Link
+        href="/sign-in"
+        className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+      >
+        Giriş Yap
+      </Link>
+      <GlowButton
+        className="px-4 py-2 text-sm font-semibold text-white ai-gradient rounded-lg
+                 shadow-lg shadow-accent-500/20"
+      >
+        <Link href="/sign-up">Ücretsiz Başla</Link>
+      </GlowButton>
+    </>
+  );
+}
 
 export default function LandingPage() {
   return (
@@ -53,21 +115,10 @@ export default function LandingPage() {
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Logo size="sm" showText={true} />
+            <Logo size="sm" showText={true} href="/dashboard" />
 
             <div className="flex items-center gap-4">
-              <Link
-                href="/sign-in"
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
-              >
-                Giriş Yap
-              </Link>
-              <GlowButton
-                className="px-4 py-2 text-sm font-semibold text-white ai-gradient rounded-lg
-                         shadow-lg shadow-accent-500/20"
-              >
-                <Link href="/sign-up">Ücretsiz Başla</Link>
-              </GlowButton>
+              <LandingAuthNav />
             </div>
           </div>
         </div>
@@ -195,7 +246,6 @@ export default function LandingPage() {
           ======================================== */}
       <FadeInSection className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Section header */}
           <FadeInDiv className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Neden Budgeify?
@@ -205,90 +255,25 @@ export default function LandingPage() {
             </p>
           </FadeInDiv>
 
-          {/* Feature grid with stagger animation */}
           <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Feature 1 */}
-            <StaggerItem>
-              <HoverCard className="glass-card rounded-2xl p-6 h-full">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent-500/20 mb-4">
-                  <Sparkles size={24} className="text-accent-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Oracle AI Asistan</h3>
-                <p className="text-slate-400">
-                  Yapay zeka destekli asistanınız, harcama alışkanlıklarınızı analiz eder ve
-                  kişiselleştirilmiş öneriler sunar.
-                </p>
-              </HoverCard>
-            </StaggerItem>
-
-            {/* Feature 2 */}
-            <StaggerItem>
-              <HoverCard className="glass-card rounded-2xl p-6 h-full">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/20 mb-4">
-                  <TrendingUp size={24} className="text-emerald-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Akıllı Takip</h3>
-                <p className="text-slate-400">
-                  Gelir ve giderlerinizi kategorilere göre takip edin, harcama trendlerinizi
-                  görselleştirin.
-                </p>
-              </HoverCard>
-            </StaggerItem>
-
-            {/* Feature 3 */}
-            <StaggerItem>
-              <HoverCard className="glass-card rounded-2xl p-6 h-full">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-violet-500/20 mb-4">
-                  <Target size={24} className="text-violet-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Hedef Belirleme</h3>
-                <p className="text-slate-400">
-                  Tasarruf hedefleri belirleyin ve ilerlemenizi görsel olarak takip edin.
-                  Motivasyonunuzu yüksek tutun.
-                </p>
-              </HoverCard>
-            </StaggerItem>
-
-            {/* Feature 4 */}
-            <StaggerItem>
-              <HoverCard className="glass-card rounded-2xl p-6 h-full">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-amber-500/20 mb-4">
-                  <BarChart3 size={24} className="text-amber-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Detaylı Analiz</h3>
-                <p className="text-slate-400">
-                  Interaktif grafikler ve raporlarla finansal durumunuzu derinlemesine
-                  analiz edin.
-                </p>
-              </HoverCard>
-            </StaggerItem>
-
-            {/* Feature 5 */}
-            <StaggerItem>
-              <HoverCard className="glass-card rounded-2xl p-6 h-full">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-rose-500/20 mb-4">
-                  <Shield size={24} className="text-rose-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Güvenli Veri</h3>
-                <p className="text-slate-400">
-                  Verileriniz şifreli olarak saklanır. Gizliliğiniz bizim önceliğimizdir.
-                </p>
-              </HoverCard>
-            </StaggerItem>
-
-            {/* Feature 6 */}
-            <StaggerItem>
-              <HoverCard className="glass-card rounded-2xl p-6 h-full">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-cyan-500/20 mb-4">
-                  <Zap size={24} className="text-cyan-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Anlık Senkron</h3>
-                <p className="text-slate-400">
-                  Tüm cihazlarınızda anlık senkronizasyon. Nerede olursanız olun,
-                  finanslarınız yanınızda.
-                </p>
-              </HoverCard>
-            </StaggerItem>
+            {[
+              { icon: Sparkles, color: 'accent', title: 'Oracle AI Asistan', desc: 'Yapay zeka destekli asistanınız, harcama alışkanlıklarınızı analiz eder ve kişiselleştirilmiş öneriler sunar.' },
+              { icon: TrendingUp, color: 'emerald', title: 'Akıllı Takip', desc: 'Gelir ve giderlerinizi kategorilere göre takip edin, harcama trendlerinizi görselleştirin.' },
+              { icon: Target, color: 'violet', title: 'Hedef Belirleme', desc: 'Tasarruf hedefleri belirleyin ve ilerlemenizi görsel olarak takip edin. Motivasyonunuzu yüksek tutun.' },
+              { icon: BarChart3, color: 'amber', title: 'Detaylı Analiz', desc: 'Interaktif grafikler ve raporlarla finansal durumunuzu derinlemesine analiz edin.' },
+              { icon: Shield, color: 'rose', title: 'Güvenli Veri', desc: 'Verileriniz şifreli olarak saklanır. Gizliliğiniz bizim önceliğimizdir.' },
+              { icon: Zap, color: 'cyan', title: 'Anlık Senkron', desc: 'Tüm cihazlarınızda anlık senkronizasyon. Nerede olursanız olun, finanslarınız yanınızda.' },
+            ].map((feature) => (
+              <StaggerItem key={feature.title}>
+                <HoverCard className="glass-card rounded-2xl p-6 h-full">
+                  <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-${feature.color}-500/20 mb-4`}>
+                    <feature.icon size={24} className={`text-${feature.color}-400`} />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                  <p className="text-slate-400">{feature.desc}</p>
+                </HoverCard>
+              </StaggerItem>
+            ))}
           </StaggerContainer>
         </div>
       </FadeInSection>
@@ -334,7 +319,6 @@ export default function LandingPage() {
             whileHover={{ scale: 1.01 }}
             transition={{ type: 'spring', stiffness: 200 }}
           >
-            {/* Animated background glow */}
             <motion.div
               className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-accent-500/30 rounded-full blur-[80px] pointer-events-none"
               animate={{
@@ -390,7 +374,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <Logo size="sm" showText={true} />
+              <Logo size="sm" showText={true} href="/dashboard" />
             </div>
 
             <div className="flex items-center gap-6 text-sm text-slate-500">

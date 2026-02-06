@@ -95,6 +95,11 @@ export interface CategorySummary {
 /**
  * Zaman aralığı filtresi
  */
+/**
+ * Para birimi kodu
+ */
+export type CurrencyCode = 'TRY' | 'USD' | 'EUR';
+
 export type DateRange = 'week' | 'month' | 'quarter' | 'year' | 'custom';
 
 export interface DateFilter {

@@ -1,16 +1,33 @@
 // Budgeify - Utility Functions
 
+import type { CurrencyCode } from '@/types';
+
+const CURRENCY_CONFIG: Record<CurrencyCode, { locale: string; symbol: string }> = {
+  TRY: { locale: 'tr-TR', symbol: '₺' },
+  USD: { locale: 'en-US', symbol: '$' },
+  EUR: { locale: 'de-DE', symbol: '€' },
+};
+
 /**
- * Para birimini Türk Lirası formatında gösterir
+ * Para birimini formatlar — store'daki currency state'ine göre dinamik
  * @example formatCurrency(1234.56) => "₺1.234,56"
+ * @example formatCurrency(1234.56, 'USD') => "$1,234.56"
  */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
+export function formatCurrency(amount: number, currency: CurrencyCode = 'TRY'): string {
+  const config = CURRENCY_CONFIG[currency] || CURRENCY_CONFIG.TRY;
+  return new Intl.NumberFormat(config.locale, {
     style: 'currency',
-    currency: 'TRY',
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+/**
+ * Para birimi sembolünü döndürür
+ */
+export function getCurrencySymbol(currency: CurrencyCode = 'TRY'): string {
+  return CURRENCY_CONFIG[currency]?.symbol || '₺';
 }
 
 /**

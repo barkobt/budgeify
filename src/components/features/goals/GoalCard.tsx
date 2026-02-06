@@ -15,7 +15,7 @@ interface GoalCardProps {
  * GoalCard — HubX-grade goal card (dark theme)
  */
 export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
-  const { deleteGoal } = useBudgetStore();
+  const { deleteGoal, currency } = useBudgetStore();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const progress = Math.min(
@@ -86,7 +86,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
           <div>
             <h3 className="text-lg font-semibold text-white">{goal.name}</h3>
             <p className="text-sm text-slate-400 tabular-nums">
-              {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
+              {formatCurrency(goal.currentAmount, currency)} / {formatCurrency(goal.targetAmount, currency)}
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
               <span className="text-xs font-medium">Kalan</span>
             </div>
             <p className="text-sm font-bold text-slate-200 tabular-nums">
-              {formatCurrency(remaining)}
+              {formatCurrency(remaining, currency)}
             </p>
           </div>
           {goal.targetDate && (
@@ -155,7 +155,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
                   <span className="text-xs font-medium">Günlük</span>
                 </div>
                 <p className="text-sm font-bold text-slate-200 tabular-nums">
-                  {formatCurrency(dailySavingsNeeded)}
+                  {formatCurrency(dailySavingsNeeded, currency)}
                 </p>
               </div>
             </>

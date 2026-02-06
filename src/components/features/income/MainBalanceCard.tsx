@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { getCurrencySymbol } from '@/utils';
 import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 
@@ -11,13 +12,14 @@ import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
  * Pure dark theme, glass-card aesthetic, tabular-nums currency.
  */
 export const MainBalanceCard = () => {
-  const { getTotalIncome, getTotalExpenses, getBalance, getSavingsRate } = useBudgetStore();
+  const { getTotalIncome, getTotalExpenses, getBalance, getSavingsRate, currency } = useBudgetStore();
 
   const totalIncome = getTotalIncome();
   const totalExpenses = getTotalExpenses();
   const balance = getBalance();
   const savingsRate = getSavingsRate();
   const isPositive = balance >= 0;
+  const symbol = getCurrencySymbol(currency);
 
   return (
     <section className="rounded-2xl glass-card overflow-hidden transition-all duration-300">
@@ -60,7 +62,7 @@ export const MainBalanceCard = () => {
           }`}>
             <AnimatedCounter
               value={balance}
-              prefix="₺"
+              prefix={symbol}
               duration={1400}
               decimals={2}
             />
@@ -78,7 +80,7 @@ export const MainBalanceCard = () => {
             <div className="text-xl font-bold text-emerald-400 tabular-nums">
               <AnimatedCounter
                 value={totalIncome}
-                prefix="₺"
+                prefix={symbol}
                 duration={1200}
                 decimals={2}
               />
@@ -94,7 +96,7 @@ export const MainBalanceCard = () => {
             <div className="text-xl font-bold text-rose-400 tabular-nums">
               <AnimatedCounter
                 value={totalExpenses}
-                prefix="₺"
+                prefix={symbol}
                 duration={1200}
                 decimals={2}
               />

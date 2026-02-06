@@ -14,7 +14,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
  * Uses Lucide icons for all categories.
  */
 export const ExpenseList = () => {
-  const { expenses, deleteExpense, getCategoryById } = useBudgetStore();
+  const { expenses, deleteExpense, getCategoryById, currency } = useBudgetStore();
 
   // Group expenses by date
   const groupedExpenses = expenses.reduce((acc, expense) => {
@@ -83,7 +83,7 @@ export const ExpenseList = () => {
                     {formatDate(date)}
                   </h3>
                   <span className="text-sm font-medium text-rose-400 tabular-nums">
-                    {formatCurrency(dayTotal)}
+                    {formatCurrency(dayTotal, currency)}
                   </span>
                 </div>
 
@@ -128,7 +128,7 @@ export const ExpenseList = () => {
 
                         {/* Amount */}
                         <span className="text-sm font-semibold text-white tabular-nums">
-                          {formatCurrency(expense.amount)}
+                          {formatCurrency(expense.amount, currency)}
                         </span>
 
                         {/* Delete Button */}

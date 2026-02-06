@@ -23,6 +23,8 @@ import {
   viewportConfig,
   fadeInUp,
 } from '@/lib/motion';
+import { getCurrencySymbol } from '@/utils';
+import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
 import {
   Plus,
   TrendingUp,
@@ -81,21 +83,47 @@ const OracleInsightCard = dynamic(
 
 type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
 type DrawerType = 'income' | 'expense' | null;
+type TransactionView = 'expenses' | 'incomes';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [openDrawer, setOpenDrawer] = useState<DrawerType>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [txView, setTxView] = useState<TransactionView>('expenses');
 
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Live store data (replaces hardcoded values)
+  // Live store data
   const expenses = useBudgetStore((s) => s.expenses);
+  const incomes = useBudgetStore((s) => s.incomes);
+  const currency = useBudgetStore((s) => s.currency);
   const getSavingsRate = useBudgetStore((s) => s.getSavingsRate);
   const getActiveGoals = useBudgetStore((s) => s.getActiveGoals);
+  const symbol = getCurrencySymbol(currency);
+
+  // OracleHero module click handler
+  const handleModuleClick = (moduleId: WalletModuleId) => {
+    switch (moduleId) {
+      case 'income':
+        setOpenDrawer('income');
+        break;
+      case 'expense':
+        setOpenDrawer('expense');
+        break;
+      case 'goals':
+        setActiveTab('goals');
+        break;
+      case 'analytics':
+        setActiveTab('analytics');
+        break;
+      case 'insights':
+        // Scroll to Oracle insight card
+        break;
+    }
+  };
 
   const transactionCount = expenses.length;
   const goalCount = getActiveGoals().length;
@@ -118,9 +146,9 @@ export default function DashboardPage() {
               initial={isMounted ? 'hidden' : false}
               animate="visible"
             >
-              {/* Oracle Core Hero */}
+              {/* Oracle Core Hero — clickable modules */}
               <motion.div variants={staggerItem}>
-                <OracleHero />
+                <OracleHero onModuleClick={handleModuleClick} />
               </motion.div>
 
               {/* Oracle AI Insight */}
@@ -258,7 +286,7 @@ export default function DashboardPage() {
           )}
 
           {/* ========================================
-              TRANSACTIONS TAB
+              TRANSACTIONS TAB — Integrated Toggle Bar
               ======================================== */}
           {activeTab === 'transactions' && (
             <motion.div
@@ -267,7 +295,60 @@ export default function DashboardPage() {
               initial={isMounted ? 'hidden' : false}
               animate="visible"
             >
-              <ExpenseList />
+              {/* Toggle: Giderler / Gelirler */}
+              <div className="flex rounded-xl bg-white/5 border border-white/10 p-1">
+                <button
+                  onClick={() => setTxView('expenses')}
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-300 ${
+                    txView === 'expenses'
+                      ? 'bg-rose-500/15 text-rose-400 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  <ArrowDownRight size={16} />
+                  Giderler
+                </button>
+                <button
+                  onClick={() => setTxView('incomes')}
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-300 ${
+                    txView === 'incomes'
+                      ? 'bg-emerald-500/15 text-emerald-400 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  <ArrowUpRight size={16} />
+                  Gelirler
+                </button>
+              </div>
+
+              {txView === 'expenses' ? (
+                <ExpenseList />
+              ) : (
+                /* Income list — inline minimal */
+                <div className="rounded-2xl glass-card p-5 space-y-3">
+                  <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                    <TrendingUp size={16} className="text-emerald-400" />
+                    Gelirlerim ({incomes.length})
+                  </h3>
+                  {incomes.length === 0 ? (
+                    <p className="text-xs text-slate-500 py-6 text-center">Henuz gelir eklenmemis</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {incomes.map((inc) => (
+                        <div key={inc.id} className="flex items-center justify-between rounded-xl bg-white/5 p-3">
+                          <div>
+                            <p className="text-sm font-medium text-slate-200">{inc.description || inc.category}</p>
+                            <p className="text-xs text-slate-500">{inc.isRecurring ? 'Duzenli' : 'Tek seferlik'}</p>
+                          </div>
+                          <span className="text-sm font-bold text-emerald-400 tabular-nums">
+                            +{symbol}{inc.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
           )}
 

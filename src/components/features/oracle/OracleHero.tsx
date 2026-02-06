@@ -4,8 +4,8 @@
  * WalletCore Hero — HubX-grade fintech hero
  *
  * Central glowing wallet orb with 5 surrounding module chips.
- * Hover: module glows and circuit line intensifies.
- * Scroll-driven reveal with Framer Motion.
+ * Click: module triggers action (open drawer / switch tab).
+ * Scroll: modules compress toward core with layoutId-like smooth transition.
  */
 
 import { useRef, useState } from 'react';
@@ -19,13 +19,19 @@ import {
   Lightbulb,
 } from 'lucide-react';
 
+export type WalletModuleId = 'income' | 'expense' | 'goals' | 'analytics' | 'insights';
+
 const MODULES = [
-  { id: 'income', label: 'Gelir', Icon: TrendingUp, angle: -72, color: '#10B981' },
-  { id: 'expense', label: 'Gider', Icon: TrendingDown, angle: 0, color: '#F43F5E' },
-  { id: 'goals', label: 'Hedefler', Icon: Target, angle: 72, color: '#8B5CF6' },
-  { id: 'analytics', label: 'Analiz', Icon: BarChart3, angle: 144, color: '#3B82F6' },
-  { id: 'insights', label: 'Icerik', Icon: Lightbulb, angle: -144, color: '#F59E0B' },
-] as const;
+  { id: 'income' as WalletModuleId, label: 'Gelir', Icon: TrendingUp, angle: -72, color: '#10B981' },
+  { id: 'expense' as WalletModuleId, label: 'Gider', Icon: TrendingDown, angle: 0, color: '#F43F5E' },
+  { id: 'goals' as WalletModuleId, label: 'Hedefler', Icon: Target, angle: 72, color: '#8B5CF6' },
+  { id: 'analytics' as WalletModuleId, label: 'Analiz', Icon: BarChart3, angle: 144, color: '#3B82F6' },
+  { id: 'insights' as WalletModuleId, label: 'Icerik', Icon: Lightbulb, angle: -144, color: '#F59E0B' },
+];
+
+interface OracleHeroProps {
+  onModuleClick?: (moduleId: WalletModuleId) => void;
+}
 
 // Position modules in a semicircle arc above the core
 function getModulePosition(angle: number, radius: number) {
@@ -36,7 +42,7 @@ function getModulePosition(angle: number, radius: number) {
   };
 }
 
-export function OracleHero() {
+export function OracleHero({ onModuleClick }: OracleHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
@@ -107,7 +113,7 @@ export function OracleHero() {
             />
           </svg>
 
-          {/* Module Chips */}
+          {/* Module Chips — clickable, scroll-compressing */}
           {MODULES.map((mod, i) => {
             const pos = getModulePosition(mod.angle, RADIUS);
             const isHovered = hoveredId === mod.id;
@@ -125,9 +131,10 @@ export function OracleHero() {
                 onMouseEnter={() => setHoveredId(mod.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                <motion.div
-                  className="flex items-center gap-2 rounded-2xl px-3 py-2 cursor-default select-none
-                             border transition-colors duration-300"
+                <motion.button
+                  className="flex items-center gap-2 rounded-2xl px-3 py-2 select-none
+                             border transition-colors duration-300 cursor-pointer"
+                  onClick={() => onModuleClick?.(mod.id)}
                   animate={{
                     borderColor: isHovered ? `${mod.color}40` : 'rgba(255,255,255,0.05)',
                     backgroundColor: isHovered ? `${mod.color}08` : 'rgba(24,24,27,0.5)',
@@ -137,6 +144,7 @@ export function OracleHero() {
                     x: isHovered ? (pos.x > 0 ? -3 : pos.x < 0 ? 3 : 0) : 0,
                     y: isHovered ? (pos.y > 0 ? -3 : pos.y < 0 ? 3 : 0) : 0,
                   }}
+                  whileTap={{ scale: 0.92 }}
                   transition={{ duration: 0.25 }}
                 >
                   <mod.Icon
@@ -151,7 +159,7 @@ export function OracleHero() {
                   >
                     {mod.label}
                   </span>
-                </motion.div>
+                </motion.button>
               </motion.div>
             );
           })}
@@ -230,7 +238,7 @@ export function OracleHero() {
           Wallet <span className="text-gradient">Core</span>
         </h2>
         <p className="mt-1 text-center text-xs text-slate-500 max-w-[260px] leading-relaxed">
-          Tum finansal verileriniz tek merkezde. Moduller arasinda gezinerek durumunuzu gorun.
+          Modullere tiklayarak hizli islem yapin.
         </p>
       </div>
     </div>
