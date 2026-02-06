@@ -36,6 +36,7 @@ interface BudgetStoreState {
   addGoal: (goal: Goal) => void;
   updateGoal: (id: string, updates: Partial<Goal>) => void;
   deleteGoal: (id: string) => void;
+  addToGoal: (id: string, amount: number) => void;
   getActiveGoals: () => Goal[];
   getCompletedGoals: () => Goal[];
 
@@ -154,6 +155,15 @@ export const useBudgetStore = create<BudgetStoreState>()(
       deleteGoal: (id) =>
         set((state) => ({
           goals: state.goals.filter((goal) => goal.id !== id),
+        })),
+
+      addToGoal: (id, amount) =>
+        set((state) => ({
+          goals: state.goals.map((goal) =>
+            goal.id === id
+              ? { ...goal, currentAmount: goal.currentAmount + amount }
+              : goal
+          ),
         })),
 
       getActiveGoals: () => {

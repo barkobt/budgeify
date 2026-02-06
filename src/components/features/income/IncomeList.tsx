@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { formatCurrency, formatDate, getCurrencySymbol } from '@/utils';
-import { Edit2, Trash2, X, Check } from 'lucide-react';
-import type { Income } from '@/types';
+import { Edit2, Trash2, X } from 'lucide-react';
+import type { Income, CurrencyCode } from '@/types';
 import { INCOME_ICON_MAP } from '@/lib/category-icons';
 
 interface IncomeListProps {
@@ -17,7 +17,7 @@ interface IncomeListProps {
  */
 const IncomeListItem: React.FC<{
   income: Income;
-  currency: string;
+  currency: CurrencyCode;
   onEdit: (income: Income) => void;
   onDelete: (incomeId: string) => void;
 }> = ({ income, currency, onEdit, onDelete }) => {
@@ -125,7 +125,7 @@ export const IncomeList: React.FC<IncomeListProps> = ({ onEditIncome }) => {
     try {
       // Use server persistence if available, otherwise fall back to local storage
       if (dataSync) {
-        await dataSync.deleteIncome(incomeId);
+        await dataSync.removeIncome(incomeId);
       } else {
         // Demo mode: Local storage only
         deleteIncome(incomeId);

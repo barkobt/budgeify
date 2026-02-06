@@ -23,7 +23,6 @@ import {
   viewportConfig,
   fadeInUp,
 } from '@/lib/motion';
-import { getCurrencySymbol } from '@/utils';
 import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
 import type { Income } from '@/types';
 import {
@@ -48,6 +47,10 @@ const MainSalaryForm = dynamic(
 const ExpenseForm = dynamic(
   () => import('@/components/features/expenses/ExpenseForm').then((mod) => ({ default: mod.ExpenseForm })),
   { ssr: false }
+);
+const ExpenseList = dynamic(
+  () => import('@/components/features/expenses/ExpenseList').then((mod) => ({ default: mod.ExpenseList })),
+  { ssr: false, loading: () => <SkeletonList count={5} /> }
 );
 const IncomeList = dynamic(
   () => import('@/components/features/income/IncomeList').then((mod) => ({ default: mod.IncomeList })),
@@ -100,11 +103,8 @@ export default function DashboardPage() {
 
   // Live store data
   const expenses = useBudgetStore((s) => s.expenses);
-  const incomes = useBudgetStore((s) => s.incomes);
-  const currency = useBudgetStore((s) => s.currency);
   const getSavingsRate = useBudgetStore((s) => s.getSavingsRate);
   const getActiveGoals = useBudgetStore((s) => s.getActiveGoals);
-  const symbol = getCurrencySymbol(currency);
 
   // OracleHero module click handler
   const handleModuleClick = (moduleId: WalletModuleId) => {

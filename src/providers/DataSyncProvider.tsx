@@ -30,6 +30,7 @@ import {
   deleteIncome as serverDeleteIncome,
   deleteExpense as serverDeleteExpense,
   deleteGoal as serverDeleteGoal,
+  addToGoal as serverAddToGoal,
 } from '@/actions';
 
 interface DataSyncContextType {
@@ -47,6 +48,8 @@ interface DataSyncContextType {
   removeIncome: (id: string) => Promise<void>;
   removeExpense: (id: string) => Promise<void>;
   removeGoal: (id: string) => Promise<void>;
+  deleteGoal: (id: string) => Promise<void>;
+  addToGoal: (id: string, amount: number) => Promise<void>;
 }
 
 const DataSyncContext = createContext<DataSyncContextType | null>(null);
@@ -377,7 +380,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
   /**
    * Remove Goal — pending deletes + ActionResult (no double-throw)
    */
-  const removeGoal = useCallback(async (id: string) => {
+  const deleteGoal = useCallback(async (id: string) => {
     const currentGoals = useBudgetStore.getState().goals;
     const goalToDelete = currentGoals.find((g) => g.id === id);
 
@@ -396,6 +399,29 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     pendingDeletesRef.current.delete(id);
   }, [store]);
 
+  const removeGoal = deleteGoal;
+
+  const addToGoal = useCallback(async (id: string, amount: number) => {
+    const currentGoals = useBudgetStore.getState().goals;
+    const goalToUpdate = currentGoals.find((g) => g.id === id);
+    
+    if (!goalToUpdate) return;
+
+    // Optimistic update
+    const previousAmount = goalToUpdate.currentAmount;
+    store.addToGoal(id, amount);
+
+    if (!id.startsWith('temp_')) {
+      const result = await serverAddToGoal(id, amount);
+      if (!result.success) {
+        // Rollback on failure
+        store.updateGoal(id, { currentAmount: previousAmount });
+        setLastError(result.error);
+        return;
+      }
+    }
+  }, [store]);
+
   const value: DataSyncContextType = {
     isLoading,
     isSynced,
@@ -411,6 +437,8 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     removeIncome,
     removeExpense,
     removeGoal,
+    deleteGoal,
+    addToGoal,
   };
 
   return (

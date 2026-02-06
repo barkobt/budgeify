@@ -205,8 +205,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
           <div
             className={`h-full rounded-full transition-all duration-700 ${
               isCompleted
-                ? 'bg-gradient-to-r from-emerald-400 to-emerald-500'
-                : 'bg-gradient-to-r from-accent-500 to-accent-700'
+                ? 'bg-linear-to-r from-emerald-400 to-emerald-500'
+                : 'bg-linear-to-r from-accent-500 to-accent-700'
             }`}
             style={{ width: `${progress}%` }}
           />
