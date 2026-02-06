@@ -669,6 +669,7 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 ```
 "Kart tasarımını güncelle"        → skills/ui + skills/ui/styles.md
 "Oracle Core tasarla"             → skills/ui/oracle.md
+"Dashboard layout değiştir"       → skills/ui/bento.md
 "Gelir ekleme endpoint'i yaz"     → skills/api
 "Clerk auth ayarla"               → skills/guard
 "Drizzle schema güncelle"         → skills/data
@@ -689,6 +690,8 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | 2026-02-06 | v4.0 M1: Skills Overhaul | Completed | styles.md v4.0 (Depth Layer), oracle.md created, api/README v4.0, CONVENTIONS v4.0 |
 | 2026-02-06 | v4.0 M2: Infrastructure Repair | Completed | income.ts + expense.ts → ActionResult+Zod, goal.ts UUID fix, DataSyncProvider unified + updateIncome/updateExpense |
 | 2026-02-06 | v4.0 M4: Depth Layer System | Completed | globals.css → v4.0 (atmospheric gradient body, noise texture body::after, ambient orbs, glassmorphism blur(12px)+inner light, indigo #4F46E5 palette), layout.tsx ambient layer |
+| 2026-02-06 | v4.0 M5: Oracle Chip Core | Completed | OracleHero/OracleModuleChip rewritten — 3-speed rings, central die, 3-state machine, layoutId assembly, circuit-trace, silicon-glow |
+| 2026-02-06 | v4.0 M8: Bento Grid v2.0 | Completed | skills/ui/bento.md spec, BentoGrid+BentoCard components, globals.css bento system, dashboard refactored to spatial grid layout |
 
 ---
 

@@ -456,7 +456,32 @@ xl     : 1280px (desktops)
 
 ---
 
+## 11. Bento Grid Layout (v4.0)
+
+> Full spec → `skills/ui/bento.md`
+
+### Summary
+```
+Grid: 2-column CSS Grid | gap: 12px (mobile), 16px (tablet+)
+Sizes: 1×1, 2×1, 1×2, 2×2, full
+Card: border-radius 20px, glass bg rgba(255,255,255,0.04), blur(12px), inner light
+Animation: Framer Motion stagger (0.06s children delay) + spring entry (260/24/0.8)
+Components: BentoGrid (container), BentoCard (cell with size/pressable/glow/bare variants)
+```
+
+### Dashboard Layout
+```
+Oracle Hero  → full   (no card chrome)
+Balance      → 2×2    (bare — child has own glass-card)
+Stats        → 1×1    (pressable — transaction count, goal count)
+Actions      → 1×1    (pressable — add income, add expense)
+AI Insight   → 2×1    (bare — child has own glass-card)
+Savings      → 2×1    (bare — ai-gradient premium card)
+```
+
+---
+
 *Skill Module: UI Styles — Sovereign v4.0*
 *Stack: Tailwind CSS 4 | Framer Motion | Lucide React | Inter Variable Font*
 *Foundation: Depth Black (atmospheric gradient) | Indigo Glow #4F46E5 | Glassmorphism blur(12px) + inner light*
-*New in v4.0: Depth Layer System, VisionOS inner light, ambient orbs, noise texture*
+*New in v4.0: Depth Layer System, VisionOS inner light, ambient orbs, noise texture, Bento Grid layout*
