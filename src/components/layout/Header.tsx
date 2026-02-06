@@ -129,9 +129,22 @@ function AuthButtons({
         )}
         <UserButton
           appearance={{
+            variables: {
+              colorPrimary: '#3B82F6',
+              colorBackground: '#0A0A0F',
+              colorText: '#E2E8F0',
+              colorTextSecondary: '#94A3B8',
+              borderRadius: '0.75rem',
+            },
             elements: {
               avatarBox: 'w-9 h-9 ring-2 ring-accent-500/30',
-            }
+              userButtonPopoverCard: '!bg-zinc-900 border border-white/10 shadow-2xl',
+              userButtonPopoverActions: '!bg-transparent',
+              userButtonPopoverActionButton: 'text-slate-200 hover:!bg-white/10',
+              userButtonPopoverActionButtonText: '!text-slate-200',
+              userButtonPopoverActionButtonIcon: '!text-slate-400',
+              userButtonPopoverFooter: 'hidden',
+            },
           }}
         />
       </>
