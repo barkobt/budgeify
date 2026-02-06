@@ -74,6 +74,10 @@ const OracleHero = dynamic(
   () => import('@/components/features/oracle/OracleHero').then((mod) => ({ default: mod.OracleHero })),
   { ssr: false }
 );
+const OracleInsightCard = dynamic(
+  () => import('@/components/features/oracle/OracleInsightCard').then((mod) => ({ default: mod.OracleInsightCard })),
+  { ssr: false }
+);
 
 type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
 type DrawerType = 'income' | 'expense' | null;
@@ -117,6 +121,11 @@ export default function DashboardPage() {
               {/* Oracle Core Hero */}
               <motion.div variants={staggerItem}>
                 <OracleHero />
+              </motion.div>
+
+              {/* Oracle AI Insight */}
+              <motion.div variants={staggerItem}>
+                <OracleInsightCard />
               </motion.div>
 
               {/* Hero Balance Card */}
