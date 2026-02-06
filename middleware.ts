@@ -2,7 +2,7 @@
  * Budgeify — Authentication Middleware
  *
  * Crash-proof: skips Clerk auth when env keys are missing.
- * This allows local dev and Vercel preview builds to work without secrets.
+ * Explicit exclusion of all static assets, icons, and public files.
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
@@ -53,7 +53,6 @@ async function handleWithClerk(request: NextRequest) {
 
 export default async function middleware(request: NextRequest) {
   if (!clerkEnabled) {
-    // No Clerk keys — allow all routes (demo mode)
     return NextResponse.next();
   }
 
@@ -62,7 +61,15 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    '/(api|trpc)(.*)',
+    /*
+     * Match all paths EXCEPT:
+     * - _next/static (static files)
+     * - _next/image (image optimization)
+     * - favicon.ico, favicon-*.png
+     * - icon.svg, icon-*.png, apple-icon-*.png
+     * - manifest.json, robots.txt, sitemap.xml
+     * - Any file with a common static extension
+     */
+    '/((?!_next/static|_next/image|favicon\\.ico|favicon-.*\\.png|icon-.*\\.png|icon\\.svg|apple-icon-.*\\.png|manifest\\.json|robots\\.txt|sitemap\\.xml).*)',
   ],
 };

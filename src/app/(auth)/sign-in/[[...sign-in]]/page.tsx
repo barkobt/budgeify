@@ -3,17 +3,89 @@
 /**
  * Sign In Page - Dark Theme Edition
  *
- * 🎓 MENTOR NOTU:
- * Auth sayfaları, uygulamanın "kapısı"dır.
- * İlk izlenim burada oluşur - premium olmalı.
+ * Crash-proof: renders fallback if Clerk is not available.
  */
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { SignIn } from '@clerk/nextjs';
 import { Logo } from '@/components/ui/Logo';
 import { FloatingElement } from '@/components/ui/MotionElements';
 import { ArrowLeft } from 'lucide-react';
+
+const clerkAppearance = {
+  elements: {
+    rootBox: 'w-full',
+    card: 'glass-card rounded-2xl border-0 shadow-2xl shadow-black/30 !bg-white/[0.03]',
+    headerTitle: 'text-white text-xl font-semibold',
+    headerSubtitle: 'text-slate-400',
+    socialButtonsBlockButton:
+      'glass-subtle hover:!bg-white/10 text-white border-white/10 rounded-xl transition-all duration-300',
+    socialButtonsBlockButtonText: 'font-medium text-white',
+    dividerLine: 'bg-white/10',
+    dividerText: 'text-slate-500',
+    formFieldLabel: 'text-slate-300 font-medium',
+    formFieldInput:
+      '!bg-white/5 border-white/10 text-white rounded-xl focus:border-accent-500 focus:ring-accent-500/20 placeholder:text-slate-500',
+    formFieldInputShowPasswordButton: 'text-slate-400 hover:text-white',
+    formButtonPrimary:
+      'ai-gradient hover:opacity-90 rounded-xl font-semibold h-12 text-base shadow-lg shadow-accent-500/20',
+    footerActionLink: 'text-accent-400 hover:text-accent-300',
+    footer: 'hidden',
+    identityPreviewEditButton: 'text-accent-400 hover:text-accent-300',
+    formFieldAction: 'text-accent-400 hover:text-accent-300',
+  },
+  variables: {
+    colorPrimary: '#3B82F6',
+    colorBackground: 'transparent',
+    colorText: '#E2E8F0',
+    colorTextSecondary: '#94A3B8',
+    borderRadius: '1rem',
+  },
+};
+
+function ClerkSignInLoader() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [SignInComponent, setSignInComponent] = useState<React.ComponentType<any> | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    import('@clerk/nextjs')
+      .then((mod) => {
+        setSignInComponent(() => mod.SignIn);
+      })
+      .catch(() => {
+        setFailed(true);
+      });
+  }, []);
+
+  if (failed) {
+    return (
+      <div className="glass-card rounded-2xl p-8 text-center">
+        <p className="text-white font-semibold mb-2">Giris yapilamiyor</p>
+        <p className="text-slate-400 text-sm mb-4">
+          Kimlik dogrulama servisi su an kullanilabilir degil.
+        </p>
+        <Link
+          href="/"
+          className="text-accent-400 hover:text-accent-300 text-sm font-medium"
+        >
+          Ana sayfaya don
+        </Link>
+      </div>
+    );
+  }
+
+  if (!SignInComponent) {
+    return (
+      <div className="glass-card rounded-2xl p-8 flex items-center justify-center">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-400 border-t-transparent" />
+      </div>
+    );
+  }
+
+  return <SignInComponent appearance={clerkAppearance} />;
+}
 
 export default function SignInPage() {
   return (
@@ -66,38 +138,7 @@ export default function SignInPage() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <SignIn
-            appearance={{
-              elements: {
-                rootBox: 'w-full',
-                card: 'glass-card rounded-2xl border-0 shadow-2xl shadow-black/30 !bg-white/[0.03]',
-                headerTitle: 'text-white text-xl font-semibold',
-                headerSubtitle: 'text-slate-400',
-                socialButtonsBlockButton:
-                  'glass-subtle hover:!bg-white/10 text-white border-white/10 rounded-xl transition-all duration-300',
-                socialButtonsBlockButtonText: 'font-medium text-white',
-                dividerLine: 'bg-white/10',
-                dividerText: 'text-slate-500',
-                formFieldLabel: 'text-slate-300 font-medium',
-                formFieldInput:
-                  '!bg-white/5 border-white/10 text-white rounded-xl focus:border-accent-500 focus:ring-accent-500/20 placeholder:text-slate-500',
-                formFieldInputShowPasswordButton: 'text-slate-400 hover:text-white',
-                formButtonPrimary:
-                  'ai-gradient hover:opacity-90 rounded-xl font-semibold h-12 text-base shadow-lg shadow-accent-500/20',
-                footerActionLink: 'text-accent-400 hover:text-accent-300',
-                footer: 'hidden',
-                identityPreviewEditButton: 'text-accent-400 hover:text-accent-300',
-                formFieldAction: 'text-accent-400 hover:text-accent-300',
-              },
-              variables: {
-                colorPrimary: '#3B82F6',
-                colorBackground: 'transparent',
-                colorText: '#E2E8F0',
-                colorTextSecondary: '#94A3B8',
-                borderRadius: '1rem',
-              },
-            }}
-          />
+          <ClerkSignInLoader />
         </motion.div>
 
         {/* Back to home */}
