@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Wallet } from 'lucide-react';
 
 interface LogoProps {
@@ -23,11 +22,10 @@ export const Logo: React.FC<LogoProps> = ({
   className = '',
   href
 }) => {
-  const pathname = usePathname();
   const { icon, text, padding } = sizeMap[size];
 
-  // Smart linking: if href is provided, use it; otherwise determine from pathname
-  const linkHref = href ?? (pathname?.startsWith('/dashboard') ? '/dashboard' : '/');
+  // Always route to /dashboard — the middleware handles auth redirects
+  const linkHref = href ?? '/dashboard';
 
   const logoContent = (
     <div className={`flex items-center gap-2.5 ${className}`}>
