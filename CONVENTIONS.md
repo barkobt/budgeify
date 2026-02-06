@@ -688,6 +688,7 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | 2026-02-06 | v3.2 M3: Oracle Core Assembly | Completed | OracleHero rewritten with HubX Assembly, OracleModuleChip extracted |
 | 2026-02-06 | v4.0 M1: Skills Overhaul | Completed | styles.md v4.0 (Depth Layer), oracle.md created, api/README v4.0, CONVENTIONS v4.0 |
 | 2026-02-06 | v4.0 M2: Infrastructure Repair | Completed | income.ts + expense.ts → ActionResult+Zod, goal.ts UUID fix, DataSyncProvider unified + updateIncome/updateExpense |
+| 2026-02-06 | v4.0 M4: Depth Layer System | Completed | globals.css → v4.0 (atmospheric gradient body, noise texture body::after, ambient orbs, glassmorphism blur(12px)+inner light, indigo #4F46E5 palette), layout.tsx ambient layer |
 
 ---
 

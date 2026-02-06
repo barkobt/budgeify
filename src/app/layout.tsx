@@ -41,7 +41,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#050505',
+  themeColor: '#000000',
 };
 
 const clerkEnabled =
@@ -55,7 +55,12 @@ export default function RootLayout({
 }) {
   const inner = (
     <html lang="tr" className={inter.variable}>
-      <body className="min-h-screen antialiased font-sans noise-overlay">
+      <body className="min-h-screen antialiased font-sans">
+        {/* v4.0: Ambient Gradient Orbs — Depth Layer System */}
+        <div className="ambient-layer" aria-hidden="true">
+          <div className="ambient-orb-indigo" />
+          <div className="ambient-orb-violet" />
+        </div>
         <ErrorBoundary>{children}</ErrorBoundary>
       </body>
     </html>
@@ -69,8 +74,8 @@ export default function RootLayout({
     <ClerkProvider
       appearance={{
         variables: {
-          colorPrimary: '#3B82F6',
-          colorBackground: '#0A0A0F',
+          colorPrimary: '#4F46E5',
+          colorBackground: '#000000',
           colorText: '#E2E8F0',
           colorTextSecondary: '#94A3B8',
           borderRadius: '0.75rem',
