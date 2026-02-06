@@ -48,3 +48,6 @@ coverage/
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Archive directory
+archive/
