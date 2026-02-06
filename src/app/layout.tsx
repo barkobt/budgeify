@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 
 const inter = Inter({
@@ -11,8 +12,16 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Budgeify - AI-Powered Kisisel Finans',
-  description: 'Yapay zeka destekli, modern ve minimalist kisisel finans yonetimi uygulamasi.',
-  keywords: ['butce', 'finans', 'tasarruf', 'harcama takibi', 'kisisel finans', 'para yonetimi'],
+  description:
+    'Yapay zeka destekli, modern ve minimalist kisisel finans yonetimi uygulamasi.',
+  keywords: [
+    'butce',
+    'finans',
+    'tasarruf',
+    'harcama takibi',
+    'kisisel finans',
+    'para yonetimi',
+  ],
   authors: [{ name: 'Budgeify Team' }],
   applicationName: 'Budgeify',
   category: 'finance',
@@ -35,9 +44,11 @@ export const viewport: Viewport = {
   themeColor: '#050505',
 };
 
-const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const clerkEnabled =
+  !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+  !!process.env.CLERK_SECRET_KEY;
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -45,9 +56,7 @@ export default async function RootLayout({
   const inner = (
     <html lang="tr" className={inter.variable}>
       <body className="min-h-screen antialiased font-sans noise-overlay">
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+        <ErrorBoundary>{children}</ErrorBoundary>
       </body>
     </html>
   );
@@ -55,9 +64,6 @@ export default async function RootLayout({
   if (!clerkEnabled) {
     return inner;
   }
-
-  // Dynamic import — Clerk only loaded when keys exist
-  const { ClerkProvider } = await import('@clerk/nextjs');
 
   return (
     <ClerkProvider
