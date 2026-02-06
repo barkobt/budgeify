@@ -21,7 +21,19 @@
  */
 
 import { motion, Variants, HTMLMotionProps } from 'framer-motion';
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
+
+/**
+ * SSR Hydration Guard — prevents white screen from Framer Motion
+ * initial={{ opacity: 0 }} rendering on the server.
+ * Returns false on SSR / first render → Framer initial={false} → content visible.
+ * Returns true after mount → animations can play on subsequent mounts.
+ */
+function useHydrated() {
+  const [h, setH] = useState(false);
+  useEffect(() => setH(true), []);
+  return h;
+}
 
 // ========================================
 // ANIMATION VARIANTS
@@ -157,9 +169,10 @@ export function FadeInSection({
   delay = 0,
   ...props
 }: MotionSectionProps) {
+  const hydrated = useHydrated();
   return (
     <motion.section
-      initial="hidden"
+      initial={hydrated ? 'hidden' : false}
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
       variants={{
@@ -199,6 +212,7 @@ export function FadeInDiv({
   direction = 'up',
   ...props
 }: MotionDivProps) {
+  const hydrated = useHydrated();
   const variants: Record<string, Variants> = {
     up: fadeInUp,
     down: fadeInDown,
@@ -209,7 +223,7 @@ export function FadeInDiv({
 
   return (
     <motion.div
-      initial="hidden"
+      initial={hydrated ? 'hidden' : false}
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
       variants={variants[direction]}
@@ -236,9 +250,10 @@ export function StaggerContainer({
   delay = 0,
   ...props
 }: MotionDivProps) {
+  const hydrated = useHydrated();
   return (
     <motion.div
-      initial="hidden"
+      initial={hydrated ? 'hidden' : false}
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={{
@@ -366,9 +381,10 @@ export function HeroText({
   className?: string;
   delay?: number;
 }) {
+  const hydrated = useHydrated();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+      initial={hydrated ? { opacity: 0, y: 30, filter: 'blur(10px)' } : false}
       animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       transition={{
         duration: 0.8,

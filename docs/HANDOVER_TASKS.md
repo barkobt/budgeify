@@ -25,6 +25,24 @@
 - `src/components/features/goals/GoalForm.tsx` — error display + currency
 - `src/components/features/goals/GoalCard.tsx` — dynamic currency
 
+## BEYAZ EKRAN SEBEBI
+
+**Kök Neden (2 katman):**
+
+1. **Stale `.next` webpack cache**: Multi-file edit sonrası `.next/server/` içindeki chunk ID'leri bozuldu (`Cannot find module './682.js'`). Fix: `rm -rf .next` + rebuild.
+
+2. **Framer Motion SSR opacity:0 tuzağı**: Landing page'deki TÜM elementler (`motion.nav`, `HeroText`, `FadeInSection`, `StaggerContainer`, `FadeInDiv`, footer) sunucuda `style="opacity:0;transform:translateY(-100px)"` ile render ediliyor. Eğer client JS herhangi bir sebeple çalışmazsa (hydration error, Clerk timeout, network fail) tüm içerik **kalıcı olarak görünmez** = beyaz ekran.
+
+**Dashboard korunuyordu** — `initial={isMounted ? 'hidden' : false}` guard vardı.
+**Landing page korunmuyordu** — tüm Framer Motion elementleri çıplak `initial={{ opacity: 0 }}` kullanıyordu.
+
+**Uygulanan Fix:**
+- `MotionElements.tsx`: `useHydrated()` hook eklendi, tüm component'lere `initial={hydrated ? 'hidden' : false}` guard
+- `page.tsx` (landing): `isMounted` state + tüm `motion.*` elementlerine `initial={isMounted ? {...} : false}`
+- `loading.tsx` (root + dashboard): "SİSTEM YÜKLENİYOR" safety render eklendi
+
+**Doğrulama:** SSR HTML artık `opacity:1;transform:none` ile render — JS çalışmasa bile içerik görünür.
+
 ## Not Implemented
 
 - **HubX Scroll Merge**: layoutId chip-merging animation on scroll (deferred — needs design spec)

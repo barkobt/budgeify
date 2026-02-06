@@ -102,13 +102,16 @@ function GuestNavButtons() {
 }
 
 export default function LandingPage() {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-cosmic-900 via-cosmic-800 to-cosmic-700 overflow-hidden">
       {/* ========================================
           NAVIGATION
           ======================================== */}
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
+        initial={isMounted ? { y: -100, opacity: 0 } : false}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="fixed top-0 left-0 right-0 z-50 bg-cosmic-900/80 backdrop-blur-xl border-b border-white/5"
@@ -130,13 +133,13 @@ export default function LandingPage() {
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
         {/* Animated background glow effects */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={isMounted ? { opacity: 0, scale: 0.8 } : false}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
           className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent-500/20 rounded-full blur-[128px] pointer-events-none"
         />
         <motion.div
-          initial={{ opacity: 0, x: -100 }}
+          initial={isMounted ? { opacity: 0, x: -100 } : false}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, delay: 0.2, ease: 'easeOut' }}
           className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-violet-500/10 rounded-full blur-[100px] pointer-events-none"
@@ -211,7 +214,7 @@ export default function LandingPage() {
               ].map((item, index) => (
                 <motion.div
                   key={item.text}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={isMounted ? { opacity: 0, y: 10 } : false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + index * 0.1 }}
                   className="flex items-center gap-2"
@@ -294,7 +297,7 @@ export default function LandingPage() {
                 <div className="text-center">
                   <motion.p
                     className="text-3xl sm:text-4xl font-black text-gradient mb-1"
-                    initial={{ opacity: 0, scale: 0.5 }}
+                    initial={isMounted ? { opacity: 0, scale: 0.5 } : false}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ type: 'spring', stiffness: 200, damping: 10 }}
@@ -365,7 +368,7 @@ export default function LandingPage() {
           FOOTER
           ======================================== */}
       <motion.footer
-        initial={{ opacity: 0 }}
+        initial={isMounted ? { opacity: 0 } : false}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
