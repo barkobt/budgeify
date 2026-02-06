@@ -99,10 +99,10 @@ export const ExpenseForm = () => {
   if (showSuccess) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 mb-4">
-          <Check size={32} className="text-emerald-600" strokeWidth={3} />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 mb-4">
+          <Check size={32} className="text-emerald-400" strokeWidth={3} />
         </div>
-        <p className="text-lg font-semibold text-slate-900">Gider Eklendi</p>
+        <p className="text-lg font-semibold text-white">Gider Eklendi</p>
         <p className="text-sm text-slate-500 mt-1">Başarıyla kaydedildi</p>
       </div>
     );
@@ -126,11 +126,11 @@ export const ExpenseForm = () => {
 
       {/* Category Grid */}
       <div>
-        <label className="mb-3 block text-sm font-medium text-slate-700">
-          Kategori <span className="text-rose-500">*</span>
+        <label className="mb-3 block text-sm font-medium text-slate-300">
+          Kategori <span className="text-rose-400">*</span>
         </label>
         {errors.categoryId && (
-          <p className="mb-2 text-sm text-rose-500">{errors.categoryId}</p>
+          <p className="mb-2 text-sm text-rose-400">{errors.categoryId}</p>
         )}
         <div className="grid grid-cols-3 gap-2 max-h-[280px] overflow-y-auto pr-1">
           {DEFAULT_CATEGORIES.slice(0, 12).map((cat) => (
@@ -138,10 +138,10 @@ export const ExpenseForm = () => {
               key={cat.id}
               type="button"
               onClick={() => setCategoryId(cat.id)}
-              className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all ${
+              className={`flex flex-col items-center gap-1.5 rounded-xl border p-3 transition-all ${
                 categoryId === cat.id
-                  ? 'border-accent-700 bg-accent-50 text-accent-700'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                  ? 'border-accent-500/50 bg-accent-500/15 text-accent-400'
+                  : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20'
               }`}
             >
               {(() => { const Icon = getCategoryIcon(cat.id); return <Icon size={18} />; })()}
@@ -151,7 +151,7 @@ export const ExpenseForm = () => {
         </div>
         {/* Show More Categories */}
         <details className="mt-2">
-          <summary className="text-xs text-slate-500 cursor-pointer hover:text-accent-700">
+          <summary className="text-xs text-slate-500 cursor-pointer hover:text-accent-400">
             Daha fazla kategori göster
           </summary>
           <div className="grid grid-cols-3 gap-2 mt-2">
@@ -160,10 +160,10 @@ export const ExpenseForm = () => {
                 key={cat.id}
                 type="button"
                 onClick={() => setCategoryId(cat.id)}
-                className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all ${
+                className={`flex flex-col items-center gap-1.5 rounded-xl border p-3 transition-all ${
                   categoryId === cat.id
-                    ? 'border-accent-700 bg-accent-50 text-accent-700'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                    ? 'border-accent-500/50 bg-accent-500/15 text-accent-400'
+                    : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20'
                 }`}
               >
                 {(() => { const Icon = getCategoryIcon(cat.id); return <Icon size={18} />; })()}
@@ -176,7 +176,7 @@ export const ExpenseForm = () => {
 
       {/* Date */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">
+        <label className="mb-2 block text-sm font-medium text-slate-300">
           Tarih
         </label>
         <input
@@ -184,7 +184,7 @@ export const ExpenseForm = () => {
           value={date}
           onChange={(e) => setDate(e.target.value)}
           max={getTodayDate()}
-          className="w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition-all focus:border-accent-700 focus:ring-2 focus:ring-accent-700/20"
+          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
         />
       </div>
 

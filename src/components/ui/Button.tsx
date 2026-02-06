@@ -47,7 +47,7 @@ const variantStyles: Record<ButtonVariant, string> = {
 
   // Neutral - Standard actions
   secondary:
-    'bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-900 shadow-sm font-medium',
+    'bg-white/10 hover:bg-white/15 active:bg-white/20 text-slate-200 shadow-sm font-medium',
 
   // Success - Income/positive
   success:
@@ -59,11 +59,11 @@ const variantStyles: Record<ButtonVariant, string> = {
 
   // Outline - Secondary CTA
   outline:
-    'border-2 border-accent-700 text-accent-700 hover:bg-accent-50 active:bg-accent-100 font-semibold',
+    'border border-accent-500/50 text-accent-400 hover:bg-accent-500/10 active:bg-accent-500/15 font-semibold',
 
   // Ghost - Subtle actions
   ghost:
-    'bg-transparent hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-medium',
+    'bg-transparent hover:bg-white/10 active:bg-white/15 text-slate-300 font-medium',
 };
 
 const sizeStyles: Record<ButtonSize, { padding: string; paddingIconOnly: string; text: string; radius: string }> = {

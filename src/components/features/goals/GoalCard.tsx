@@ -12,10 +12,7 @@ interface GoalCardProps {
 }
 
 /**
- * GoalCard - Tekil Hedef Kartı with Delete Functionality
- *
- * Bir hedefin detaylarını, ilerleme çubuğunu ve kalan süreyi gösterir.
- * Minimalist delete button with confirmation.
+ * GoalCard — HubX-grade goal card (dark theme)
  */
 export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
   const { deleteGoal } = useBudgetStore();
@@ -41,17 +38,17 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
 
   return (
     <div
-      className={`relative rounded-2xl border-2 p-5 transition-all duration-300 hover-lift ${
+      className={`relative rounded-2xl border p-5 transition-all duration-300 hover-lift ${
         isCompleted
-          ? 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100/50'
-          : 'border-slate-200 bg-white hover:border-accent-200 hover:shadow-lg'
+          ? 'border-emerald-500/30 bg-emerald-500/10'
+          : 'border-white/10 bg-zinc-900/40 hover:border-accent-500/30'
       }`}
     >
       {/* Delete Confirmation Overlay */}
       {showDeleteConfirm && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/95 backdrop-blur-sm animate-scaleIn">
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-zinc-900/95 backdrop-blur-sm animate-scaleIn">
           <div className="text-center p-4">
-            <p className="text-sm font-medium text-slate-700 mb-3">
+            <p className="text-sm font-medium text-slate-300 mb-3">
               Bu hedefi silmek istediğinize emin misiniz?
             </p>
             <div className="flex items-center justify-center gap-2">
@@ -64,7 +61,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-200 active:scale-95"
+                className="flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-slate-300 transition-all hover:bg-white/15 active:scale-95"
               >
                 <X size={14} />
                 İptal
@@ -78,17 +75,17 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div
-            className={`flex h-12 w-12 items-center justify-center rounded-xl text-2xl shadow-sm ${
+            className={`flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${
               isCompleted
-                ? 'bg-emerald-100 border border-emerald-200'
-                : 'bg-accent-50 border border-accent-100'
+                ? 'bg-emerald-500/20 border border-emerald-500/30'
+                : 'bg-accent-500/15 border border-accent-500/20'
             }`}
           >
             {goal.icon}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">{goal.name}</h3>
-            <p className="text-sm text-slate-500 tabular-nums">
+            <h3 className="text-lg font-semibold text-white">{goal.name}</h3>
+            <p className="text-sm text-slate-400 tabular-nums">
               {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
             </p>
           </div>
@@ -102,7 +99,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
           ) : (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-rose-50 hover:text-rose-500 active:scale-95"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition-all hover:bg-rose-500/20 hover:text-rose-400 active:scale-95"
               aria-label="Hedefi sil"
             >
               <Trash2 size={16} />
@@ -114,12 +111,12 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-medium text-slate-700">İlerleme</span>
-          <span className={`font-bold ${isCompleted ? 'text-emerald-600' : 'text-accent-700'}`}>
+          <span className="font-medium text-slate-400">İlerleme</span>
+          <span className={`font-bold tabular-nums ${isCompleted ? 'text-emerald-400' : 'text-accent-400'}`}>
             %{progress}
           </span>
         </div>
-        <div className="h-3 overflow-hidden rounded-full bg-slate-200">
+        <div className="h-2 overflow-hidden rounded-full bg-white/10">
           <div
             className={`h-full rounded-full transition-all duration-700 ${
               isCompleted
@@ -134,30 +131,30 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
       {/* Stats */}
       {!isCompleted && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-xl bg-slate-50 p-3 transition-all hover:bg-slate-100">
+          <div className="rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
             <div className="mb-1 flex items-center gap-1 text-slate-500">
               <Target className="h-3.5 w-3.5" />
               <span className="text-xs font-medium">Kalan</span>
             </div>
-            <p className="text-sm font-bold text-slate-900 tabular-nums">
+            <p className="text-sm font-bold text-slate-200 tabular-nums">
               {formatCurrency(remaining)}
             </p>
           </div>
           {goal.targetDate && (
             <>
-              <div className="rounded-xl bg-slate-50 p-3 transition-all hover:bg-slate-100">
+              <div className="rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
                 <div className="mb-1 flex items-center gap-1 text-slate-500">
                   <Calendar className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium">Süre</span>
                 </div>
-                <p className="text-sm font-bold text-slate-900 tabular-nums">{daysLeft} gün</p>
+                <p className="text-sm font-bold text-slate-200 tabular-nums">{daysLeft} gün</p>
               </div>
-              <div className="rounded-xl bg-slate-50 p-3 transition-all hover:bg-slate-100">
+              <div className="rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
                 <div className="mb-1 flex items-center gap-1 text-slate-500">
                   <TrendingUp className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium">Günlük</span>
                 </div>
-                <p className="text-sm font-bold text-slate-900 tabular-nums">
+                <p className="text-sm font-bold text-slate-200 tabular-nums">
                   {formatCurrency(dailySavingsNeeded)}
                 </p>
               </div>
@@ -176,9 +173,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
 };
 
 /**
- * GoalList - Hedef Listesi
- *
- * Tüm hedefleri gösterir.
+ * GoalList — HubX-grade goal list (dark theme)
  */
 export const GoalList = () => {
   const { getActiveGoals, getCompletedGoals } = useBudgetStore();
@@ -187,22 +182,22 @@ export const GoalList = () => {
 
   if (activeGoals.length === 0 && completedGoals.length === 0) {
     return (
-      <div className="rounded-2xl bg-white/95 border border-slate-200/80 shadow-lg p-6">
+      <div className="rounded-2xl glass-card p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-700">
-            <Target size={20} className="text-white" strokeWidth={2.5} />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl ai-gradient">
+            <Target size={20} className="text-white" strokeWidth={2} />
           </div>
           <div>
-            <p className="text-lg font-semibold text-slate-900">Tasarruf Hedeflerim</p>
+            <p className="text-lg font-semibold text-white">Tasarruf Hedeflerim</p>
             <p className="text-xs text-slate-500">Hedeflerinizi takip edin</p>
           </div>
         </div>
         <div className="py-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-            <Target size={32} className="text-slate-400" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
+            <Target size={32} className="text-slate-500" />
           </div>
-          <p className="text-slate-600 font-medium">Henüz hedef eklenmemiş</p>
-          <p className="text-sm text-slate-400 mt-2">
+          <p className="text-slate-300 font-medium">Henüz hedef eklenmemiş</p>
+          <p className="text-sm text-slate-500 mt-2">
             Yukarıdaki formu kullanarak ilk hedefinizi oluşturun
           </p>
         </div>
@@ -211,13 +206,13 @@ export const GoalList = () => {
   }
 
   return (
-    <div className="rounded-2xl bg-white/95 border border-slate-200/80 shadow-lg p-6">
+    <div className="rounded-2xl glass-card p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-700">
-          <Target size={20} className="text-white" strokeWidth={2.5} />
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl ai-gradient">
+          <Target size={20} className="text-white" strokeWidth={2} />
         </div>
         <div>
-          <p className="text-lg font-semibold text-slate-900">
+          <p className="text-lg font-semibold text-white">
             Tasarruf Hedeflerim ({activeGoals.length + completedGoals.length})
           </p>
           <p className="text-xs text-slate-500">Hedeflerinizi takip edin</p>
@@ -228,7 +223,7 @@ export const GoalList = () => {
         {/* Active Goals */}
         {activeGoals.length > 0 && (
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-slate-400 flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-accent-500 animate-pulse" />
               Aktif Hedefler
             </h4>
@@ -241,7 +236,7 @@ export const GoalList = () => {
         {/* Completed Goals */}
         {completedGoals.length > 0 && (
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-slate-400 flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
               Tamamlanan Hedefler
             </h4>

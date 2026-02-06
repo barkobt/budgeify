@@ -132,29 +132,29 @@ export default function DashboardPage() {
               >
                 <motion.button
                   onClick={() => setOpenDrawer('income')}
-                  className="group glass-card hover-lift p-4 flex items-center gap-3 transition-all duration-300"
+                  className="group glass-card rounded-2xl hover-lift p-4 flex items-center gap-3 transition-all duration-300"
                   whileTap={{ scale: 0.97 }}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 transition-colors group-hover:bg-emerald-500/30">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 transition-colors group-hover:bg-emerald-500/25">
                     <ArrowUpRight size={20} strokeWidth={2} />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-semibold text-white">Gelir Ekle</p>
-                    <p className="text-xs text-slate-400">Maas, ek gelir</p>
+                    <p className="text-sm font-semibold text-slate-200">Gelir Ekle</p>
+                    <p className="text-xs text-slate-500">Maas, ek gelir</p>
                   </div>
                 </motion.button>
 
                 <motion.button
                   onClick={() => setOpenDrawer('expense')}
-                  className="group glass-card hover-lift p-4 flex items-center gap-3 transition-all duration-300"
+                  className="group glass-card rounded-2xl hover-lift p-4 flex items-center gap-3 transition-all duration-300"
                   whileTap={{ scale: 0.97 }}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-400 transition-colors group-hover:bg-rose-500/30">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 transition-colors group-hover:bg-rose-500/25">
                     <ArrowDownRight size={20} strokeWidth={2} />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-semibold text-white">Gider Ekle</p>
-                    <p className="text-xs text-slate-400">Harcama, fatura</p>
+                    <p className="text-sm font-semibold text-slate-200">Gider Ekle</p>
+                    <p className="text-xs text-slate-500">Harcama, fatura</p>
                   </div>
                 </motion.button>
               </motion.section>
@@ -167,36 +167,36 @@ export default function DashboardPage() {
               >
                 <motion.button
                   onClick={() => setActiveTab('transactions')}
-                  className="group glass-subtle hover-lift p-4 flex items-center justify-between transition-all duration-300"
+                  className="group glass-card rounded-2xl hover-lift p-4 flex items-center justify-between transition-all duration-300"
                   whileTap={{ scale: 0.97 }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500/20">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-500/15">
                       <TrendingUp size={18} className="text-accent-400" strokeWidth={2} />
                     </div>
                     <div className="text-left">
                       <p className="text-lg font-bold text-white tabular-nums">{transactionCount}</p>
-                      <p className="text-xs text-slate-400">Islem</p>
+                      <p className="text-xs text-slate-500">Islem</p>
                     </div>
                   </div>
-                  <ChevronRight size={16} className="text-slate-500 group-hover:text-accent-400 transition-colors" />
+                  <ChevronRight size={16} className="text-slate-600 group-hover:text-accent-400 transition-colors" />
                 </motion.button>
 
                 <motion.button
                   onClick={() => setActiveTab('goals')}
-                  className="group glass-subtle hover-lift p-4 flex items-center justify-between transition-all duration-300"
+                  className="group glass-card rounded-2xl hover-lift p-4 flex items-center justify-between transition-all duration-300"
                   whileTap={{ scale: 0.97 }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500/20">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-500/15">
                       <Target size={18} className="text-accent-400" strokeWidth={2} />
                     </div>
                     <div className="text-left">
                       <p className="text-lg font-bold text-white tabular-nums">{goalCount}</p>
-                      <p className="text-xs text-slate-400">Hedef</p>
+                      <p className="text-xs text-slate-500">Hedef</p>
                     </div>
                   </div>
-                  <ChevronRight size={16} className="text-slate-500 group-hover:text-accent-400 transition-colors" />
+                  <ChevronRight size={16} className="text-slate-600 group-hover:text-accent-400 transition-colors" />
                 </motion.button>
               </motion.section>
 
@@ -214,10 +214,10 @@ export default function DashboardPage() {
                     <PiggyBank size={22} className="text-white" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-white/70 uppercase tracking-wide">Tasarruf Orani</p>
+                    <p className="text-xs font-medium text-white/70 uppercase tracking-wider">Tasarruf Orani</p>
                     <div className="flex items-baseline gap-2">
                       <p className="text-2xl font-black text-white tabular-nums">%{savingsRate}</p>
-                      <p className="text-sm text-white/80">/ %{savingsTarget} hedef</p>
+                      <p className="text-sm text-white/60 tabular-nums">/ %{savingsTarget} hedef</p>
                     </div>
                   </div>
                 </div>

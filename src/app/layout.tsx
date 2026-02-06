@@ -44,7 +44,7 @@ export default async function RootLayout({
 }) {
   const inner = (
     <html lang="tr" className={inter.variable}>
-      <body className="min-h-screen antialiased font-sans">
+      <body className="min-h-screen antialiased font-sans noise-overlay">
         <ErrorBoundary>
           {children}
         </ErrorBoundary>

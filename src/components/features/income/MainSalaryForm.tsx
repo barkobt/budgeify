@@ -92,10 +92,10 @@ export const MainSalaryForm = () => {
   if (showSuccess) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 mb-4">
-          <Check size={32} className="text-emerald-600" strokeWidth={3} />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 mb-4">
+          <Check size={32} className="text-emerald-400" strokeWidth={3} />
         </div>
-        <p className="text-lg font-semibold text-slate-900">Gelir Eklendi</p>
+        <p className="text-lg font-semibold text-white">Gelir Eklendi</p>
         <p className="text-sm text-slate-500 mt-1">Başarıyla kaydedildi</p>
       </div>
     );
@@ -119,7 +119,7 @@ export const MainSalaryForm = () => {
 
       {/* Category Grid */}
       <div>
-        <label className="mb-3 block text-sm font-medium text-slate-700">
+        <label className="mb-3 block text-sm font-medium text-slate-300">
           Kategori
         </label>
         <div className="grid grid-cols-3 gap-2">
@@ -128,10 +128,10 @@ export const MainSalaryForm = () => {
               key={cat.id}
               type="button"
               onClick={() => setCategory(cat.id as IncomeCategory)}
-              className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-3 transition-all ${
+              className={`flex flex-col items-center gap-1.5 rounded-xl border p-3 transition-all ${
                 category === cat.id
-                  ? 'border-accent-700 bg-accent-50 text-accent-700'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                  ? 'border-accent-500/50 bg-accent-500/15 text-accent-400'
+                  : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20'
               }`}
             >
               {(() => { const Icon = INCOME_ICON_MAP[cat.id]; return Icon ? <Icon size={18} /> : null; })()}
@@ -152,15 +152,15 @@ export const MainSalaryForm = () => {
       />
 
       {/* Recurring Toggle */}
-      <label className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 cursor-pointer">
+      <label className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 p-4 cursor-pointer">
         <input
           type="checkbox"
           checked={isRecurring}
           onChange={(e) => setIsRecurring(e.target.checked)}
-          className="h-5 w-5 rounded border-slate-300 text-accent-700 focus:ring-accent-700/20"
+          className="h-5 w-5 rounded border-white/20 bg-white/5 text-accent-500 focus:ring-accent-500/20"
         />
         <div>
-          <p className="text-sm font-medium text-slate-700">Düzenli gelir</p>
+          <p className="text-sm font-medium text-slate-300">Düzenli gelir</p>
           <p className="text-xs text-slate-500">Her ay tekrarlayan gelir</p>
         </div>
       </label>

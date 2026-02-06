@@ -65,15 +65,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
     const baseStyles =
-      'w-full rounded-xl border-2 bg-white/50 backdrop-blur-sm transition-all duration-200 outline-none';
+      'w-full rounded-xl border bg-white/5 backdrop-blur-sm transition-all duration-200 outline-none';
 
     const borderStyles = error
-      ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
-      : 'border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20';
+      ? 'border-rose-500/50 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
+      : 'border-white/10 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20';
 
     const disabledStyles = disabled
-      ? 'bg-slate-50 text-slate-400 cursor-not-allowed'
-      : 'text-slate-900 placeholder:text-slate-400';
+      ? 'bg-white/[0.02] text-slate-600 cursor-not-allowed'
+      : 'text-slate-200 placeholder:text-slate-500';
 
     const combinedInputClassName = `${baseStyles} ${sizeStyles[size]} ${borderStyles} ${disabledStyles} ${className}`;
 
@@ -82,7 +82,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-slate-700 mb-2"
+            className="block text-sm font-medium text-slate-300 mb-2"
           >
             {label}
             {isRequired && <span className="text-red-500 ml-1">*</span>}

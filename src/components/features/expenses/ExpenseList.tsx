@@ -48,11 +48,11 @@ export const ExpenseList = () => {
         </CardHeader>
         <CardContent>
           <div className="py-12 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-              <FileText size={32} className="text-slate-400" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
+              <FileText size={32} className="text-slate-500" />
             </div>
-            <p className="text-slate-600 font-medium">Henuz harcama eklenmemis</p>
-            <p className="text-sm text-slate-400 mt-2">
+            <p className="text-slate-300 font-medium">Henuz harcama eklenmemis</p>
+            <p className="text-sm text-slate-500 mt-2">
               Ilk harcamanizi ekleyerek baslayin
             </p>
           </div>
@@ -79,10 +79,10 @@ export const ExpenseList = () => {
               <div key={date}>
                 {/* Date Header */}
                 <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-slate-700">
+                  <h3 className="text-sm font-semibold text-slate-400">
                     {formatDate(date)}
                   </h3>
-                  <span className="text-sm font-medium text-red-600 tabular-nums">
+                  <span className="text-sm font-medium text-rose-400 tabular-nums">
                     {formatCurrency(dayTotal)}
                   </span>
                 </div>
@@ -96,7 +96,7 @@ export const ExpenseList = () => {
                     return (
                       <div
                         key={expense.id}
-                        className="flex items-center gap-3 rounded-xl bg-slate-50 p-3 transition-colors hover:bg-slate-100"
+                        className="flex items-center gap-3 rounded-xl bg-white/5 p-3 transition-colors hover:bg-white/10"
                       >
                         {/* Category Icon */}
                         {category && (
@@ -115,7 +115,7 @@ export const ExpenseList = () => {
                         {/* Info */}
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-slate-800">
+                            <span className="text-sm font-medium text-slate-200">
                               {category?.name || 'Bilinmeyen'}
                             </span>
                           </div>
@@ -127,14 +127,14 @@ export const ExpenseList = () => {
                         </div>
 
                         {/* Amount */}
-                        <span className="text-sm font-semibold text-slate-900 tabular-nums">
+                        <span className="text-sm font-semibold text-white tabular-nums">
                           {formatCurrency(expense.amount)}
                         </span>
 
                         {/* Delete Button */}
                         <button
                           onClick={() => handleDelete(expense.id)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-rose-500/20 hover:text-rose-400"
                           aria-label="Sil"
                         >
                           <Trash2 className="h-4 w-4" />

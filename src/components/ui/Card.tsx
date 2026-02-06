@@ -119,7 +119,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ children, className = '', as: Component = 'h2', ...props }, ref) => (
     <Component
       ref={ref as React.Ref<HTMLHeadingElement>}
-      className={`text-xl font-semibold text-slate-900 tracking-tight ${className}`}
+      className={`text-xl font-semibold text-white tracking-tight ${className}`}
       {...props}
     >
       {children}
