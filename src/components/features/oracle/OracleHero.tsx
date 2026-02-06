@@ -15,7 +15,6 @@ import { useBudgetStore } from '@/store/useBudgetStore';
 import { OracleModuleChip } from './OracleModuleChip';
 
 export type WalletModuleId = 'income' | 'expense' | 'goals' | 'analytics' | 'insights';
-type OracleState = 'identifying' | 'predicting' | 'active';
 
 const MODULES = [
   { id: 'income' as WalletModuleId, label: 'Gelir', Icon: TrendingUp, angle: -72, color: '#10B981', scrollStart: 0.05, scrollEnd: 0.20 },
@@ -33,11 +32,6 @@ function getModulePosition(angle: number, radius: number) {
   return { x: Math.cos(rad) * radius, y: Math.sin(rad) * radius };
 }
 
-const STATE_LABELS: Record<OracleState, string> = {
-  identifying: 'Veri analiz ediliyor',
-  predicting: 'Tahminler hesaplaniyor',
-  active: 'Oracle Core aktif',
-};
 
 interface OracleHeroProps {
   onModuleClick?: (moduleId: WalletModuleId) => void;
@@ -62,11 +56,6 @@ export function OracleHero({ onModuleClick }: OracleHeroProps) {
   const coreGlow = useTransform(scrollYProgress, [0, 0.3, 0.6], [0.2, 0.6, 1]);
   const ringOpacity = useTransform(scrollYProgress, [0.5, 0.7], [0, 1]);
 
-  // Derive oracle state from scroll progress
-  const oracleState = useTransform<number, OracleState>(
-    scrollYProgress,
-    (v) => (v < 0.3 ? 'identifying' : v < 0.6 ? 'predicting' : 'active')
-  );
 
   // Module positions (memoized)
   const modulePositions = useMemo(
