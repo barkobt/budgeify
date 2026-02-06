@@ -25,6 +25,7 @@ import {
 } from '@/lib/motion';
 import { getCurrencySymbol } from '@/utils';
 import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
+import type { Income } from '@/types';
 import {
   Plus,
   TrendingUp,
@@ -48,8 +49,8 @@ const ExpenseForm = dynamic(
   () => import('@/components/features/expenses/ExpenseForm').then((mod) => ({ default: mod.ExpenseForm })),
   { ssr: false }
 );
-const ExpenseList = dynamic(
-  () => import('@/components/features/expenses/ExpenseList').then((mod) => ({ default: mod.ExpenseList })),
+const IncomeList = dynamic(
+  () => import('@/components/features/income/IncomeList').then((mod) => ({ default: mod.IncomeList })),
   { ssr: false, loading: () => <SkeletonList count={5} /> }
 );
 const CategoryChart = dynamic(
@@ -90,6 +91,7 @@ export default function DashboardPage() {
   const [openDrawer, setOpenDrawer] = useState<DrawerType>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [txView, setTxView] = useState<TransactionView>('expenses');
+  const [editingIncome, setEditingIncome] = useState<Income | null>(null);
 
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
@@ -324,30 +326,7 @@ export default function DashboardPage() {
               {txView === 'expenses' ? (
                 <ExpenseList />
               ) : (
-                /* Income list — inline minimal */
-                <div className="rounded-2xl glass-card p-5 space-y-3">
-                  <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                    <TrendingUp size={16} className="text-emerald-400" />
-                    Gelirlerim ({incomes.length})
-                  </h3>
-                  {incomes.length === 0 ? (
-                    <p className="text-xs text-slate-500 py-6 text-center">Henuz gelir eklenmemis</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {incomes.map((inc) => (
-                        <div key={inc.id} className="flex items-center justify-between rounded-xl bg-white/5 p-3">
-                          <div>
-                            <p className="text-sm font-medium text-slate-200">{inc.description || inc.category}</p>
-                            <p className="text-xs text-slate-500">{inc.isRecurring ? 'Duzenli' : 'Tek seferlik'}</p>
-                          </div>
-                          <span className="text-sm font-bold text-emerald-400 tabular-nums">
-                            +{symbol}{inc.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <IncomeList onEditIncome={setEditingIncome} />
               )}
             </motion.div>
           )}
@@ -413,11 +392,19 @@ export default function DashboardPage() {
 
       {/* Drawers */}
       <Drawer
-        open={openDrawer === 'income'}
-        onOpenChange={(open) => !open && setOpenDrawer(null)}
-        title="Gelir Ekle"
+        open={openDrawer === 'income' || !!editingIncome}
+        onOpenChange={(open) => {
+          if (!open) {
+            setOpenDrawer(null);
+            setEditingIncome(null);
+          }
+        }}
+        title={editingIncome ? 'Gelir Düzenle' : 'Gelir Ekle'}
       >
-        <MainSalaryForm />
+        <MainSalaryForm 
+          editingIncome={editingIncome} 
+          onCancelEdit={() => setEditingIncome(null)} 
+        />
       </Drawer>
 
       <Drawer

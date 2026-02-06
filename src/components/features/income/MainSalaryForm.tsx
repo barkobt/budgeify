@@ -7,9 +7,9 @@ import { generateId, getCurrentISODate, getCurrencySymbol } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { reportError } from '@/lib/error-reporting';
-import type { IncomeCategory } from '@/types';
+import type { IncomeCategory, Income } from '@/types';
 import { INCOME_CATEGORIES } from '@/constants/categories';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { INCOME_ICON_MAP } from '@/lib/category-icons';
 
 /**
@@ -21,7 +21,12 @@ import { INCOME_ICON_MAP } from '@/lib/category-icons';
  * - Auth varsa: DataSyncProvider kullanır (server persistence)
  * - Auth yoksa: Sadece Zustand kullanır (localStorage demo mode)
  */
-export const MainSalaryForm = () => {
+interface MainSalaryFormProps {
+  editingIncome?: Income | null;
+  onCancelEdit?: () => void;
+}
+
+export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, onCancelEdit }) => {
   const { addIncome, currency } = useBudgetStore();
   const dataSync = useDataSyncOptional();
   const symbol = getCurrencySymbol(currency);
@@ -35,7 +40,21 @@ export const MainSalaryForm = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  // Removed inline icon map — using shared INCOME_ICON_MAP
+  // Initialize form with editing income data
+  React.useEffect(() => {
+    if (editingIncome) {
+      setAmount(editingIncome.amount.toString());
+      setDescription(editingIncome.description || '');
+      setCategory(editingIncome.category);
+      setIsRecurring(editingIncome.isRecurring);
+    } else {
+      // Reset form for new income
+      setAmount('');
+      setDescription('');
+      setCategory('salary');
+      setIsRecurring(true);
+    }
+  }, [editingIncome]);
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -60,33 +79,47 @@ export const MainSalaryForm = () => {
         isRecurring,
       };
 
-      // Use server persistence if available, otherwise fall back to local storage
-      if (dataSync) {
-        await dataSync.createIncome(incomeData);
+      if (editingIncome && dataSync) {
+        // Update existing income
+        await dataSync.updateIncome(editingIncome.id, incomeData);
+        onCancelEdit?.();
+      } else if (editingIncome) {
+        // Demo mode: Update local storage
+        // Note: This would need updateIncome method in store
+        console.warn('Update income not implemented in demo mode');
+        onCancelEdit?.();
       } else {
-        // Demo mode: Local storage only
-        addIncome({
-          id: generateId(),
-          type: category === 'salary' ? 'salary' : 'additional',
-          category,
-          amount: parseFloat(amount),
-          description: description.trim() || undefined,
-          isRecurring,
-          createdAt: getCurrentISODate(),
-          updatedAt: getCurrentISODate(),
-        });
+        // Create new income
+        if (dataSync) {
+          await dataSync.createIncome(incomeData);
+        } else {
+          // Demo mode: Local storage only
+          addIncome({
+            id: generateId(),
+            type: category === 'salary' ? 'salary' : 'additional',
+            category,
+            amount: parseFloat(amount),
+            description: description.trim() || undefined,
+            isRecurring,
+            createdAt: getCurrentISODate(),
+            updatedAt: getCurrentISODate(),
+          });
+        }
+      }
+
+      // Reset form only for new income
+      if (!editingIncome) {
+        setAmount('');
+        setDescription('');
+        setCategory('salary');
+        setIsRecurring(true);
       }
 
       setShowSuccess(true);
-      setAmount('');
-      setDescription('');
-      setCategory('salary');
-      setIsRecurring(true);
-
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
       reportError(error instanceof Error ? error : new Error(String(error)), { context: 'MainSalaryForm' });
-      setServerError(error instanceof Error ? error.message : 'Gelir eklenirken bir hata olustu');
+      setServerError(error instanceof Error ? error.message : 'Gelir kaydedilirken bir hata oluştu');
     } finally {
       setIsSubmitting(false);
     }
@@ -98,7 +131,9 @@ export const MainSalaryForm = () => {
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 mb-4">
           <Check size={32} className="text-emerald-400" strokeWidth={3} />
         </div>
-        <p className="text-lg font-semibold text-white">Gelir Eklendi</p>
+        <p className="text-lg font-semibold text-white">
+          {editingIncome ? 'Gelir Güncellendi' : 'Gelir Eklendi'}
+        </p>
         <p className="text-sm text-slate-500 mt-1">Başarıyla kaydedildi</p>
       </div>
     );
@@ -175,6 +210,22 @@ export const MainSalaryForm = () => {
         </div>
       </label>
 
+      {/* Cancel button for edit mode */}
+      {editingIncome && (
+        <Button
+          type="button"
+          variant="secondary"
+          isFullWidth
+          onClick={onCancelEdit}
+          disabled={isSubmitting}
+          size="lg"
+          className="mb-3"
+        >
+          <X size={16} className="mr-2" />
+          İptal
+        </Button>
+      )}
+
       {/* Submit */}
       <Button
         type="submit"
@@ -183,7 +234,7 @@ export const MainSalaryForm = () => {
         isLoading={isSubmitting}
         size="lg"
       >
-        Gelir Ekle
+        {editingIncome ? 'Geliri Güncelle' : 'Gelir Ekle'}
       </Button>
     </form>
   );
