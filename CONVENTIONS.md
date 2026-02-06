@@ -5,11 +5,11 @@
 
 ---
 
-## Project Structure v3.0
+## Project Structure v4.0
 
 ### Execution Zone Principle
 - **src/**: **ONLY** directory for functional code execution
-- **skills/**: AI assistant skill modules (api, ui, guard, data, debug, architect, devops)
+- **skills/**: AI assistant skill modules (api, ui, ui/oracle, guard, data, debug, architect, devops)
 - **public/**: Static assets only
 - **archive/**: All legacy documentation and deprecated files
 
@@ -231,13 +231,16 @@ export async function createIncome(input: z.infer<typeof CreateIncomeSchema>) {
 }
 ```
 
-### Server Action Rules
+### Server Action Rules (v4.0 — Universal)
 1. **Auth → Validate → Execute → Revalidate** (always this order)
-2. Return `ActionResult<T>` discriminated union
-3. User-facing error messages in Turkish
-4. Server-side logs in English with context
-5. Never expose internal errors to client
-6. Always `revalidatePath` after mutations
+2. **ALL** server actions return `ActionResult<T>` discriminated union — **no exceptions**
+3. **NEVER** use `throw` in server actions — always return `{ success: false, error }`
+4. **ALL** inputs validated with Zod schemas — no raw input accepted
+5. Use `resolveUserId()` helper for auth check
+6. User-facing error messages in Turkish
+7. Server-side logs in English with context
+8. Never expose internal errors to client
+9. Always `revalidatePath` after mutations
 
 ### API Route Structure (Webhooks only)
 ```typescript
@@ -433,27 +436,31 @@ if (!result.success) {
 
 ---
 
-## 7. UI & Design System (HubX Edition v3.2)
+## 7. UI & Design System (Sovereign v4.0)
 
 > **Canonical Source**: `skills/ui/styles.md` — full specifications live there.
+> **Oracle Chip Core**: `skills/ui/oracle.md` — Oracle visual spec.
 > This section is the executive summary.
 
-### Design Vision: Pure Black + Indigo Glow + Glassmorphism
+### Design Vision: Depth Black + Indigo Glow + Glassmorphism
 ```
-"Siyah bir tuvaldir. Indigo ışığı sadece anlam taşıyan yerlerde parlar."
+"Siyah bir tuval değil, derinliği olan bir atmosfer.
+Indigo ışığı sadece anlam taşıyan yerlerde parlar."
 
-- %75 Pure Black Foundation (#000 backgrounds)
+- %70 Depth Black Foundation (layered backgrounds with atmosphere)
 - %15 Semantic Colors (emerald=income, rose=expense, amber=warning)
 - %10 Indigo Glow Accent (#4F46E5 — CTA, focus, active states ONLY)
+- %5  Atmospheric Layer (mesh gradients, noise, ambient orbs)
 ```
 
 ### Color Palette
 ```css
-/* Pure Black Foundation */
+/* Depth Black Foundation */
 --bg-base:       #000000;   /* Body background */
 --bg-surface:    #050505;   /* Primary surface */
 --bg-elevated:   #0A0A0A;   /* Elevated containers */
 --bg-card:       #0F0F0F;   /* Card backgrounds */
+--bg-atmosphere: radial-gradient(ellipse at 50% 0%, #0a0a1a, #050508, #000);
 
 /* Indigo Glow Accent */
 --indigo-400:    #818CF8;   /* Light accent, links */
@@ -466,26 +473,38 @@ if (!result.success) {
 --warning:       #F59E0B;   /* Alerts */
 ```
 
-### Glassmorphism (Universal: blur 12px, border white/10)
+### Depth Layer System (v4.0)
+```
+Body: atmospheric gradient (NOT flat #000)
+Noise: body::after overlay (opacity 0.035)
+Ambient: fixed-position gradient orbs (indigo top, violet bottom-right)
+Inner Light: inset 0 1px 0 rgba(255,255,255,0.06) on all glass elements
+/* See skills/ui/styles.md Section 2 for full spec */
+```
+
+### Glassmorphism (Universal: blur 12px, border white/10, inner light)
 ```css
 /* Level 3 - Card (most common) */
 .glass-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06); /* v4.0: inner light */
 }
 /* See skills/ui/styles.md for all 5 levels */
 ```
 
-### Motion Math (HubX Assembly)
+### Motion Math (Chip Core Assembly)
 ```typescript
 // Canonical spring for scroll-driven assembly
 const ASSEMBLY_SPRING = { type: 'spring', stiffness: 260, damping: 20, mass: 1 };
 
+// Oracle 3-State Machine: dormant → assembling → active
 // Module scroll offsets (non-linear arrival)
 // Income: 0.05-0.20 | Expense: 0.12-0.30 | Goals: 0.20-0.40
-// See skills/ui/styles.md Section 3 for full interpolation map
+// See skills/ui/styles.md Section 4 for full interpolation map
+// See skills/ui/oracle.md for Chip Core visual spec
 ```
 
 ### Component Styling Patterns
@@ -637,7 +656,7 @@ refactor/auth-middleware
 | **Database** | Always userId filter, decimal for money, soft delete |
 | **Errors** | Turkish user messages, English server logs |
 | **Security** | Clerk auth on every action, ownership check |
-| **UI** | Pure Black #000, Indigo Glow #4F46E5 (%10), blur(12px), Spring physics |
+| **UI** | Depth Black (atmosphere), Indigo Glow #4F46E5 (%10), blur(12px) + inner light, Spring physics |
 | **Testing** | 80% minimum, 100% for critical paths |
 | **Git** | Conventional commits, feature branches |
 
@@ -649,6 +668,7 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 
 ```
 "Kart tasarımını güncelle"        → skills/ui + skills/ui/styles.md
+"Oracle Core tasarla"             → skills/ui/oracle.md
 "Gelir ekleme endpoint'i yaz"     → skills/api
 "Clerk auth ayarla"               → skills/guard
 "Drizzle schema güncelle"         → skills/data
@@ -663,12 +683,15 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 
 | Date | Milestone | Status | Notes |
 |------|-----------|--------|-------|
-| 2026-02-06 | M1: Skill Manifest | Completed | `skills/ui/styles.md` created, CONVENTIONS.md synced |
-| 2026-02-06 | M2: Infrastructure Repair | Completed | middleware optimized, goal.ts refactored to ActionResult+Zod |
-| 2026-02-06 | M3: Oracle Core Assembly | Completed | OracleHero rewritten with HubX Assembly, OracleModuleChip extracted |
+| 2026-02-06 | v3.2 M1: Skill Manifest | Completed | `skills/ui/styles.md` created, CONVENTIONS.md synced |
+| 2026-02-06 | v3.2 M2: Infrastructure Repair | Completed | middleware optimized, goal.ts refactored to ActionResult+Zod |
+| 2026-02-06 | v3.2 M3: Oracle Core Assembly | Completed | OracleHero rewritten with HubX Assembly, OracleModuleChip extracted |
+| 2026-02-06 | v4.0 M1: Skills Overhaul | Completed | styles.md v4.0 (Depth Layer), oracle.md created, api/README v4.0, CONVENTIONS v4.0 |
+| 2026-02-06 | v4.0 M2: Infrastructure Repair | Completed | income.ts + expense.ts → ActionResult+Zod, goal.ts UUID fix, DataSyncProvider unified + updateIncome/updateExpense |
 
 ---
 
-*Project Brain v3.2 - Budgeify Sovereign (HubX Edition)*
+*Project Brain v4.0 - Budgeify Sovereign*
 *Stack: Next.js 14 | Clerk Auth | Drizzle ORM | Neon PostgreSQL | Tailwind CSS 4*
-*Design: Pure Black #000 | Indigo Glow #4F46E5 | Glassmorphism blur(12px) | Spring Physics 260/20/1*
+*Design: Depth Black (atmosphere) | Indigo Glow #4F46E5 | Glassmorphism blur(12px) + inner light | Spring Physics 260/20/1*
+*API: ActionResult<T> + Zod universal mandate | Oracle: Chip Core 3-state machine*

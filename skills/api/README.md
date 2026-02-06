@@ -1,13 +1,15 @@
-# Skill: API & Server Actions
+# Skill: API & Server Actions — Sovereign v4.0
 
 > Budgeify'ın veri katmanı ve sunucu tarafı iş mantığı.
 > Tetikleyici: CRUD operasyonları, server action yazma, endpoint oluşturma görevleri.
+
+> **v4.0 Mandate**: TÜM server action’lar `ActionResult<T>` + Zod kullanır. `throw` patternı yasaktır.
 
 ---
 
 ## Architecture
 
-Budgeify v2.0 **Server Actions** pattern kullanır (Next.js 14 App Router).
+Budgeify v4.0 **Server Actions** pattern kullanır (Next.js 14 App Router).
 API Routes sadece webhook'lar için kullanılır.
 
 ```
@@ -26,10 +28,21 @@ src/app/api/
 
 ---
 
-## Server Action Template
+## Server Action Template (v4.0)
 
 Her server action bu sırayı takip eder: **Auth → Validate → Execute → Revalidate**
 
+### resolveUserId Helper
+```typescript
+// Shared auth helper — used in ALL server actions
+async function resolveUserId(): Promise<ActionResult<string>> {
+  const { userId } = await auth();
+  if (!userId) return { success: false, error: 'Unauthorized' };
+  return { success: true, data: userId };
+}
+```
+
+### Full Template
 ```typescript
 'use server';
 
@@ -266,20 +279,40 @@ export async function POST(req: Request) {
 
 ---
 
-## Rules
+## Rules (v4.0 — Universal)
 
 1. **Auth → Validate → Execute → Revalidate** (always this order)
-2. Return `ActionResult<T>` discriminated union
-3. User-facing errors in **Turkish**
-4. Server logs in **English** with context
-5. Never expose internal errors to client
-6. Always `revalidatePath` after mutations
-7. Always filter by `userId` (multi-tenant)
-8. Use Zod for ALL input validation
-9. Soft delete with `deletedAt` timestamp
-10. Use `decimal(12,2)` for money fields
+2. **ALL** server actions return `ActionResult<T>` discriminated union — **no exceptions**
+3. **NEVER** use `throw` in server actions — always return `{ success: false, error }`
+4. **ALL** inputs validated with Zod schemas — **no raw input accepted**
+5. Use `resolveUserId()` helper for auth check
+6. User-facing errors in **Turkish**
+7. Server logs in **English** with context
+8. Never expose internal errors to client
+9. Always `revalidatePath` after mutations
+10. Always filter by `userId` (multi-tenant)
+11. Soft delete with `deletedAt` timestamp
+12. Use `decimal(12,2)` for money fields
+
+### v4.0 Migration Checklist
+```
+[✓] goal.ts     — ActionResult<T> + Zod (migrated in v3.2)
+[ ] income.ts   — MUST migrate from throw → ActionResult<T> + Zod
+[ ] expense.ts  — MUST migrate from throw → ActionResult<T> + Zod
+[✓] category.ts — verify ActionResult compliance
+[✓] user.ts     — verify ActionResult compliance
+```
+
+### DataSyncProvider Integration
+```
+v4.0 requires DataSyncProvider to:
+- Handle ONLY ActionResult<T> responses (no try/catch-throw)
+- Expose updateIncome(id, data) and updateExpense(id, data) methods
+- Fix goal error double-propagation bug
+```
 
 ---
 
-*Skill Module: API & Server Actions*
+*Skill Module: API & Server Actions — Sovereign v4.0*
 *Stack: Next.js 14 Server Actions | Drizzle ORM | Zod | Clerk Auth*
+*Mandate: ActionResult<T> + Zod for ALL actions — zero throw tolerance*

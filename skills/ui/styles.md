@@ -1,30 +1,41 @@
-# Skill: UI Styles — HubX Edition v3.2
+# Skill: UI Styles — Sovereign v4.0
 
 > Budgeify'ın görsel anayasası. Tüm bileşenler bu dosyadaki kurallara uymalıdır.
 > Canonical source: `skills/ui/styles.md` — CONVENTIONS.md bu dosyaya referans verir.
+> Oracle Chip Core spec: `skills/ui/oracle.md`
 
 ---
 
-## 1. Visual Identity: Pure Black + Indigo Glow
+## 1. Visual Identity: Depth Black + Indigo Glow
 
 ### Foundation Philosophy
 ```
-"Siyah bir tuvaldir. Indigo ışığı sadece anlam taşıyan yerlerde parlar."
+"Siyah bir tuval değil, derinliği olan bir atmosfer.
+Indigo ışığı sadece anlam taşıyan yerlerde parlar."
 
 Renk Dağılımı:
-- %75 Pure Black Foundation (backgrounds, surfaces)
+- %70 Depth Black Foundation (layered backgrounds with atmosphere)
 - %15 Semantic Colors (emerald=income, rose=expense, amber=warning)
 - %10 Indigo Glow Accent (CTA, focus, active states ONLY)
+- %5  Atmospheric Layer (mesh gradients, noise, ambient orbs)
 ```
 
 ### Background Palette
 ```css
-/* Pure Black Foundation */
+/* Depth Black Foundation */
 --bg-base:      #000000;   /* Body background — absolute black */
 --bg-surface:   #050505;   /* Primary surface */
 --bg-elevated:  #0A0A0A;   /* Elevated containers */
 --bg-card:      #0F0F0F;   /* Card backgrounds */
 --bg-interactive:#141414;   /* Hover/interactive surfaces */
+
+/* Atmospheric Body Gradient (replaces flat #000) */
+--bg-atmosphere: radial-gradient(
+  ellipse at 50% 0%,
+  #0a0a1a 0%,
+  #050508 50%,
+  #000000 100%
+);
 ```
 
 ### Indigo Glow Accent
@@ -64,13 +75,102 @@ Renk Dağılımı:
 
 ---
 
-## 2. Glassmorphism v3.2
+## 2. Depth Layer System (v4.0)
+
+> *"From amateur void to VisionOS atmosphere."*
+
+### Body Atmosphere
+```css
+/* Body background — atmospheric gradient, NOT flat black */
+body {
+  background: var(--bg-atmosphere);
+  /* radial-gradient(ellipse at 50% 0%, #0a0a1a 0%, #050508 50%, #000000 100%) */
+}
+```
+
+### Noise Texture (Global)
+```css
+/* Applied to body::after — adds film grain depth */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,..."); /* noise pattern */
+  mix-blend-mode: overlay;
+}
+```
+
+### Ambient Gradient Orbs
+```css
+/* Fixed-position ambient layer behind all content */
+.ambient-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Indigo orb — top center */
+.ambient-orb-indigo {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(79,70,229,0.06) 0%, transparent 70%);
+  filter: blur(80px);
+}
+
+/* Violet orb — bottom right */
+.ambient-orb-violet {
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 600px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 70%);
+  filter: blur(80px);
+}
+```
+
+### VisionOS Inner Light
+```css
+/* Top-edge light catch for glass elements — simulates overhead light source */
+.inner-glow {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Apply to ALL glass-card and glass-elevated elements */
+/* Combined: glass-card + inner-glow */
+```
+
+### Layer Stack (z-index)
+```
+z-0   : body background (atmospheric gradient)
+z-1   : noise overlay (body::after)
+z-2   : ambient orbs (.ambient-layer)
+z-10  : page content
+z-20  : glass cards
+z-30  : elevated elements (modals, drawers)
+z-40  : header / navigation
+z-50  : toast notifications
+```
+
+---
+
+## 3. Glassmorphism v4.0
 
 ### Core Formula
 ```
 background: rgba(255, 255, 255, {opacity});
 backdrop-filter: blur(12px);
 border: 1px solid rgba(255, 255, 255, 0.10);
+box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);  /* v4.0: VisionOS inner light */
 ```
 
 ### Levels
@@ -94,7 +194,9 @@ border: 1px solid rgba(255, 255, 255, 0.10);
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);  /* v4.0: inner light */
 }
 
 /* Level 4 — Elevated (modals, drawers, active cards) */
@@ -102,7 +204,9 @@ border: 1px solid rgba(255, 255, 255, 0.10);
   background: rgba(255, 255, 255, 0.07);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);  /* v4.0: inner light */
 }
 
 /* Level 5 — Focus (active/focused elements, Indigo glow) */
@@ -122,7 +226,7 @@ border: 1px solid rgba(255, 255, 255, 0.10);
 
 ---
 
-## 3. Motion Math — HubX Assembly System
+## 4. Motion Math — Chip Core Assembly System
 
 ### Spring Physics (Canonical Config)
 ```typescript
@@ -154,15 +258,17 @@ const springs = {
 
 ### Scroll-Driven Assembly Logic
 ```
-Oracle Core Assembly — modules arrive at different scroll offsets:
+Oracle Chip Core Assembly — modules dock into concentric rings:
 
 ScrollY Progress:  0.0 ──── 0.15 ──── 0.25 ──── 0.35 ──── 0.50 ──── 1.0
                     │         │          │          │          │         │
-                    │    Income arrives   │     Goals arrive    │         │
-                    │         │     Expense arrives  │    All merged      │
+                    │    Income docks    │     Goals dock      │         │
+                    │         │     Expense docks    │    Core active    │
                     │         │          │          │          │         │
-State:          [Scattered] ─── [Identifying Patterns] ─── [Predicting] ─── [Active]
+State:          [Dormant] ─── [Assembling — rings brighten] ─── [Active — full glow]
 ```
+
+> Full Oracle Chip Core spec → `skills/ui/oracle.md`
 
 ### Module Interpolation Map
 ```typescript
@@ -179,14 +285,14 @@ const MODULE_SCROLL_OFFSETS = {
 // Use cubicBezier(0.16, 1, 0.3, 1) for expo-out feel
 ```
 
-### Assembly States (layoutId transitions)
+### Assembly States (3-State Machine)
 ```typescript
-type OracleState = 'identifying' | 'predicting' | 'active';
+type OracleState = 'dormant' | 'assembling' | 'active';
 
 // State transitions driven by scroll progress:
-// 0.00 - 0.30 → 'identifying'  (modules scattered, circuit lines dim)
-// 0.30 - 0.60 → 'predicting'   (modules converging, glow intensifying)
-// 0.60 - 1.00 → 'active'       (all merged at core, full indigo glow)
+// 0.00 - 0.25 → 'dormant'      (rings dim, no modules visible, core pulse faint)
+// 0.25 - 0.60 → 'assembling'   (modules flying in, rings brightening, glow traces)
+// 0.60 - 1.00 → 'active'       (all docked, full indigo glow, data readout visible)
 ```
 
 ### Duration Guidelines
@@ -208,7 +314,7 @@ Assembly (scroll-driven)   : spring-based (no fixed duration)
 
 ---
 
-## 4. Iconography — Lucide React (Strict)
+## 5. Iconography — Lucide React (Strict)
 
 ### Rules
 ```
@@ -249,7 +355,7 @@ const MODULE_ICONS = {
 
 ---
 
-## 5. Typography (Inter Variable)
+## 6. Typography (Inter Variable)
 
 ```
 Display    : text-5xl  / font-black  / tracking-tight  / text-white
@@ -265,7 +371,7 @@ Mono       : text-sm   / font-mono   / tabular-nums  / text-zinc-300
 
 ---
 
-## 6. Spacing (8px Harmonic Grid)
+## 7. Spacing (8px Harmonic Grid)
 
 ```
 Card padding     : p-6 (24px)
@@ -279,7 +385,7 @@ Inline gap       : gap-2 (8px)
 
 ---
 
-## 7. Component Styling Patterns
+## 8. Component Styling Patterns
 
 ### Card
 ```tsx
@@ -312,7 +418,7 @@ className="bg-white/5 border border-white/10 rounded-xl px-4 py-3.5
 
 ---
 
-## 8. Responsive Strategy (Mobile-First)
+## 9. Responsive Strategy (Mobile-First)
 
 ```
 Base   : 375px  (design target)
@@ -331,7 +437,7 @@ xl     : 1280px (desktops)
 
 ---
 
-## 9. Prohibited Patterns
+## 10. Prohibited Patterns
 
 ```
 [X] Inline styles (use Tailwind)
@@ -344,10 +450,13 @@ xl     : 1280px (desktops)
 [X] box-shadow without backdrop-filter on glass elements
 [X] Fixed durations for interactive animations (use springs)
 [X] Overshoot/bounce on financial data displays
+[X] Flat #000 body without atmospheric gradient (v4.0)
+[X] Glass cards without inner-glow (v4.0)
 ```
 
 ---
 
-*Skill Module: UI Styles — HubX Edition v3.2*
+*Skill Module: UI Styles — Sovereign v4.0*
 *Stack: Tailwind CSS 4 | Framer Motion | Lucide React | Inter Variable Font*
-*Foundation: Pure Black #000 | Indigo Glow #4F46E5 | Glassmorphism blur(12px)*
+*Foundation: Depth Black (atmospheric gradient) | Indigo Glow #4F46E5 | Glassmorphism blur(12px) + inner light*
+*New in v4.0: Depth Layer System, VisionOS inner light, ambient orbs, noise texture*

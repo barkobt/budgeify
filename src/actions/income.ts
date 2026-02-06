@@ -1,33 +1,60 @@
 'use server';
 
 /**
- * Income Server Actions
+ * Income Server Actions (v4.0 — Sovereign Pattern)
  *
- * 🎓 MENTOR NOTU - CRUD Pattern:
- * -----------------------------
- * CRUD = Create, Read, Update, Delete
- * Her veri modeli için bu 4 temel operasyon tanımlanır.
- *
- * Server Actions'da revalidatePath ile cache'i temizleyebilirsin.
- * Bu sayede UI otomatik güncellenir.
+ * Pattern: Auth → Validate → Execute → Revalidate
+ * Returns: ActionResult<T> discriminated union
+ * Errors: Turkish user-facing, English server logs
  */
 
 import { db } from '@/db';
-import { incomes, NewIncome, users } from '@/db/schema';
+import { incomes, type NewIncome, users } from '@/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
-import { reportError } from '@/lib/error-reporting';
+import { z } from 'zod';
 
-/**
- * Helper: Get user ID from Clerk session
- */
-async function getUserId(): Promise<string> {
+// ========================================
+// TYPES
+// ========================================
+
+type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
+// ========================================
+// ZOD SCHEMAS
+// ========================================
+
+const CreateIncomeSchema = z.object({
+  amount: z.number().positive('Tutar pozitif olmalı'),
+  description: z.string().max(100).optional(),
+  categoryId: z.string().min(1).optional(),
+  date: z.coerce.date().optional(),
+  isRecurring: z.boolean().optional(),
+});
+
+const UpdateIncomeSchema = z.object({
+  amount: z.number().positive().optional(),
+  description: z.string().max(100).optional(),
+  categoryId: z.string().min(1).optional(),
+  date: z.coerce.date().optional(),
+  isRecurring: z.boolean().optional(),
+});
+
+const IncomeIdSchema = z.string().uuid('Geçersiz gelir ID');
+
+export type CreateIncomeInput = z.infer<typeof CreateIncomeSchema>;
+export type UpdateIncomeInput = z.infer<typeof UpdateIncomeSchema>;
+
+// ========================================
+// AUTH HELPER
+// ========================================
+
+async function resolveUserId(): Promise<ActionResult<string>> {
   const { userId: clerkId } = await auth();
-
-  if (!clerkId) {
-    throw new Error('Unauthorized');
-  }
+  if (!clerkId) return { success: false, error: 'Oturum açmanız gerekiyor' };
 
   const user = await db
     .select({ id: users.id })
@@ -35,189 +62,225 @@ async function getUserId(): Promise<string> {
     .where(eq(users.clerkId, clerkId))
     .limit(1);
 
-  if (!user[0]) {
-    throw new Error('User not found in database');
-  }
-
-  return user[0].id;
+  if (!user[0]) return { success: false, error: 'Kullanıcı bulunamadı' };
+  return { success: true, data: user[0].id };
 }
+
+function revalidateIncomePaths(): void {
+  revalidatePath('/dashboard');
+  revalidatePath('/income');
+}
+
+// ========================================
+// READ ACTIONS
+// ========================================
 
 /**
  * Get All Incomes
- * Kullanıcının tüm gelirlerini getir
  */
-export async function getIncomes() {
-  try {
-    const userId = await getUserId();
+export async function getIncomes(): Promise<ActionResult<(typeof incomes.$inferSelect)[]>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
+  // EXECUTE
+  try {
     const result = await db
       .select()
       .from(incomes)
-      .where(eq(incomes.userId, userId))
+      .where(eq(incomes.userId, userResult.data))
       .orderBy(desc(incomes.date));
 
-    return result;
+    return { success: true, data: result };
   } catch (error) {
-    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'income.getIncomes' });
-    throw new Error('Gelirler yüklenirken bir hata oluştu');
+    console.error('[getIncomes]', { userId: userResult.data, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Gelirler yüklenirken bir hata oluştu' };
   }
 }
 
 /**
  * Get Income by ID
  */
-export async function getIncomeById(id: string) {
-  const userId = await getUserId();
+export async function getIncomeById(id: string): Promise<ActionResult<typeof incomes.$inferSelect | null>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
-  const result = await db
-    .select()
-    .from(incomes)
-    .where(and(eq(incomes.id, id), eq(incomes.userId, userId)))
-    .limit(1);
+  // VALIDATE
+  const parsed = IncomeIdSchema.safeParse(id);
+  if (!parsed.success) return { success: false, error: 'Geçersiz gelir ID' };
 
-  return result[0] ?? null;
+  // EXECUTE
+  try {
+    const result = await db
+      .select()
+      .from(incomes)
+      .where(and(eq(incomes.id, parsed.data), eq(incomes.userId, userResult.data)))
+      .limit(1);
+
+    return { success: true, data: result[0] ?? null };
+  } catch (error) {
+    console.error('[getIncomeById]', { userId: userResult.data, id, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Gelir yüklenemedi' };
+  }
 }
+
+// ========================================
+// WRITE ACTIONS
+// ========================================
 
 /**
  * Create Income
  */
-export async function createIncome(data: {
-  amount: number;
-  description?: string;
-  categoryId?: string;
-  date?: Date;
-  isRecurring?: boolean;
-}) {
-  try {
-    const userId = await getUserId();
+export async function createIncome(input: CreateIncomeInput): Promise<ActionResult<typeof incomes.$inferSelect>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
+  // VALIDATE
+  const parsed = CreateIncomeSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: 'Geçersiz veri' };
+
+  // EXECUTE
+  try {
     const newIncome: NewIncome = {
-      userId,
-      amount: data.amount.toString(),
-      description: data.description ?? null,
-      categoryId: data.categoryId ?? null,
-      date: data.date ?? new Date(),
-      isRecurring: data.isRecurring ?? false,
+      userId: userResult.data,
+      amount: parsed.data.amount.toString(),
+      description: parsed.data.description ?? null,
+      categoryId: parsed.data.categoryId ?? null,
+      date: parsed.data.date ?? new Date(),
+      isRecurring: parsed.data.isRecurring ?? false,
     };
 
     const [created] = await db.insert(incomes).values(newIncome).returning();
 
-    revalidatePath('/dashboard');
-    revalidatePath('/income');
-
-    return created;
+    // REVALIDATE
+    revalidateIncomePaths();
+    return { success: true, data: created };
   } catch (error) {
-    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'income.createIncome' });
-    throw new Error('Gelir eklenirken bir hata oluştu');
+    console.error('[createIncome]', { userId: userResult.data, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Gelir eklenirken bir hata oluştu' };
   }
 }
 
 /**
  * Update Income
  */
-export async function updateIncome(
-  id: string,
-  data: {
-    amount?: number;
-    description?: string;
-    categoryId?: string;
-    date?: Date;
-    isRecurring?: boolean;
+export async function updateIncome(id: string, input: UpdateIncomeInput): Promise<ActionResult<typeof incomes.$inferSelect>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
+
+  // VALIDATE
+  const idParsed = IncomeIdSchema.safeParse(id);
+  if (!idParsed.success) return { success: false, error: 'Geçersiz gelir ID' };
+
+  const parsed = UpdateIncomeSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: 'Geçersiz veri' };
+
+  // EXECUTE
+  try {
+    // Ownership check
+    const existing = await db
+      .select()
+      .from(incomes)
+      .where(and(eq(incomes.id, idParsed.data), eq(incomes.userId, userResult.data)))
+      .limit(1);
+
+    if (!existing[0]) return { success: false, error: 'Gelir bulunamadı' };
+
+    const updateData: Partial<NewIncome> = { updatedAt: new Date() };
+    if (parsed.data.amount !== undefined) updateData.amount = parsed.data.amount.toString();
+    if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
+    if (parsed.data.categoryId !== undefined) updateData.categoryId = parsed.data.categoryId;
+    if (parsed.data.date !== undefined) updateData.date = parsed.data.date;
+    if (parsed.data.isRecurring !== undefined) updateData.isRecurring = parsed.data.isRecurring;
+
+    const [updated] = await db
+      .update(incomes)
+      .set(updateData)
+      .where(eq(incomes.id, idParsed.data))
+      .returning();
+
+    // REVALIDATE
+    revalidateIncomePaths();
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error('[updateIncome]', { userId: userResult.data, id, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Gelir güncellenirken bir hata oluştu' };
   }
-) {
-  const userId = await getUserId();
-
-  // Verify ownership
-  const existing = await db
-    .select()
-    .from(incomes)
-    .where(and(eq(incomes.id, id), eq(incomes.userId, userId)))
-    .limit(1);
-
-  if (!existing[0]) {
-    throw new Error('Income not found or unauthorized');
-  }
-
-  const updateData: Partial<NewIncome> = {
-    updatedAt: new Date(),
-  };
-
-  if (data.amount !== undefined) updateData.amount = data.amount.toString();
-  if (data.description !== undefined) updateData.description = data.description;
-  if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
-  if (data.date !== undefined) updateData.date = data.date;
-  if (data.isRecurring !== undefined) updateData.isRecurring = data.isRecurring;
-
-  const [updated] = await db
-    .update(incomes)
-    .set(updateData)
-    .where(eq(incomes.id, id))
-    .returning();
-
-  revalidatePath('/dashboard');
-  revalidatePath('/income');
-
-  return updated;
 }
 
 /**
  * Delete Income
  */
-export async function deleteIncome(id: string) {
-  try {
-    const userId = await getUserId();
+export async function deleteIncome(id: string): Promise<ActionResult<{ id: string }>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
-    // Verify ownership
+  // VALIDATE
+  const idParsed = IncomeIdSchema.safeParse(id);
+  if (!idParsed.success) return { success: false, error: 'Geçersiz gelir ID' };
+
+  // EXECUTE
+  try {
+    // Ownership check
     const existing = await db
       .select()
       .from(incomes)
-      .where(and(eq(incomes.id, id), eq(incomes.userId, userId)))
+      .where(and(eq(incomes.id, idParsed.data), eq(incomes.userId, userResult.data)))
       .limit(1);
 
-    if (!existing[0]) {
-      throw new Error('Gelir bulunamadı veya yetkiniz yok');
-    }
+    if (!existing[0]) return { success: false, error: 'Gelir bulunamadı' };
 
-    await db.delete(incomes).where(eq(incomes.id, id));
+    await db.delete(incomes).where(eq(incomes.id, idParsed.data));
 
-    revalidatePath('/dashboard');
-    revalidatePath('/income');
-
-    return { success: true };
+    // REVALIDATE
+    revalidateIncomePaths();
+    return { success: true, data: { id: idParsed.data } };
   } catch (error) {
-    reportError(error instanceof Error ? error : new Error(String(error)), { context: 'income.deleteIncome' });
-    if (error instanceof Error && error.message.includes('bulunamadı')) {
-      throw error;
-    }
-    throw new Error('Gelir silinirken bir hata oluştu');
+    console.error('[deleteIncome]', { userId: userResult.data, id, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Gelir silinirken bir hata oluştu' };
   }
 }
+
+// ========================================
+// ANALYTICS ACTIONS
+// ========================================
 
 /**
  * Get Total Income for Current Month
  */
-export async function getTotalIncomeThisMonth() {
-  const userId = await getUserId();
+export async function getTotalIncomeThisMonth(): Promise<ActionResult<number>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  // EXECUTE
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-  const result = await db
-    .select()
-    .from(incomes)
-    .where(eq(incomes.userId, userId));
+    const result = await db
+      .select()
+      .from(incomes)
+      .where(eq(incomes.userId, userResult.data));
 
-  // Filter by date in JS (Drizzle doesn't have great date range support)
-  const monthlyIncomes = result.filter((income) => {
-    const incomeDate = new Date(income.date);
-    return incomeDate >= startOfMonth && incomeDate <= endOfMonth;
-  });
+    const monthlyIncomes = result.filter((income) => {
+      const incomeDate = new Date(income.date);
+      return incomeDate >= startOfMonth && incomeDate <= endOfMonth;
+    });
 
-  const total = monthlyIncomes.reduce(
-    (sum, income) => sum + parseFloat(income.amount),
-    0
-  );
+    const total = monthlyIncomes.reduce(
+      (sum, income) => sum + parseFloat(income.amount),
+      0
+    );
 
-  return total;
+    return { success: true, data: total };
+  } catch (error) {
+    console.error('[getTotalIncomeThisMonth]', { userId: userResult.data, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Aylık gelir hesaplanamadı' };
+  }
 }
