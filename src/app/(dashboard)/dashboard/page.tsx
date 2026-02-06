@@ -127,9 +127,9 @@ export default function DashboardPage() {
     }
   };
 
-  const transactionCount = expenses.length;
-  const goalCount = getActiveGoals().length;
-  const savingsRate = getSavingsRate();
+  const transactionCount = isMounted ? expenses.length : 0;
+  const goalCount = isMounted ? getActiveGoals().length : 0;
+  const savingsRate = isMounted ? getSavingsRate() : 0;
   const savingsTarget = 30;
   const savingsProgress = savingsTarget > 0 ? Math.min(Math.round((savingsRate / savingsTarget) * 100), 100) : 0;
 
