@@ -80,7 +80,7 @@
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "cv11", "ss01", "ss03";
     text-rendering: optimizeLegibility;
-    background: #000000;
+    background: #050505;
     min-height: 100vh;
     color: #E2E8F0;
   }
