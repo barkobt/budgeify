@@ -665,6 +665,7 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 |------|-----------|--------|-------|
 | 2026-02-06 | M1: Skill Manifest | Completed | `skills/ui/styles.md` created, CONVENTIONS.md synced |
 | 2026-02-06 | M2: Infrastructure Repair | Completed | middleware optimized, goal.ts refactored to ActionResult+Zod |
+| 2026-02-06 | M3: Oracle Core Assembly | Completed | OracleHero rewritten with HubX Assembly, OracleModuleChip extracted |
 
 ---
 

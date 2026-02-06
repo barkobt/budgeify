@@ -1,233 +1,163 @@
 'use client';
 
 /**
- * WalletCore Hero — HubX-grade fintech hero
+ * OracleHero — HubX Assembly v3.2
  *
- * Central glowing wallet orb with 5 surrounding module chips.
- * Click: module triggers action (open drawer / switch tab).
- * Scroll: modules compress toward core with layoutId-like smooth transition.
+ * Scroll-driven module convergence with spring physics (260/20/1).
+ * 3-state transitions: identifying → predicting → active.
+ * Real-time data from useBudgetStore.
  */
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import {
-  Wallet,
-  TrendingUp,
-  TrendingDown,
-  Target,
-  BarChart3,
-  Lightbulb,
-} from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Target, BarChart3, Sparkles } from 'lucide-react';
+import { useBudgetStore } from '@/store/useBudgetStore';
+import { OracleModuleChip } from './OracleModuleChip';
 
 export type WalletModuleId = 'income' | 'expense' | 'goals' | 'analytics' | 'insights';
+type OracleState = 'identifying' | 'predicting' | 'active';
 
 const MODULES = [
-  { id: 'income' as WalletModuleId, label: 'Gelir', Icon: TrendingUp, angle: -72, color: '#10B981' },
-  { id: 'expense' as WalletModuleId, label: 'Gider', Icon: TrendingDown, angle: 0, color: '#F43F5E' },
-  { id: 'goals' as WalletModuleId, label: 'Hedefler', Icon: Target, angle: 72, color: '#8B5CF6' },
-  { id: 'analytics' as WalletModuleId, label: 'Analiz', Icon: BarChart3, angle: 144, color: '#3B82F6' },
-  { id: 'insights' as WalletModuleId, label: 'Icerik', Icon: Lightbulb, angle: -144, color: '#F59E0B' },
+  { id: 'income' as WalletModuleId, label: 'Gelir', Icon: TrendingUp, angle: -72, color: '#10B981', scrollStart: 0.05, scrollEnd: 0.20 },
+  { id: 'expense' as WalletModuleId, label: 'Gider', Icon: TrendingDown, angle: 0, color: '#F43F5E', scrollStart: 0.12, scrollEnd: 0.30 },
+  { id: 'goals' as WalletModuleId, label: 'Hedefler', Icon: Target, angle: 72, color: '#8B5CF6', scrollStart: 0.20, scrollEnd: 0.40 },
+  { id: 'analytics' as WalletModuleId, label: 'Analiz', Icon: BarChart3, angle: 144, color: '#4F46E5', scrollStart: 0.25, scrollEnd: 0.45 },
+  { id: 'insights' as WalletModuleId, label: 'Oracle', Icon: Sparkles, angle: -144, color: '#F59E0B', scrollStart: 0.30, scrollEnd: 0.50 },
 ];
+
+const RADIUS = 110;
+const ASSEMBLY_SPRING = { type: 'spring' as const, stiffness: 260, damping: 20, mass: 1 };
+
+function getModulePosition(angle: number, radius: number) {
+  const rad = ((angle - 90) * Math.PI) / 180;
+  return { x: Math.cos(rad) * radius, y: Math.sin(rad) * radius };
+}
+
+const STATE_LABELS: Record<OracleState, string> = {
+  identifying: 'Veri analiz ediliyor',
+  predicting: 'Tahminler hesaplaniyor',
+  active: 'Oracle Core aktif',
+};
 
 interface OracleHeroProps {
   onModuleClick?: (moduleId: WalletModuleId) => void;
-}
-
-// Position modules in a semicircle arc above the core
-function getModulePosition(angle: number, radius: number) {
-  const rad = ((angle - 90) * Math.PI) / 180;
-  return {
-    x: Math.cos(rad) * radius,
-    y: Math.sin(rad) * radius,
-  };
 }
 
 export function OracleHero({ onModuleClick }: OracleHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
+  // Store bindings
+  const balance = useBudgetStore((s) => s.getBalance());
+  const savingsRate = useBudgetStore((s) => s.getSavingsRate());
+
+  // Scroll-driven assembly
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
 
-  const coreScale = useTransform(scrollYProgress, [0, 0.4], [0.85, 1]);
-  const coreGlow = useTransform(scrollYProgress, [0, 0.3], [0.3, 1]);
+  // Core animations driven by scroll
+  const coreScale = useTransform(scrollYProgress, [0, 0.3, 0.6], [0.8, 0.95, 1]);
+  const coreGlow = useTransform(scrollYProgress, [0, 0.3, 0.6], [0.2, 0.6, 1]);
+  const ringOpacity = useTransform(scrollYProgress, [0.5, 0.7], [0, 1]);
 
-  const RADIUS = 110;
-  const CENTER = { x: 160, y: 150 };
+  // Derive oracle state from scroll progress
+  const oracleState = useTransform<number, OracleState>(
+    scrollYProgress,
+    (v) => (v < 0.3 ? 'identifying' : v < 0.6 ? 'predicting' : 'active')
+  );
+
+  // Module positions (memoized)
+  const modulePositions = useMemo(
+    () => MODULES.map((mod) => getModulePosition(mod.angle, RADIUS)),
+    []
+  );
+
+  // Status display
+  const hoveredModule = hoveredId ? MODULES.find((m) => m.id === hoveredId) : null;
 
   return (
     <div ref={containerRef} className="relative">
       <div className="flex flex-col items-center py-6">
-        {/* Wallet Core Assembly */}
-        <div className="relative w-full max-w-[340px] mx-auto" style={{ height: 300 }}>
+        <div className="relative w-full max-w-85 mx-auto" style={{ height: 300 }}>
           {/* SVG Circuit Lines */}
-          <svg
-            viewBox="0 0 320 300"
-            fill="none"
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            aria-hidden="true"
-          >
-            {MODULES.map((mod) => {
-              const pos = getModulePosition(mod.angle, RADIUS);
-              const isHovered = hoveredId === mod.id;
-              return (
-                <motion.line
-                  key={mod.id}
-                  x1={CENTER.x}
-                  y1={CENTER.y}
-                  x2={CENTER.x + pos.x}
-                  y2={CENTER.y + pos.y}
-                  stroke={isHovered ? mod.color : 'rgba(255,255,255,0.06)'}
-                  strokeWidth={isHovered ? 1.5 : 0.5}
-                  strokeLinecap="round"
-                  initial={false}
-                  animate={{
-                    stroke: isHovered ? mod.color : 'rgba(255,255,255,0.06)',
-                    strokeWidth: isHovered ? 1.5 : 0.5,
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-              );
-            })}
-
-            {/* Core outer ring */}
-            <motion.circle
-              cx={CENTER.x}
-              cy={CENTER.y}
-              r="32"
-              stroke="rgba(59, 130, 246, 0.2)"
-              strokeWidth="0.5"
-              fill="none"
-              style={{ opacity: coreGlow }}
-            />
-            <motion.circle
-              cx={CENTER.x}
-              cy={CENTER.y}
-              r="44"
-              stroke="rgba(59, 130, 246, 0.08)"
-              strokeWidth="0.5"
-              fill="none"
-              style={{ opacity: coreGlow }}
-            />
+          <svg viewBox="0 0 320 300" fill="none" className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
+            {MODULES.map((mod, i) => (
+              <motion.line
+                key={mod.id}
+                x1={160} y1={150}
+                x2={160 + modulePositions[i].x} y2={150 + modulePositions[i].y}
+                stroke={hoveredId === mod.id ? mod.color : 'rgba(255,255,255,0.04)'}
+                strokeWidth={hoveredId === mod.id ? 1.5 : 0.5}
+                strokeLinecap="round"
+                initial={false}
+                animate={{ stroke: hoveredId === mod.id ? mod.color : 'rgba(255,255,255,0.04)' }}
+                transition={{ duration: 0.2 }}
+              />
+            ))}
+            <motion.circle cx={160} cy={150} r="32" stroke="rgba(79,70,229,0.2)" strokeWidth="0.5" fill="none" style={{ opacity: coreGlow }} />
+            <motion.circle cx={160} cy={150} r="44" stroke="rgba(79,70,229,0.08)" strokeWidth="0.5" fill="none" style={{ opacity: coreGlow }} />
           </svg>
 
-          {/* Module Chips — clickable, scroll-compressing */}
-          {MODULES.map((mod, i) => {
-            const pos = getModulePosition(mod.angle, RADIUS);
-            const isHovered = hoveredId === mod.id;
-            return (
-              <motion.div
-                key={mod.id}
-                className="absolute"
-                style={{
-                  left: CENTER.x + pos.x - 40,
-                  top: CENTER.y + pos.y - 18,
-                }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
-                onMouseEnter={() => setHoveredId(mod.id)}
-                onMouseLeave={() => setHoveredId(null)}
-              >
-                <motion.button
-                  className="flex items-center gap-2 rounded-2xl px-3 py-2 select-none
-                             border transition-colors duration-300 cursor-pointer"
-                  onClick={() => onModuleClick?.(mod.id)}
-                  animate={{
-                    borderColor: isHovered ? `${mod.color}40` : 'rgba(255,255,255,0.05)',
-                    backgroundColor: isHovered ? `${mod.color}08` : 'rgba(24,24,27,0.5)',
-                    boxShadow: isHovered
-                      ? `0 0 20px ${mod.color}15, 0 0 40px ${mod.color}08`
-                      : '0 0 0 transparent',
-                    x: isHovered ? (pos.x > 0 ? -3 : pos.x < 0 ? 3 : 0) : 0,
-                    y: isHovered ? (pos.y > 0 ? -3 : pos.y < 0 ? 3 : 0) : 0,
-                  }}
-                  whileTap={{ scale: 0.92 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <mod.Icon
-                    size={14}
-                    style={{ color: isHovered ? mod.color : '#64748B' }}
-                    strokeWidth={2}
-                    className="transition-colors duration-300"
-                  />
-                  <span
-                    className="text-[11px] font-medium transition-colors duration-300"
-                    style={{ color: isHovered ? '#E2E8F0' : '#64748B' }}
-                  >
-                    {mod.label}
-                  </span>
-                </motion.button>
-              </motion.div>
-            );
-          })}
+          {/* Module Chips — scroll-driven convergence */}
+          {MODULES.map((mod, i) => (
+            <OracleModuleChip
+              key={mod.id}
+              id={mod.id}
+              label={mod.label}
+              Icon={mod.Icon}
+              color={mod.color}
+              baseX={modulePositions[i].x}
+              baseY={modulePositions[i].y}
+              scrollProgress={scrollYProgress}
+              scrollStart={mod.scrollStart}
+              scrollEnd={mod.scrollEnd}
+              isHovered={hoveredId === mod.id}
+              onHover={setHoveredId}
+              onClick={() => onModuleClick?.(mod.id)}
+              index={i}
+            />
+          ))}
 
           {/* Central Wallet Core */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2"
-            style={{
-              top: CENTER.y - 28,
-              scale: coreScale,
-            }}
-          >
+          <motion.div className="absolute left-1/2 -translate-x-1/2" style={{ top: 122, scale: coreScale }}>
             <div className="relative">
-              {/* Glow backdrop */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl ai-gradient blur-xl"
-                style={{ opacity: coreGlow }}
-              />
-              {/* Core chip */}
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl ai-gradient
-                              shadow-lg shadow-accent-500/20">
+              <motion.div className="absolute -inset-3 rounded-2xl bg-indigo-600/30 blur-xl" style={{ opacity: coreGlow }} />
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-600 to-indigo-800 shadow-[0_0_32px_rgba(79,70,229,0.3)]">
                 <Wallet size={24} className="text-white" strokeWidth={1.5} />
               </div>
-              {/* Pulse ring */}
               <motion.div
-                className="absolute -inset-2 rounded-2xl border border-accent-400/20"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.4, 0, 0.4],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                className="absolute -inset-2 rounded-2xl border border-indigo-400/20"
+                style={{ opacity: ringOpacity }}
+                animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0, 0.4] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
             </div>
           </motion.div>
         </div>
 
-        {/* Status chip */}
+        {/* Status Chip — context-aware */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={hoveredId ?? 'default'}
-            className="flex items-center gap-2 rounded-full bg-zinc-900/50 border border-white/5
-                       px-4 py-1.5 backdrop-blur-sm"
+            key={hoveredId ?? 'status'}
+            className="flex items-center gap-2 rounded-full bg-black/60 border border-white/5 px-4 py-1.5 backdrop-blur-sm"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.2 }}
+            transition={ASSEMBLY_SPRING}
           >
-            {hoveredId ? (
+            {hoveredModule ? (
               <>
-                {(() => {
-                  const mod = MODULES.find((m) => m.id === hoveredId);
-                  if (!mod) return null;
-                  return (
-                    <>
-                      <mod.Icon size={12} style={{ color: mod.color }} strokeWidth={2} />
-                      <span className="text-xs font-medium text-slate-300">{mod.label} modulu aktif</span>
-                    </>
-                  );
-                })()}
+                <hoveredModule.Icon size={12} style={{ color: hoveredModule.color }} strokeWidth={2} />
+                <span className="text-xs font-medium text-zinc-300">{hoveredModule.label} modulu</span>
               </>
             ) : (
               <>
-                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-medium text-slate-400">Wallet Core hazir</span>
+                <div className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                <span className="text-xs font-medium text-zinc-500">
+                  {balance !== 0 ? `Bakiye: ${savingsRate}% tasarruf` : 'Oracle Core hazir'}
+                </span>
               </>
             )}
           </motion.div>
@@ -235,9 +165,9 @@ export function OracleHero({ onModuleClick }: OracleHeroProps) {
 
         {/* Title */}
         <h2 className="mt-3 text-center text-lg font-bold text-white tracking-tight">
-          Wallet <span className="text-gradient">Core</span>
+          Oracle <span className="bg-linear-to-r from-indigo-400 to-indigo-600 bg-clip-text text-transparent">Core</span>
         </h2>
-        <p className="mt-1 text-center text-xs text-slate-500 max-w-[260px] leading-relaxed">
+        <p className="mt-1 text-center text-xs text-zinc-500 max-w-65 leading-relaxed">
           Modullere tiklayarak hizli islem yapin.
         </p>
       </div>
