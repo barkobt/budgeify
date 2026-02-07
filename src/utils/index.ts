@@ -24,6 +24,34 @@ export function formatCurrency(amount: number, currency: CurrencyCode = 'TRY'): 
 }
 
 /**
+ * Kompakt para formatı — küçük alanlarda (die, chip) kullanım için
+ * Ondalık kısmı kaldırır, büyük sayıları kısaltır (1.2K, 3.5M)
+ * @example formatCurrencyCompact(12000, 'TRY') => "₺12.000"
+ * @example formatCurrencyCompact(1500000, 'TRY') => "₺1,5M"
+ */
+export function formatCurrencyCompact(amount: number, currency: CurrencyCode = 'TRY'): string {
+  const config = CURRENCY_CONFIG[currency] || CURRENCY_CONFIG.TRY;
+  const abs = Math.abs(amount);
+  const sign = amount < 0 ? '-' : '';
+
+  if (abs >= 1_000_000) {
+    const val = (abs / 1_000_000).toFixed(1).replace('.', currency === 'TRY' ? ',' : '.');
+    return `${sign}${config.symbol}${val}M`;
+  }
+  if (abs >= 100_000) {
+    const val = (abs / 1_000).toFixed(0);
+    return `${sign}${config.symbol}${val}K`;
+  }
+
+  return new Intl.NumberFormat(config.locale, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+/**
  * Para birimi sembolünü döndürür
  */
 export function getCurrencySymbol(currency: CurrencyCode = 'TRY'): string {

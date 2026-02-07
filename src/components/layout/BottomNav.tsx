@@ -25,7 +25,8 @@ const navItems = [
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40
-                    bg-cosmic-900/90 backdrop-blur-xl border-t border-white/5 safe-area-pb">
+                    backdrop-blur-xl border-t border-white/5 safe-area-pb"
+         style={{ background: 'rgba(5, 5, 8, 0.90)' }}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-around h-16">
           {navItems.map((item) => {
@@ -36,7 +37,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
               <button
                 key={item.tab}
                 onClick={() => onTabChange(item.tab)}
-                className="flex flex-col items-center justify-center gap-1.5 min-w-[70px] py-2
+                className="flex flex-col items-center justify-center gap-1.5 min-w-17.5 py-2
                            transition-all duration-300 relative group"
                 aria-label={item.name}
                 aria-current={isActive ? 'page' : undefined}
@@ -46,7 +47,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
                   className={`absolute top-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full
                               transition-all duration-300 ${
                                 isActive
-                                  ? 'w-10 bg-gradient-to-r from-accent-400 to-violet-500 shadow-lg shadow-accent-500/50'
+                                  ? 'w-10 bg-linear-to-r from-accent-400 to-violet-500 shadow-lg shadow-accent-500/50'
                                   : 'w-0 bg-transparent'
                               }`}
                 />

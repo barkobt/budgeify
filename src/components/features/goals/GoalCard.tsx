@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { calculateSavingsGoal } from '@/lib/analytics';
-import { formatCurrency, formatDate } from '@/utils';
+import { formatCurrencyCompact, formatDate } from '@/utils';
 import { Target, TrendingUp, Calendar, Trash2, Check, X, Plus } from 'lucide-react';
 import type { Goal } from '@/types';
 
@@ -161,8 +161,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white">{goal.name}</h3>
-            <p className="text-sm text-slate-400 tabular-nums">
-              {formatCurrency(goal.currentAmount, currency)} / {formatCurrency(goal.targetAmount, currency)}
+            <p className="text-sm text-slate-400 tabular-nums truncate max-w-45">
+              {formatCurrencyCompact(goal.currentAmount, currency)} / {formatCurrencyCompact(goal.targetAmount, currency)}
             </p>
           </div>
         </div>
@@ -221,8 +221,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
               <Target className="h-3.5 w-3.5" />
               <span className="text-xs font-medium">Kalan</span>
             </div>
-            <p className="text-sm font-bold text-slate-200 tabular-nums">
-              {formatCurrency(remaining, currency)}
+            <p className="text-sm font-bold text-slate-200 tabular-nums truncate">
+              {formatCurrencyCompact(remaining, currency)}
             </p>
           </div>
           {goal.targetDate && (
@@ -239,8 +239,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
                   <TrendingUp className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium">Günlük</span>
                 </div>
-                <p className="text-sm font-bold text-slate-200 tabular-nums">
-                  {formatCurrency(dailySavingsNeeded, currency)}
+                <p className="text-sm font-bold text-slate-200 tabular-nums truncate">
+                  {formatCurrencyCompact(dailySavingsNeeded, currency)}
                 </p>
               </div>
             </>

@@ -609,7 +609,7 @@
   overflow: hidden;
 }
 
-/* Indigo orb — top center */
+/* Indigo orb — top center (opacity driven by --ambient-indigo-opacity for M11 ignition) */
 .ambient-orb-indigo {
   position: absolute;
   top: -20%;
@@ -617,19 +617,25 @@
   transform: translateX(-50%);
   width: 800px;
   height: 600px;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(79, 70, 229, 1) 0%, transparent 70%);
+  opacity: var(--ambient-indigo-opacity, 0.06);
   filter: blur(80px);
+  will-change: opacity;
+  transition: opacity 0.3s ease;
 }
 
-/* Violet orb — bottom right */
+/* Violet orb — bottom right (opacity driven by --ambient-violet-opacity for M11 ignition) */
 .ambient-orb-violet {
   position: absolute;
   bottom: -10%;
   right: -10%;
   width: 600px;
   height: 500px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.04) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(139, 92, 246, 1) 0%, transparent 70%);
+  opacity: var(--ambient-violet-opacity, 0.04);
   filter: blur(80px);
+  will-change: opacity;
+  transition: opacity 0.3s ease;
 }
 
 /* ========================================
@@ -640,7 +646,35 @@
 
 .oracle-runway {
   position: relative;
-  height: 150vh;
+  height: 250vh;
+}
+
+/* Responsive assembly container — wider on large screens */
+.oracle-assembly-container {
+  height: 380px;
+  max-width: 380px;
+}
+
+@media (min-width: 768px) {
+  .oracle-assembly-container {
+    height: 440px;
+    max-width: 440px;
+  }
+
+  .chip-ring-1 { width: 220px; height: 220px; }
+  .chip-ring-2 { width: 340px; height: 340px; }
+  .chip-ring-3 { width: 440px; height: 440px; }
+}
+
+@media (min-width: 1024px) {
+  .oracle-assembly-container {
+    height: 500px;
+    max-width: 500px;
+  }
+
+  .chip-ring-1 { width: 240px; height: 240px; }
+  .chip-ring-2 { width: 380px; height: 380px; }
+  .chip-ring-3 { width: 500px; height: 500px; }
 }
 
 .oracle-sticky {
@@ -728,18 +762,18 @@
 /* Silicon Glow — multi-layer cascade */
 .silicon-glow {
   box-shadow:
-    0 0 24px rgba(79, 70, 229, 0.15),
-    0 0 48px rgba(79, 70, 229, 0.10),
-    0 0 96px rgba(79, 70, 229, 0.05),
-    0 0 192px rgba(79, 70, 229, 0.02);
+    0 0 24px rgba(99, 102, 241, 0.18),
+    0 0 48px rgba(79, 70, 229, 0.12),
+    0 0 96px rgba(79, 70, 229, 0.06),
+    0 0 192px rgba(139, 92, 246, 0.03);
 }
 
 .silicon-glow--active {
   box-shadow:
-    0 0 32px rgba(79, 70, 229, 0.25),
-    0 0 64px rgba(79, 70, 229, 0.15),
-    0 0 128px rgba(79, 70, 229, 0.08),
-    0 0 256px rgba(79, 70, 229, 0.03);
+    0 0 36px rgba(99, 102, 241, 0.30),
+    0 0 72px rgba(79, 70, 229, 0.20),
+    0 0 128px rgba(99, 102, 241, 0.10),
+    0 0 256px rgba(139, 92, 246, 0.05);
   transition: box-shadow 0.8s ease;
 }
 
@@ -806,6 +840,20 @@
   .bento-grid {
     gap: 10px;
   }
+
+  .bento-1x1 { padding: 14px; min-height: 100px; }
+  .bento-2x1 { padding: 16px; min-height: 100px; }
+  .bento-2x2 { padding: 20px; min-height: 180px; }
+}
+
+@media (min-width: 1024px) {
+  .bento-grid {
+    gap: 12px;
+  }
+
+  .bento-1x1 { padding: 16px; min-height: 110px; }
+  .bento-2x1 { padding: 18px; min-height: 110px; }
+  .bento-2x2 { padding: 24px; min-height: 200px; }
 }
 
 /* Bento Card — base glass surface */
@@ -1193,6 +1241,146 @@
   0%   { width: 0%;   margin-left: 0; }
   50%  { width: 100%; margin-left: 0; }
   100% { width: 0%;   margin-left: 100%; }
+}
+
+/* ========================================
+   v4.6: M11 SCROLL PROGRESS INDICATOR
+   ======================================== */
+
+.scroll-progress-bar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 2px;
+  z-index: 45;
+  background: linear-gradient(180deg, #4F46E5 0%, #818CF8 100%);
+  transform-origin: top;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(79, 70, 229, 0.4);
+  transition: opacity 0.3s ease;
+}
+
+/* ========================================
+   v4.6: M11 CHROMATIC ABERRATION
+   Single pulse at dock completion (95%+)
+   ======================================== */
+
+@keyframes chromatic-pulse {
+  0%   { box-shadow: -1px 0 0 rgba(255,0,0,0), 1px 0 0 rgba(0,0,255,0); }
+  30%  { box-shadow: -2px 0 0 rgba(255,0,0,0.15), 2px 0 0 rgba(0,100,255,0.15); }
+  70%  { box-shadow: -1px 0 0 rgba(255,0,0,0.08), 1px 0 0 rgba(0,100,255,0.08); }
+  100% { box-shadow: 0 0 0 rgba(255,0,0,0), 0 0 0 rgba(0,0,255,0); }
+}
+
+.chromatic-pulse {
+  animation: chromatic-pulse 200ms ease-out forwards;
+}
+
+/* ========================================
+   v4.6: M11 SCREEN SHAKE — "Mass Landed"
+   ======================================== */
+
+@keyframes screen-shake {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-1px); }
+  30%  { transform: translateX(1px); }
+  45%  { transform: translateX(-0.5px); }
+  60%  { transform: translateX(0.5px); }
+  80%  { transform: translateX(-0.25px); }
+  100% { transform: translateX(0); }
+}
+
+.screen-shake {
+  animation: screen-shake 150ms ease-out forwards;
+}
+
+/* ========================================
+   v4.6: M12 SILICON DIE — Hardware Chip
+   4-layer SVG, 3 size states, parallax
+   ======================================== */
+
+.silicon-die-wrapper {
+  position: relative;
+  perspective: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Size states — spring-transitioned via framer-motion */
+.silicon-die--dormant  { width: 100px; height: 100px; }
+.silicon-die--active   { width: 120px; height: 120px; }
+.silicon-die--docked   { width: 64px;  height: 64px;  }
+
+/* Circuit trace stroke animation for die */
+.silicon-trace {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: silicon-trace-draw 2s var(--ease-out-expo) forwards;
+}
+
+.silicon-trace-secondary {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: silicon-trace-draw-secondary 2.5s var(--ease-out-expo) 0.3s forwards;
+}
+
+@keyframes silicon-trace-draw {
+  from { stroke-dashoffset: 60; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes silicon-trace-draw-secondary {
+  from { stroke-dashoffset: 40; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Core logic block glow pulse */
+@keyframes silicon-core-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(79, 70, 229, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(79, 70, 229, 0.6))
+           drop-shadow(0 0 24px rgba(79, 70, 229, 0.3));
+  }
+}
+
+.silicon-core--active {
+  animation: silicon-core-glow 2s ease-in-out infinite;
+}
+
+/* Light Leaks — radial gradient overlays at die edges */
+.silicon-light-leak {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  filter: blur(12px);
+}
+
+.silicon-light-leak--tl {
+  top: -15%;
+  left: -15%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 70%);
+}
+
+.silicon-light-leak--br {
+  bottom: -15%;
+  right: -15%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, transparent 70%);
+}
+
+.silicon-light-leak--tr {
+  top: -10%;
+  right: -10%;
+  width: 45%;
+  height: 45%;
+  background: radial-gradient(circle, rgba(165, 180, 252, 0.22) 0%, transparent 70%);
 }
 
 /* ========================================

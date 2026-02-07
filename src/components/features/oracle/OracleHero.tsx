@@ -1,29 +1,36 @@
 'use client';
 
 /**
- * OracleHero — Silicon Chip Core v4.0
+ * OracleHero — Cinematic Assembly v4.6 (M11 + M12)
  *
- * Scroll-driven silicon chip assembly with 3-speed concentric rings,
- * central die processor, 3-state machine (dormant→assembling→active),
- * and real-time data readout. Spring physics 260/20/1.
+ * 4-Phase scroll choreography over 200vh runway:
+ *   Phase 1 — Awakening (0–20%): Core dormant, breathing, modules invisible
+ *   Phase 2 — Assembly (20–50%): Modules converge, core warms up
+ *   Phase 3 — Ignition (50–70%): Core active, data readout, ambient ignition
+ *   Phase 4 — Dock (70–100%): Scale down, rings fade, chromatic + shake
+ *
+ * SiliconDie replaces Wallet icon (M12).
+ * Spring physics: 260/20/1 canonical, 300/15/1 for assembly convergence.
  */
 
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useRef, useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { Wallet, TrendingUp, TrendingDown, Target, BarChart3, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, BarChart3, Sparkles } from 'lucide-react';
 import { useBudgetStore } from '@/store/useBudgetStore';
-import { formatCurrency } from '@/utils';
+import { formatCurrencyCompact } from '@/utils';
 import { OracleModuleChip, type ChipDockState } from './OracleModuleChip';
+import { SiliconDie } from './SiliconDie';
 
 export type WalletModuleId = 'income' | 'expense' | 'goals' | 'analytics' | 'insights';
 type OracleState = 'dormant' | 'assembling' | 'active';
 
+// M11: Module scroll ranges shifted to 20–50% Assembly phase
 const MODULES = [
-  { id: 'income' as WalletModuleId, label: 'Gelir', Icon: TrendingUp, angle: -72, color: '#10B981', scrollStart: 0.05, scrollEnd: 0.20 },
-  { id: 'expense' as WalletModuleId, label: 'Gider', Icon: TrendingDown, angle: 0, color: '#F43F5E', scrollStart: 0.12, scrollEnd: 0.30 },
-  { id: 'goals' as WalletModuleId, label: 'Hedefler', Icon: Target, angle: 72, color: '#8B5CF6', scrollStart: 0.20, scrollEnd: 0.40 },
-  { id: 'analytics' as WalletModuleId, label: 'Analiz', Icon: BarChart3, angle: 144, color: '#4F46E5', scrollStart: 0.25, scrollEnd: 0.45 },
-  { id: 'insights' as WalletModuleId, label: 'Oracle', Icon: Sparkles, angle: -144, color: '#F59E0B', scrollStart: 0.30, scrollEnd: 0.50 },
+  { id: 'income' as WalletModuleId, label: 'Gelir', Icon: TrendingUp, angle: -72, color: '#10B981', scrollStart: 0.20, scrollEnd: 0.35 },
+  { id: 'expense' as WalletModuleId, label: 'Gider', Icon: TrendingDown, angle: 0, color: '#F43F5E', scrollStart: 0.24, scrollEnd: 0.38 },
+  { id: 'goals' as WalletModuleId, label: 'Hedefler', Icon: Target, angle: 72, color: '#8B5CF6', scrollStart: 0.28, scrollEnd: 0.42 },
+  { id: 'analytics' as WalletModuleId, label: 'Analiz', Icon: BarChart3, angle: 144, color: '#4F46E5', scrollStart: 0.32, scrollEnd: 0.46 },
+  { id: 'insights' as WalletModuleId, label: 'Oracle', Icon: Sparkles, angle: -144, color: '#F59E0B', scrollStart: 0.36, scrollEnd: 0.50 },
 ];
 
 const SCATTER_RADIUS = 160;
@@ -35,9 +42,10 @@ function getRadialPos(angle: number, radius: number) {
   return { x: Math.cos(rad) * radius, y: Math.sin(rad) * radius };
 }
 
+// M11: 4-phase state machine
 function getOracleState(progress: number): OracleState {
-  if (progress < 0.25) return 'dormant';
-  if (progress < 0.60) return 'assembling';
+  if (progress < 0.20) return 'dormant';
+  if (progress < 0.50) return 'assembling';
   return 'active';
 }
 
@@ -47,14 +55,25 @@ function getChipDockState(progress: number, scrollEnd: number): ChipDockState {
   return 'docked';
 }
 
-interface OracleHeroProps {
-  onModuleClick?: (moduleId: WalletModuleId) => void;
+// M12: Die size from oracle state + dock phase
+function getDieSize(state: OracleState, dockProgress: number): 'dormant' | 'active' | 'docked' {
+  if (state === 'dormant') return 'dormant';
+  if (dockProgress > 0.85) return 'docked';
+  return 'active';
 }
 
-export function OracleHero({ onModuleClick }: OracleHeroProps) {
+interface OracleHeroProps {
+  onModuleClick?: (moduleId: WalletModuleId) => void;
+  onScrollProgress?: (progress: number) => void;
+}
+
+export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [oracleState, setOracleState] = useState<OracleState>('dormant');
+  const [hasDocked, setHasDocked] = useState(false);
+  const [showChromatic, setShowChromatic] = useState(false);
+  const [showShake, setShowShake] = useState(false);
 
   // Store bindings
   const balance = useBudgetStore((s) => s.getBalance());
@@ -64,22 +83,65 @@ export function OracleHero({ onModuleClick }: OracleHeroProps) {
     s.goals.reduce((sum, g) => sum + g.currentAmount, 0)
   );
 
-  // Scroll-driven assembly
+  // Scroll-driven assembly over 200vh runway
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
 
-  // Track oracle state from scroll
+  // Track oracle state + dock effects from scroll
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     const newState = getOracleState(latest);
     if (newState !== oracleState) setOracleState(newState);
+
+    // Report scroll progress to parent (ambient ignition)
+    onScrollProgress?.(latest);
+
+    // M11 Phase 4: Chromatic + Shake at dock completion
+    if (latest >= 0.95 && !hasDocked) {
+      setHasDocked(true);
+      setShowChromatic(true);
+      setShowShake(true);
+      // Auto-dismiss effects
+      setTimeout(() => setShowChromatic(false), 250);
+      setTimeout(() => setShowShake(false), 200);
+    }
+    if (latest < 0.90) {
+      setHasDocked(false);
+    }
   });
 
-  // Core visual transforms
-  const coreScale = useTransform(scrollYProgress, [0, 0.25, 0.6], [0.85, 0.95, 1]);
-  const coreGlow = useTransform(scrollYProgress, [0, 0.25, 0.6], [0.15, 0.5, 1]);
-  const dataReadoutOpacity = useTransform(scrollYProgress, [0.55, 0.65], [0, 1]);
+  // ===== PHASE 1 — Awakening (0–20%) =====
+  // Core: scale 0.8, breathing pulse via CSS
+  // Rings: opacity 0.2, slow rotation (CSS base)
+
+  // ===== PHASE 2 — Assembly (20–50%) =====
+  // Core: scale 0.8→0.95, modules converge
+
+  // ===== PHASE 3 — Ignition (50–70%) =====
+  // Core: scale 0.95→1.0, data readout fades in, glow peaks
+
+  // ===== PHASE 4 — Dock (70–100%) =====
+  // Core: scale 1.0→0.6, translateY toward bento, rings fade out
+
+  // Core visual transforms — 4-phase
+  const coreScale = useTransform(
+    scrollYProgress,
+    [0, 0.20, 0.50, 0.70, 1.0],
+    [0.8, 0.8, 0.95, 1.0, 0.6]
+  );
+  const coreGlow = useTransform(
+    scrollYProgress,
+    [0, 0.20, 0.50, 0.70],
+    [0.1, 0.15, 0.5, 1.0]
+  );
+  const dataReadoutOpacity = useTransform(scrollYProgress, [0.50, 0.60], [0, 1]);
+
+  // Phase 4: Dock translateY — core moves down toward bento
+  const coreDockY = useTransform(scrollYProgress, [0.70, 1.0], [0, 60]);
+
+  // Phase 4: Ring fade out
+  const ringOpacity = useTransform(scrollYProgress, [0.70, 0.90], [1, 0]);
 
   // Module positions (memoized)
   const scatterPositions = useMemo(
@@ -94,37 +156,40 @@ export function OracleHero({ onModuleClick }: OracleHeroProps) {
   // Ring state class
   const ringStateClass = `chip-ring--${oracleState}`;
 
-  // Die state class
-  const dieClass = oracleState === 'dormant'
-    ? 'oracle-die oracle-die--dormant'
-    : oracleState === 'active'
-      ? 'oracle-die oracle-die--active'
-      : 'oracle-die';
-
   // Silicon glow class
   const siliconGlowClass = oracleState === 'active' ? 'silicon-glow--active' : 'silicon-glow';
+
+  // Die size state
+  const dieSize = getDieSize(oracleState, scrollYProgress.get());
 
   // Status display
   const hoveredModule = hoveredId ? MODULES.find((m) => m.id === hoveredId) : null;
 
   const handleHover = useCallback((id: string | null) => setHoveredId(id), []);
 
+  // Clean up timeouts on unmount
+  useEffect(() => {
+    return () => {
+      setShowChromatic(false);
+      setShowShake(false);
+    };
+  }, []);
+
   return (
     <div ref={containerRef} className="oracle-runway">
-      <div className="oracle-sticky">
+      <div className={`oracle-sticky ${showShake ? 'screen-shake' : ''}`}>
       <div className="flex flex-col items-center justify-center min-h-[60vh] py-6">
         {/* Silicon Assembly Container */}
         <div
-          className={`relative w-full mx-auto rounded-full ${siliconGlowClass}`}
-          style={{ height: 380, maxWidth: 380 }}
+          className={`relative w-full mx-auto rounded-full ${siliconGlowClass} ${showChromatic ? 'chromatic-pulse' : ''} oracle-assembly-container`}
         >
           <LayoutGroup>
-            {/* 3-Speed Concentric Rings */}
-            <div className={`chip-ring chip-ring-3 ${ringStateClass}`} aria-hidden="true" />
-            <div className={`chip-ring chip-ring-2 ${ringStateClass}`} aria-hidden="true" />
-            <div className={`chip-ring chip-ring-1 ${ringStateClass}`} aria-hidden="true" />
+            {/* 3-Speed Concentric Rings — fade out in Phase 4 */}
+            <motion.div className={`chip-ring chip-ring-3 ${ringStateClass}`} style={{ opacity: ringOpacity }} aria-hidden="true" />
+            <motion.div className={`chip-ring chip-ring-2 ${ringStateClass}`} style={{ opacity: ringOpacity }} aria-hidden="true" />
+            <motion.div className={`chip-ring chip-ring-1 ${ringStateClass}`} style={{ opacity: ringOpacity }} aria-hidden="true" />
 
-            {/* Module Chips — scroll-driven convergence into ring positions */}
+            {/* Module Chips — Assembly phase convergence (20–50%) */}
             {MODULES.map((mod, i) => (
               <OracleModuleChip
                 key={mod.id}
@@ -147,52 +212,51 @@ export function OracleHero({ onModuleClick }: OracleHeroProps) {
               />
             ))}
 
-            {/* Central Die — Silicon Processor */}
+            {/* Central Die — M12 Silicon Die replaces Wallet */}
             <motion.div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
-              style={{ scale: coreScale }}
+              style={{ scale: coreScale, y: coreDockY }}
             >
               <div className="relative">
                 {/* Ambient glow behind die */}
                 <motion.div
-                  className="absolute -inset-6 rounded-3xl bg-indigo-600/25 blur-2xl"
+                  className="absolute -inset-8 rounded-3xl bg-indigo-600/25 blur-2xl"
                   style={{ opacity: coreGlow }}
                 />
 
-                {/* The Die */}
-                <div className={dieClass}>
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-1">
-                    {/* Icon — always visible */}
-                    <Wallet size={24} className="text-white/90" strokeWidth={1.5} />
+                {/* M12: Silicon Die — 4-layer SVG hardware chip */}
+                <SiliconDie
+                  size={dieSize}
+                  scrollProgress={scrollYProgress}
+                  layoutId="silicon-die-core"
+                />
 
-                    {/* Data Readout — active state only */}
-                    <AnimatePresence>
-                      {oracleState === 'active' && (
-                        <motion.div
-                          className="flex flex-col items-center"
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 4 }}
-                          transition={ASSEMBLY_SPRING}
-                          style={{ opacity: dataReadoutOpacity }}
-                          role="status"
-                          aria-label={`Bakiye: ${formatCurrency(balance, currency)}`}
-                        >
-                          <span className="text-lg font-bold tabular-nums text-white leading-none">
-                            {formatCurrency(balance, currency)}
-                          </span>
-                          {totalGoalSavings > 0 && (
-                            <span className="text-[9px] font-medium text-indigo-200/70 mt-0.5">
-                              {formatCurrency(totalGoalSavings, currency)} tasarruf
-                            </span>
-                          )}
-                        </motion.div>
+                {/* Data Readout — Ignition phase (50–70%) */}
+                <AnimatePresence>
+                  {oracleState === 'active' && (
+                    <motion.div
+                      className="absolute inset-0 flex flex-col items-center justify-center"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={ASSEMBLY_SPRING}
+                      style={{ opacity: dataReadoutOpacity }}
+                      role="status"
+                      aria-label={`Bakiye: ${formatCurrencyCompact(balance, currency)}`}
+                    >
+                      <span className="text-sm font-bold tabular-nums text-white leading-none drop-shadow-lg max-w-[90%] truncate text-center">
+                        {formatCurrencyCompact(balance, currency)}
+                      </span>
+                      {totalGoalSavings > 0 && (
+                        <span className="text-[8px] font-medium text-indigo-200/70 mt-0.5 drop-shadow-sm max-w-[90%] truncate text-center">
+                          {formatCurrencyCompact(totalGoalSavings, currency)}
+                        </span>
                       )}
-                    </AnimatePresence>
-                  </div>
-                </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                {/* Pulse ring around die */}
+                {/* Pulse ring around die — active state */}
                 {oracleState === 'active' && (
                   <motion.div
                     className="absolute -inset-3 rounded-3xl border border-indigo-400/20"

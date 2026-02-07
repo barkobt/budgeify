@@ -33,7 +33,7 @@ export const Header = () => {
 
   return (
     <header className="w-full fixed top-0 left-0 right-0 z-50
-                       bg-[#050505]/80 backdrop-blur-xl border-b border-white/5">
+                       bg-depth-surface/80 backdrop-blur-xl border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Logo size="sm" showText={true} href="/dashboard" />
@@ -140,9 +140,11 @@ function AuthButtons({
               avatarBox: 'w-9 h-9 ring-2 ring-accent-500/30',
               userButtonPopoverCard: '!bg-zinc-900 border border-white/10 shadow-2xl',
               userButtonPopoverActions: '!bg-transparent',
-              userButtonPopoverActionButton: 'text-slate-200 hover:!bg-white/10',
+              userButtonPopoverActionButton: '!text-slate-200 hover:!bg-white/10',
               userButtonPopoverActionButtonText: '!text-slate-200',
               userButtonPopoverActionButtonIcon: '!text-slate-400',
+              userPreviewMainIdentifier: '!text-white',
+              userPreviewSecondaryIdentifier: '!text-slate-400',
               userButtonPopoverFooter: 'hidden',
             },
           }}

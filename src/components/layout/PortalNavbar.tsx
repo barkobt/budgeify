@@ -44,7 +44,7 @@ export const PortalNavbar: React.FC<PortalNavbarProps> = ({ activeTab = 'dashboa
 
   return (
     <nav className="portal-navbar" role="navigation" aria-label="Portal navigation">
-      <div className="max-w-lg mx-auto px-4 h-full flex items-center justify-between">
+      <div className="max-w-lg md:max-w-xl lg:max-w-2xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
         {/* Left: Mini Die Logo */}
         <button
           onClick={scrollToTop}
@@ -93,9 +93,11 @@ export const PortalNavbar: React.FC<PortalNavbarProps> = ({ activeTab = 'dashboa
                   avatarBox: 'w-8 h-8 ring-2 ring-accent-500/30',
                   userButtonPopoverCard: '!bg-zinc-900 border border-white/10 shadow-2xl',
                   userButtonPopoverActions: '!bg-transparent',
-                  userButtonPopoverActionButton: 'text-slate-200 hover:!bg-white/10',
+                  userButtonPopoverActionButton: '!text-slate-200 hover:!bg-white/10',
                   userButtonPopoverActionButtonText: '!text-slate-200',
                   userButtonPopoverActionButtonIcon: '!text-slate-400',
+                  userPreviewMainIdentifier: '!text-white',
+                  userPreviewSecondaryIdentifier: '!text-slate-400',
                   userButtonPopoverFooter: 'hidden',
                 },
               }}

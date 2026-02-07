@@ -11,6 +11,7 @@ import { motion, type MotionValue, useTransform } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
 const ASSEMBLY_SPRING = { type: 'spring' as const, stiffness: 260, damping: 20, mass: 1 };
+const CONVERGENCE_SPRING = { type: 'spring' as const, stiffness: 300, damping: 15, mass: 1 };
 
 export type ChipDockState = 'scattered' | 'docking' | 'docked';
 
@@ -51,11 +52,14 @@ export function OracleModuleChip({
   onClick,
   index: _index,
 }: OracleModuleChipProps) {
-  // Non-linear convergence: scattered → dock position
+  // Non-linear convergence: scattered → dock position (M11 tighter physics)
   const convergeFactor = useTransform(scrollProgress, [scrollStart, scrollEnd], [0, 1]);
   const x = useTransform(convergeFactor, [0, 1], [baseX, dockX]);
   const y = useTransform(convergeFactor, [0, 1], [baseY, dockY]);
   const chipOpacity = useTransform(scrollProgress, [scrollStart - 0.05, scrollStart], [0, 1]);
+
+  // Phase 4: Label fade-out during dock (70–90%)
+  const labelOpacity = useTransform(scrollProgress, [0.70, 0.90], [1, 0]);
 
   const isDocked = dockState === 'docked';
   const dockedClass = isDocked ? `oracle-chip--docked-${id}` : '';
@@ -65,7 +69,7 @@ export function OracleModuleChip({
       layoutId={`oracle-chip-${id}`}
       className="absolute left-1/2 top-1/2"
       style={{ x, y, opacity: chipOpacity }}
-      transition={ASSEMBLY_SPRING}
+      transition={CONVERGENCE_SPRING}
       onMouseEnter={() => onHover(id)}
       onMouseLeave={() => onHover(null)}
     >
@@ -105,12 +109,12 @@ export function OracleModuleChip({
           strokeWidth={2}
           className="transition-colors duration-200 shrink-0"
         />
-        <span
+        <motion.span
           className="text-[11px] font-medium transition-colors duration-200 whitespace-nowrap"
-          style={{ color: isDocked || isHovered ? '#E4E4E7' : '#71717A' }}
+          style={{ color: isDocked || isHovered ? '#E4E4E7' : '#71717A', opacity: labelOpacity }}
         >
           {label}
-        </span>
+        </motion.span>
 
         {/* Haptic glow dot — visible when docked */}
         {isDocked && (

@@ -84,9 +84,12 @@ export default function RootLayout({
         },
         elements: {
           userButtonPopoverCard: '!bg-zinc-900 border border-white/10',
-          userButtonPopoverActionButton: 'text-slate-200 hover:!bg-white/10',
+          userButtonPopoverActions: '!bg-transparent',
+          userButtonPopoverActionButton: '!text-slate-200 hover:!bg-white/10',
           userButtonPopoverActionButtonText: '!text-slate-200',
           userButtonPopoverActionButtonIcon: '!text-slate-400',
+          userPreviewMainIdentifier: '!text-white',
+          userPreviewSecondaryIdentifier: '!text-slate-400',
           userButtonPopoverFooter: 'hidden',
         },
       }}

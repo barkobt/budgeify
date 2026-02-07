@@ -29,6 +29,7 @@ import {
   CheckCircle2,
   LayoutDashboard,
 } from 'lucide-react';
+import { SiliconDie } from '@/components/features/oracle/SiliconDie';
 
 /**
  * LandingAuthNav — Auth-aware nav buttons
@@ -91,12 +92,14 @@ function GuestNavButtons() {
       >
         Giriş Yap
       </Link>
-      <GlowButton
-        className="px-4 py-2 text-sm font-semibold text-white ai-gradient rounded-lg
-                 shadow-lg shadow-accent-500/20"
-      >
-        <Link href="/sign-up">Ücretsiz Başla</Link>
-      </GlowButton>
+      <Link href="/sign-up">
+        <GlowButton
+          className="px-4 py-2 text-sm font-semibold text-white ai-gradient rounded-lg
+                   shadow-lg shadow-accent-500/20"
+        >
+          Ücretsiz Başla
+        </GlowButton>
+      </Link>
     </>
   );
 }
@@ -106,7 +109,7 @@ export default function LandingPage() {
   useEffect(() => setIsMounted(true), []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cosmic-900 via-cosmic-800 to-cosmic-700 overflow-hidden">
+    <div className="min-h-screen overflow-hidden" style={{ background: 'linear-gradient(180deg, #050508 0%, #0a0a1a 40%, #0d0d1f 100%)' }}>
       {/* ========================================
           NAVIGATION
           ======================================== */}
@@ -114,7 +117,8 @@ export default function LandingPage() {
         initial={isMounted ? { y: -100, opacity: 0 } : false}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 bg-cosmic-900/80 backdrop-blur-xl border-b border-white/5"
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-white/5"
+        style={{ background: 'rgba(5, 5, 8, 0.80)' }}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -136,13 +140,15 @@ export default function LandingPage() {
           initial={isMounted ? { opacity: 0, scale: 0.8 } : false}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent-500/20 rounded-full blur-[128px] pointer-events-none"
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-150 h-150 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(79, 70, 229, 0.25) 0%, transparent 70%)', filter: 'blur(80px)' }}
         />
         <motion.div
           initial={isMounted ? { opacity: 0, x: -100 } : false}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, delay: 0.2, ease: 'easeOut' }}
-          className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-violet-500/10 rounded-full blur-[100px] pointer-events-none"
+          className="absolute top-1/3 left-1/4 w-100 h-100 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)', filter: 'blur(60px)' }}
         />
 
         <div className="relative max-w-4xl mx-auto text-center">
@@ -171,6 +177,19 @@ export default function LandingPage() {
               Budgeify ile gelir ve giderlerinizi takip edin, akıllı tasarruf önerileri alın
               ve finansal hedeflerinize yapay zeka desteğiyle ulaşın.
             </p>
+          </HeroText>
+
+          {/* Silicon Die — Hero Visual */}
+          <HeroText delay={0.35}>
+            <div className="flex items-center justify-center mb-8">
+              <motion.div
+                animate={{ rotateZ: [0, 360] }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                className="relative"
+              >
+                <SiliconDie size="active" layoutId="landing-die" />
+              </motion.div>
+            </div>
           </HeroText>
 
           {/* CTA Buttons */}
@@ -323,7 +342,8 @@ export default function LandingPage() {
             transition={{ type: 'spring', stiffness: 200 }}
           >
             <motion.div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-accent-500/30 rounded-full blur-[80px] pointer-events-none"
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-100 h-50 rounded-full pointer-events-none"
+              style={{ background: 'radial-gradient(circle, rgba(79, 70, 229, 0.35) 0%, transparent 70%)', filter: 'blur(40px)' }}
               animate={{
                 scale: [1, 1.2, 1],
                 opacity: [0.3, 0.5, 0.3],
@@ -373,6 +393,7 @@ export default function LandingPage() {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className="py-12 px-4 border-t border-white/5"
+        style={{ background: 'rgba(5, 5, 8, 0.5)' }}
       >
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">

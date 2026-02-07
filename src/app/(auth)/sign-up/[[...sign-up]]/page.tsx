@@ -89,7 +89,7 @@ function ClerkSignUpLoader() {
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cosmic-900 via-cosmic-800 to-cosmic-700 px-4 py-12 overflow-hidden relative">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden relative" style={{ background: 'linear-gradient(180deg, #050508 0%, #0a0a1a 40%, #0d0d1f 100%)' }}>
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}

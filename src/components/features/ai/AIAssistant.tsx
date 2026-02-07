@@ -215,7 +215,8 @@ export const AIAssistant: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-50 bg-cosmic-900/80 backdrop-blur-md"
+            className="fixed inset-0 z-50 backdrop-blur-md"
+            style={{ background: 'rgba(5, 5, 8, 0.80)' }}
             onClick={() => setIsOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -228,9 +229,9 @@ export const AIAssistant: React.FC = () => {
       <motion.div
         className="fixed bottom-0 left-0 right-0 z-50 flex flex-col
                   max-h-[85vh] rounded-t-3xl
-                  bg-gradient-to-b from-cosmic-700/95 to-cosmic-800/95
                   backdrop-blur-xl border-t border-x border-white/10
                   shadow-2xl shadow-black/50"
+        style={{ background: 'linear-gradient(180deg, rgba(13, 13, 31, 0.95) 0%, rgba(10, 10, 26, 0.95) 100%)' }}
         initial={{ y: '100%' }}
         animate={{ y: isOpen ? 0 : '100%' }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}

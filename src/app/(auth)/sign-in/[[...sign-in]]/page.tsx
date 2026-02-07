@@ -89,19 +89,19 @@ function ClerkSignInLoader() {
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cosmic-900 via-cosmic-800 to-cosmic-700 px-4 py-12 overflow-hidden relative">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden relative" style={{ background: 'linear-gradient(180deg, #050508 0%, #0a0a1a 40%, #0d0d1f 100%)' }}>
       {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-accent-500/15 rounded-full blur-[120px] pointer-events-none"
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-125 h-125 bg-accent-500/15 rounded-full blur-[120px] pointer-events-none"
       />
       <motion.div
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1.2, delay: 0.2 }}
-        className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-violet-500/10 rounded-full blur-[100px] pointer-events-none"
+        className="absolute top-1/3 right-1/4 w-75 h-75 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none"
       />
 
       {/* Floating decorative elements */}

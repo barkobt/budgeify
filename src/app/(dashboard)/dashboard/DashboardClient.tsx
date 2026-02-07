@@ -17,7 +17,7 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { PortalNavbar } from '@/components/layout/PortalNavbar';
 import { DockBar } from '@/components/layout/DockBar';
 import { Drawer } from '@/components/ui/Drawer';
@@ -106,10 +106,30 @@ export default function DashboardClient() {
   const [txView, setTxView] = useState<TransactionView>('expenses');
   const [editingIncome, setEditingIncome] = useState<Income | null>(null);
 
+  const [showPreflight, setShowPreflight] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
     setIsMounted(true);
+    // Client-side cinematic entrance — dismiss after 1.8s
+    const timer = setTimeout(() => setShowPreflight(false), 1800);
+    return () => clearTimeout(timer);
   }, []);
+
+  // M11: Ambient ignition — drive orb opacity via CSS custom properties
+  const handleScrollProgress = (progress: number) => {
+    setScrollProgress(progress);
+    // Phase 3 Ignition (50–70%): ambient orbs intensify
+    const indigoOpacity = progress < 0.5 ? 0.06
+      : progress < 0.7 ? 0.06 + (progress - 0.5) / 0.2 * 0.14
+      : 0.20;
+    const violetOpacity = progress < 0.5 ? 0.04
+      : progress < 0.7 ? 0.04 + (progress - 0.5) / 0.2 * 0.08
+      : 0.12;
+    document.documentElement.style.setProperty('--ambient-indigo-opacity', String(indigoOpacity));
+    document.documentElement.style.setProperty('--ambient-violet-opacity', String(violetOpacity));
+  };
 
   // Live store data
   const expenses = useBudgetStore((s) => s.expenses);
@@ -154,17 +174,71 @@ export default function DashboardClient() {
 
   return (
     <>
+      {/* Client-side cinematic entrance — replaces server-side delay */}
+      <AnimatePresence>
+        {showPreflight && (
+          <motion.div
+            className="preflight-screen"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="preflight-ambient" />
+            <div className="preflight-die-container">
+              <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="preflight-die" aria-hidden="true">
+                <rect x="10" y="10" width="80" height="80" rx="16" fill="#1e1b4b" stroke="#312e81" strokeWidth="0.5" />
+                <line x1="30" y1="10" x2="30" y2="90" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
+                <line x1="50" y1="10" x2="50" y2="90" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
+                <line x1="70" y1="10" x2="70" y2="90" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
+                <line x1="10" y1="30" x2="90" y2="30" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
+                <line x1="10" y1="50" x2="90" y2="50" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
+                <line x1="10" y1="70" x2="90" y2="70" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
+                <path d="M25 50 H40 M60 50 H75 M50 25 V40 M50 60 V75" stroke="#4F46E5" strokeWidth="1" opacity="0.6" className="preflight-trace" />
+                <path d="M30 30 L40 40 M60 40 L70 30 M30 70 L40 60 M60 60 L70 70" stroke="#6366F1" strokeWidth="0.8" opacity="0.4" className="preflight-trace-secondary" />
+                <rect x="35" y="35" width="30" height="30" rx="8" fill="url(#coreGradientClient)" className="preflight-core" />
+                <rect x="10" y="10" width="80" height="80" rx="16" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+                <defs>
+                  <linearGradient id="coreGradientClient" x1="35" y1="35" x2="65" y2="65">
+                    <stop offset="0%" stopColor="#4F46E5" />
+                    <stop offset="50%" stopColor="#6366F1" />
+                    <stop offset="100%" stopColor="#818CF8" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div className="preflight-status" aria-live="polite">
+              <span className="preflight-text preflight-text-1">Sistemler uyanıyor...</span>
+              <span className="preflight-text preflight-text-2">Finansal çekirdek hazırlanıyor...</span>
+              <span className="preflight-text preflight-text-3">Oracle aktif</span>
+            </div>
+            <div className="preflight-progress">
+              <div className="preflight-progress-bar" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* M11: Scroll Progress Indicator — right edge indigo bar */}
+      {activeTab === 'dashboard' && scrollProgress > 0 && scrollProgress < 1 && (
+        <div
+          className="scroll-progress-bar"
+          style={{ height: `${scrollProgress * 100}vh`, opacity: scrollProgress < 0.98 ? 1 : 0 }}
+          aria-hidden="true"
+        />
+      )}
+
       <PageWrapper>
         <main id="main-content" className="min-h-screen pb-24 px-4 sm:px-6" role="main">
-          <div className="mx-auto max-w-lg">
+          <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-2xl">
           {/* ========================================
               DASHBOARD TAB — Bento Grid v4.0
               ======================================== */}
           {activeTab === 'dashboard' && (
+            <LayoutGroup>
             <BentoGrid isMounted={isMounted}>
               {/* Oracle Core Hero — full width, no card chrome */}
               <BentoCard size="full">
-                <OracleHero onModuleClick={handleModuleClick} />
+                <OracleHero onModuleClick={handleModuleClick} onScrollProgress={handleScrollProgress} />
               </BentoCard>
 
               {/* Hero Balance — 2×2 (child has own glass-card styling) */}
@@ -320,6 +394,7 @@ export default function DashboardClient() {
                 </div>
               </BentoCard>
             </BentoGrid>
+            </LayoutGroup>
           )}
 
           {/* ========================================

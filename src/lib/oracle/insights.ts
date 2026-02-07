@@ -14,6 +14,7 @@ import {
   analyzeGoals,
 } from './heuristics';
 import { estimateConfidence, type ConfidenceLevel } from './confidence';
+import { formatCurrencyCompact } from '@/utils';
 
 export interface Insight {
   id: string;
@@ -25,14 +26,7 @@ export interface Insight {
   createdAt: string;
 }
 
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+const formatCurrency = (amount: number) => formatCurrencyCompact(amount, 'TRY');
 
 export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
   const insights: Insight[] = [];
