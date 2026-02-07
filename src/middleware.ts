@@ -1,9 +1,10 @@
 /**
- * Budgeify — Authentication Middleware (v3.2)
+ * Budgeify — Authentication Middleware (v4.6)
  *
  * Crash-proof: skips Clerk auth when env keys are missing.
- * Static assets (_next/static, images, favicon) are excluded at matcher level.
- * Only HTML routes and API endpoints pass through Clerk.
+ * Static assets, manifest, robots, and image files are excluded at matcher level.
+ * Public routes: landing, auth pages, webhooks.
+ * Protected routes: /dashboard and sub-routes.
  */
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
@@ -34,8 +35,9 @@ export const config = {
      * - _next/static  (static files)
      * - _next/image   (image optimization)
      * - favicon.ico   (browser favicon)
-     * - *.svg, *.png, *.jpg, *.jpeg, *.gif, *.webp, *.ico (static assets)
+     * - manifest.json, robots.txt (public meta files)
+     * - *.svg, *.png, *.jpg, *.jpeg, *.gif, *.webp, *.ico, *.txt, *.json (static assets)
      */
-    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|robots\\.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|json)$).*)",
   ],
 };

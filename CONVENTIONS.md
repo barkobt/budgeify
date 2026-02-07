@@ -701,7 +701,7 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | 2026-02-07 | v4.6 Plan: The Mechanical Heart | Approved | Full spec: `skills/architect/v46-plan.md` — 5 milestones below |
 | 2026-02-07 | v4.6 M13-C: Portal Navbar + Dock Bar | Completed | `PortalNavbar.tsx` (command strip, context title, Clerk UserBtn) + `DockBar.tsx` (atmospheric glass blur(20px)+saturate(180%), DOCK_SPRING 400/10 bounce, energy glow halo, center FAB with radial quick-add + blur overlay) — replaces Header+BottomNav in dashboard |
 | 2026-02-07 | v4.6 M13-A: Pre-flight Screen | Completed | `dashboard/loading.tsx` rewrite — 4-layer Silicon Die SVG (substrate→traces→core→heatspreader), CSS-only preflight-rotate (4s) + preflight-pulse (2s), circuit trace stroke-dashoffset animation, 4-phase sequential status text (800ms each), ambient glow ring, indigo progress sweep bar |
-| 2026-02-07 | v4.6 M13-B: Auth Streamline | Planned | Clerk `afterSignInUrl`/`afterSignUpUrl` → `/dashboard` direct redirect, eliminate intermediate step |
+| 2026-02-07 | v4.6 M13-B: Auth Streamline | Completed | ClerkProvider `afterSignInUrl`/`afterSignUpUrl` → `/dashboard`, middleware matcher hardened (manifest.json, robots.txt, .txt/.json excluded), page.tsx → async server wrapper + DashboardClient.tsx extraction |
 | 2026-02-07 | v4.6 M11: Cinematic Assembly | Planned | 200vh runway, 4-phase choreography (Awakening→Assembly→Ignition→Dock), ambient layer ignition, scroll progress indicator, seamless handover via layoutId, chromatic aberration + screen shake on dock |
 | 2026-02-07 | v4.6 M12: Silicon Die | Planned | `SiliconDie.tsx` — 4-layer SVG (substrate→traces→core→heatspreader), Z-axis parallax, light leaks, 3 size states (100/120/64px), replaces Wallet icon |
 
