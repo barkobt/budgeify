@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
-import { formatCurrency, formatDate, getCurrencySymbol } from '@/utils';
+import { formatCurrencyCompact, formatDate } from '@/utils';
 import { Edit2, Trash2, X } from 'lucide-react';
 import type { Income, CurrencyCode } from '@/types';
 import { INCOME_ICON_MAP } from '@/lib/category-icons';
@@ -22,7 +22,6 @@ const IncomeListItem: React.FC<{
   onDelete: (incomeId: string) => void;
 }> = ({ income, currency, onEdit, onDelete }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const symbol = getCurrencySymbol(currency);
   const Icon = INCOME_ICON_MAP[income.category];
 
   const handleDelete = () => {
@@ -82,8 +81,7 @@ const IncomeListItem: React.FC<{
         <div className="flex items-center gap-3">
           <div className="text-right">
             <p className="text-sm font-bold text-emerald-400 tabular-nums">
-              +{symbol}
-              {income.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+              +{formatCurrencyCompact(income.amount, currency)}
             </p>
           </div>
 
@@ -159,7 +157,7 @@ export const IncomeList: React.FC<IncomeListProps> = ({ onEditIncome }) => {
           Gelirlerim ({incomes.length})
         </h3>
         <div className="text-xs text-slate-500">
-          Toplam: {formatCurrency(
+          Toplam: {formatCurrencyCompact(
             incomes.reduce((sum, inc) => sum + inc.amount, 0),
             currency
           )}

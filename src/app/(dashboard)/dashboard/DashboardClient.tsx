@@ -19,6 +19,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { PortalNavbar } from '@/components/layout/PortalNavbar';
+import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 import { DockBar } from '@/components/layout/DockBar';
 import { Drawer } from '@/components/ui/Drawer';
 import { PageWrapper } from '@/components/ui/PageWrapper';
@@ -70,6 +71,10 @@ const ExpenseChart = dynamic(
   () => import('@/components/features/analytics/ExpenseChart').then((mod) => ({ default: mod.ExpenseChart })),
   { ssr: false, loading: () => <SkeletonChart /> }
 );
+const SpendingVelocity = dynamic(
+  () => import('@/components/features/analytics/SpendingVelocity').then((mod) => ({ default: mod.SpendingVelocity })),
+  { ssr: false }
+);
 const GoalList = dynamic(
   () => import('@/components/features/goals/GoalCard').then((mod) => ({ default: mod.GoalList })),
   { ssr: false, loading: () => <SkeletonList count={3} /> }
@@ -108,6 +113,7 @@ export default function DashboardClient() {
 
   const [showPreflight, setShowPreflight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isOverlayActive, setIsOverlayActive] = useState(false);
 
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
@@ -123,6 +129,27 @@ export default function DashboardClient() {
     window.addEventListener('oracle:reset-dashboard', handler);
     return () => window.removeEventListener('oracle:reset-dashboard', handler);
   }, []);
+
+  // Track overlay state for DockBar visibility (AI Assistant + Drawers)
+  useEffect(() => {
+    const showHandler = () => setIsOverlayActive(true);
+    const hideHandler = () => setIsOverlayActive(false);
+    window.addEventListener('overlay:show', showHandler);
+    window.addEventListener('overlay:hide', hideHandler);
+    return () => {
+      window.removeEventListener('overlay:show', showHandler);
+      window.removeEventListener('overlay:hide', hideHandler);
+    };
+  }, []);
+
+  // Drawers also count as overlays
+  useEffect(() => {
+    if (openDrawer || editingIncome) {
+      window.dispatchEvent(new CustomEvent('overlay:show'));
+    } else {
+      window.dispatchEvent(new CustomEvent('overlay:hide'));
+    }
+  }, [openDrawer, editingIncome]);
 
   // M11: Ambient ignition — drive orb opacity via CSS custom properties
   const handleScrollProgress = (progress: number) => {
@@ -192,26 +219,9 @@ export default function DashboardClient() {
           >
             <div className="preflight-ambient" />
             <div className="preflight-die-container">
-              <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="preflight-die" aria-hidden="true">
-                <rect x="10" y="10" width="80" height="80" rx="16" fill="#1e1b4b" stroke="#312e81" strokeWidth="0.5" />
-                <line x1="30" y1="10" x2="30" y2="90" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
-                <line x1="50" y1="10" x2="50" y2="90" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
-                <line x1="70" y1="10" x2="70" y2="90" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
-                <line x1="10" y1="30" x2="90" y2="30" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
-                <line x1="10" y1="50" x2="90" y2="50" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
-                <line x1="10" y1="70" x2="90" y2="70" stroke="#312e81" strokeWidth="0.3" opacity="0.4" />
-                <path d="M25 50 H40 M60 50 H75 M50 25 V40 M50 60 V75" stroke="#4F46E5" strokeWidth="1" opacity="0.6" className="preflight-trace" />
-                <path d="M30 30 L40 40 M60 40 L70 30 M30 70 L40 60 M60 60 L70 70" stroke="#6366F1" strokeWidth="0.8" opacity="0.4" className="preflight-trace-secondary" />
-                <rect x="35" y="35" width="30" height="30" rx="8" fill="url(#coreGradientClient)" className="preflight-core" />
-                <rect x="10" y="10" width="80" height="80" rx="16" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
-                <defs>
-                  <linearGradient id="coreGradientClient" x1="35" y1="35" x2="65" y2="65">
-                    <stop offset="0%" stopColor="#4F46E5" />
-                    <stop offset="50%" stopColor="#6366F1" />
-                    <stop offset="100%" stopColor="#818CF8" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              <div className="preflight-die">
+                <NeonWalletIcon size={80} />
+              </div>
             </div>
             <div className="preflight-status" aria-live="polite">
               <span className="preflight-text preflight-text-1">Sistemler uyanıyor...</span>
@@ -335,7 +345,7 @@ export default function DashboardClient() {
               </BentoCard>
 
               {/* Savings — 1×1 compact widget */}
-              <BentoCard size="1x1" ariaLabel="Tasarruf orani">
+              <BentoCard size="1x1" ariaLabel="Tasarruf oranı">
                 <div className="flex flex-col h-full justify-between">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/15">
                     <PiggyBank size={14} className="text-violet-400" strokeWidth={2} />
@@ -478,6 +488,9 @@ export default function DashboardClient() {
               animate="visible"
             >
               <motion.div variants={staggerItem}>
+                <SpendingVelocity />
+              </motion.div>
+              <motion.div variants={staggerItem}>
                 <CategoryChart />
               </motion.div>
               <motion.div variants={staggerItem}>
@@ -519,7 +532,7 @@ export default function DashboardClient() {
 
       {/* v4.6: Portal Navbar + Dock Bar */}
       <PortalNavbar activeTab={activeTab} />
-      <DockBar activeTab={activeTab} onTabChange={setActiveTab} onOpenDrawer={setOpenDrawer} />
+      <DockBar activeTab={activeTab} onTabChange={setActiveTab} onOpenDrawer={setOpenDrawer} hidden={isOverlayActive} />
     </>
   );
 }

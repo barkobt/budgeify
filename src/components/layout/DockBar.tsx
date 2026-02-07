@@ -13,9 +13,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { LucideIcon } from 'lucide-react';
 import {
-  Home,
   TrendingUp,
   Target,
   BarChart3,
@@ -24,6 +22,10 @@ import {
   ArrowDownRight,
   X,
 } from 'lucide-react';
+import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DockIcon = React.ComponentType<any>;
 import { DOCK_SPRING, springs } from '@/lib/motion';
 
 type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
@@ -33,22 +35,24 @@ interface DockBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
   onOpenDrawer: (drawer: DrawerType) => void;
+  hidden?: boolean;
 }
 
-const navItems = [
-  { name: 'Dashboard', icon: Home, tab: 'dashboard' as TabType },
-  { name: 'İşlemler', icon: TrendingUp, tab: 'transactions' as TabType },
-] as const;
+const navItems: { name: string; icon: DockIcon; tab: TabType }[] = [
+  { name: 'Dashboard', icon: NeonWalletIcon, tab: 'dashboard' },
+  { name: 'İşlemler', icon: TrendingUp, tab: 'transactions' },
+];
 
-const navItemsRight = [
-  { name: 'Hedefler', icon: Target, tab: 'goals' as TabType },
-  { name: 'Analiz', icon: BarChart3, tab: 'analytics' as TabType },
-] as const;
+const navItemsRight: { name: string; icon: DockIcon; tab: TabType }[] = [
+  { name: 'Hedefler', icon: Target, tab: 'goals' },
+  { name: 'Analiz', icon: BarChart3, tab: 'analytics' },
+];
 
 export const DockBar: React.FC<DockBarProps> = ({
   activeTab,
   onTabChange,
   onOpenDrawer,
+  hidden = false,
 }) => {
   const [fabOpen, setFabOpen] = useState(false);
 
@@ -137,12 +141,12 @@ export const DockBar: React.FC<DockBarProps> = ({
         role="navigation"
         aria-label="Dock navigation"
         initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        animate={{ y: hidden ? 100 : 0, opacity: hidden ? 0 : 1 }}
         transition={springs.heavy}
       >
         {/* Version Tag */}
         <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] tabular-nums font-medium text-white/20 select-none pointer-events-none">
-          v4.8-sovereign
+          v5.0-final
         </span>
         <div className="flex items-center justify-around">
           {/* Left nav items */}
@@ -198,7 +202,7 @@ export const DockBar: React.FC<DockBarProps> = ({
  * DockItem — Individual dock tab with spring bounce + energy glow
  */
 interface DockItemProps {
-  icon: LucideIcon;
+  icon: DockIcon;
   label: string;
   isActive: boolean;
   onClick: () => void;
@@ -224,9 +228,10 @@ const DockItem: React.FC<DockItemProps> = ({ icon: Icon, label, isActive, onClic
           strokeWidth={1.5}
           className={
             isActive
-              ? 'text-accent-400'
+              ? 'text-cyan-400'
               : 'text-zinc-500'
           }
+          style={isActive ? { filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))' } : {}}
         />
       </motion.div>
 
@@ -234,7 +239,7 @@ const DockItem: React.FC<DockItemProps> = ({ icon: Icon, label, isActive, onClic
       <AnimatePresence>
         {isActive && (
           <motion.span
-            className="text-[10px] font-medium text-accent-400"
+            className="text-[10px] font-medium text-cyan-400"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}

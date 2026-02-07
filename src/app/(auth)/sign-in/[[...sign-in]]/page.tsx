@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Logo } from '@/components/ui/Logo';
 import { FloatingElement } from '@/components/ui/MotionElements';
+import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 import { ArrowLeft } from 'lucide-react';
 
 const clerkAppearance = {
@@ -62,15 +63,15 @@ function ClerkSignInLoader() {
   if (failed) {
     return (
       <div className="glass-card rounded-2xl p-8 text-center">
-        <p className="text-white font-semibold mb-2">Giris yapilamiyor</p>
+        <p className="text-white font-semibold mb-2">Giriş yapılamıyor</p>
         <p className="text-slate-400 text-sm mb-4">
-          Kimlik dogrulama servisi su an kullanilabilir degil.
+          Kimlik doğrulama servisi şu an kullanılabilir değil.
         </p>
         <Link
           href="/"
           className="text-accent-400 hover:text-accent-300 text-sm font-medium"
         >
-          Ana sayfaya don
+          Ana sayfaya dön
         </Link>
       </div>
     );
@@ -78,8 +79,11 @@ function ClerkSignInLoader() {
 
   if (!SignInComponent) {
     return (
-      <div className="glass-card rounded-2xl p-8 flex items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-400 border-t-transparent" />
+      <div className="glass-card rounded-2xl p-12 flex flex-col items-center justify-center gap-4">
+        <div className="animate-pulse">
+          <NeonWalletIcon size={48} />
+        </div>
+        <p className="text-xs text-slate-500 animate-pulse">Yükleniyor...</p>
       </div>
     );
   }
@@ -104,20 +108,27 @@ export default function SignInPage() {
         className="absolute top-1/3 right-1/4 w-75 h-75 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none"
       />
 
-      {/* Floating decorative elements */}
+      {/* Floating decorative elements — clean neon energy fields */}
       <FloatingElement
-        className="absolute top-20 right-20 opacity-20 hidden lg:block"
+        className="absolute top-20 right-20 opacity-25 hidden lg:block"
         duration={5}
         distance={15}
       >
-        <div className="w-16 h-16 rounded-2xl ai-gradient" />
+        <div className="w-16 h-16 rounded-2xl" style={{
+          background: 'linear-gradient(135deg, rgba(0,240,255,0.15) 0%, rgba(79,70,229,0.2) 100%)',
+          border: '1px solid rgba(0,240,255,0.12)',
+          boxShadow: '0 0 24px rgba(0,240,255,0.15), 0 0 48px rgba(79,70,229,0.1), inset 0 1px 0 rgba(255,255,255,0.05)'
+        }} />
       </FloatingElement>
       <FloatingElement
-        className="absolute bottom-20 left-20 opacity-15 hidden lg:block"
+        className="absolute bottom-20 left-20 opacity-20 hidden lg:block"
         duration={6}
         distance={12}
       >
-        <div className="w-12 h-12 rounded-full bg-violet-500" />
+        <div className="w-12 h-12 rounded-full" style={{
+          background: 'radial-gradient(circle, rgba(0,240,255,0.2) 0%, rgba(79,70,229,0.15) 60%, transparent 100%)',
+          boxShadow: '0 0 20px rgba(0,240,255,0.12), 0 0 40px rgba(79,70,229,0.08)'
+        }} />
       </FloatingElement>
 
       <div className="w-full max-w-md relative z-10">

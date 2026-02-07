@@ -1,10 +1,10 @@
 'use client';
 
 /**
- * SiliconDie — M12: The Mechanical Heart
+ * SiliconDie — v5.0: The Wallet Heart
  *
- * Multi-layered Silicon Die SVG replacing the amateur Wallet icon.
- * 4 layers: Substrate → Circuit Traces → Core Logic Block → Heat Spreader.
+ * Premium stylized Wallet SVG — the Mechanical Heart of Oracle.
+ * 4 layers: Wallet Body → Neon Circuit Traces → Core Energy Coin → Wallet Frame.
  * Z-axis parallax via useTransform on scroll progress.
  * Light leaks with radial-gradient + mix-blend-mode: screen.
  * 3 size states: dormant (100px), active (120px), docked (64px).
@@ -20,6 +20,11 @@ const SIZE_MAP = {
   active: 120,
   docked: 64,
 } as const;
+
+// Neon Silicon Resonance — Dual-Tone Energy Palette
+const NEON_CYAN = '#00F0FF';
+const NEON_CYAN_MID = '#00D4E8';
+const NEON_CYAN_DEEP = '#00B8D4';
 
 interface SiliconDieProps {
   size: 'dormant' | 'active' | 'docked';
@@ -48,6 +53,11 @@ export function SiliconDie({ size, scrollProgress, layoutId, className = '' }: S
   // Light leak opacity driven by scroll
   const leakOpacity = useTransform(progress, [0.3, 0.6, 0.8], [0, 0.8, 0.4]);
 
+  // Neon intensity — dormant: subtle standby, peaks at active/dock
+  const neonIntensity = useTransform(progress, [0, 0.2, 0.5, 0.7, 1.0], [0.15, 0.25, 0.6, 1.0, 0.8]);
+  const neonHaloOpacity = useTransform(progress, [0, 0.2, 0.5, 0.7, 1.0], [0.08, 0.15, 0.4, 0.7, 0.5]);
+  const neonHaloScale = useTransform(progress, [0, 0.5, 0.7, 1.0], [0.8, 1.0, 1.2, 1.0]);
+
   return (
     <motion.div
       layoutId={layoutId}
@@ -56,7 +66,14 @@ export function SiliconDie({ size, scrollProgress, layoutId, className = '' }: S
       transition={ASSEMBLY_SPRING}
       style={{ rotateX }}
     >
-      {/* Light Leaks — radial gradient overlays */}
+      {/* Neon Ambient Halo — large soft radiating glow behind entire die */}
+      <motion.div
+        className="silicon-neon-halo"
+        style={{ opacity: neonHaloOpacity, scale: neonHaloScale }}
+        aria-hidden="true"
+      />
+
+      {/* Light Leaks — radial gradient overlays (now with neon cyan tint) */}
       <motion.div
         className="silicon-light-leak silicon-light-leak--tl"
         style={{ opacity: leakOpacity }}
@@ -68,12 +85,12 @@ export function SiliconDie({ size, scrollProgress, layoutId, className = '' }: S
         aria-hidden="true"
       />
       <motion.div
-        className="silicon-light-leak silicon-light-leak--tr"
-        style={{ opacity: leakOpacity }}
+        className="silicon-light-leak silicon-light-leak--center"
+        style={{ opacity: neonIntensity }}
         aria-hidden="true"
       />
 
-      {/* 4-Layer SVG */}
+      {/* 4-Layer Premium Wallet SVG */}
       <motion.svg
         width="100%"
         height="100%"
@@ -83,106 +100,159 @@ export function SiliconDie({ size, scrollProgress, layoutId, className = '' }: S
         className="absolute inset-0"
         aria-hidden="true"
         style={{ filter: isActive
-          ? 'drop-shadow(0 0 16px rgba(99, 102, 241, 0.5)) drop-shadow(0 0 40px rgba(79, 70, 229, 0.3)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.15))'
-          : 'drop-shadow(0 0 8px rgba(99, 102, 241, 0.2)) drop-shadow(0 0 20px rgba(79, 70, 229, 0.1))'
+          ? `drop-shadow(0 0 16px rgba(0, 240, 255, 0.5)) drop-shadow(0 0 40px rgba(0, 184, 212, 0.35)) drop-shadow(0 0 60px rgba(79, 70, 229, 0.2))`
+          : `drop-shadow(0 0 8px rgba(0, 240, 255, 0.15)) drop-shadow(0 0 20px rgba(79, 70, 229, 0.1))`
         }}
       >
-        {/* Layer 1 (bottom): Substrate — dark indigo base with grid pattern */}
+        {/* Layer 1 (bottom): Wallet Body — dark indigo base with subtle grid */}
         <motion.g style={{ translateZ: layer1Z }}>
+          {/* Main wallet body */}
           <rect
-            x="10" y="10" width="80" height="80" rx="16"
-            fill="url(#substrateGradient)"
+            x="12" y="24" width="76" height="56" rx="12"
+            fill="url(#walletBodyGradient)"
             stroke="#4338CA"
             strokeWidth="0.6"
           />
-          {/* Grid lines */}
-          <line x1="30" y1="10" x2="30" y2="90" stroke="#4338CA" strokeWidth="0.3" opacity="0.5" />
-          <line x1="50" y1="10" x2="50" y2="90" stroke="#4338CA" strokeWidth="0.3" opacity="0.5" />
-          <line x1="70" y1="10" x2="70" y2="90" stroke="#4338CA" strokeWidth="0.3" opacity="0.5" />
-          <line x1="10" y1="30" x2="90" y2="30" stroke="#4338CA" strokeWidth="0.3" opacity="0.5" />
-          <line x1="10" y1="50" x2="90" y2="50" stroke="#4338CA" strokeWidth="0.3" opacity="0.5" />
-          <line x1="10" y1="70" x2="90" y2="70" stroke="#4338CA" strokeWidth="0.3" opacity="0.5" />
-        </motion.g>
-
-        {/* Layer 2: Circuit Traces — animated indigo stroke paths */}
-        <motion.g style={{ translateZ: layer2Z }}>
+          {/* Wallet flap / top section */}
           <path
-            d="M25 50 H40 M60 50 H75 M50 25 V40 M50 60 V75"
-            stroke="#818CF8"
-            strokeWidth="1.2"
-            opacity="0.7"
-            className="silicon-trace"
-          />
-          <path
-            d="M30 30 L40 40 M60 40 L70 30 M30 70 L40 60 M60 60 L70 70"
-            stroke="#A5B4FC"
-            strokeWidth="0.8"
-            opacity="0.5"
-            className="silicon-trace-secondary"
-          />
-          {/* Additional fine traces for detail */}
-          <path
-            d="M20 40 H35 M65 40 H80 M20 60 H35 M65 60 H80"
-            stroke="#6366F1"
+            d="M24 24 V17 C24 11 29 6 35 6 L65 6 C71 6 76 11 76 17 L76 24"
+            fill="url(#walletFlapGradient)"
+            stroke="#4338CA"
             strokeWidth="0.6"
-            opacity="0.4"
-            className="silicon-trace-secondary"
           />
-          {/* Energy conduits — diagonal micro-traces */}
+          {/* Interior grid lines */}
+          <line x1="35" y1="24" x2="35" y2="80" stroke="#4338CA" strokeWidth="0.25" opacity="0.35" />
+          <line x1="50" y1="24" x2="50" y2="80" stroke="#4338CA" strokeWidth="0.25" opacity="0.35" />
+          <line x1="65" y1="24" x2="65" y2="80" stroke="#4338CA" strokeWidth="0.25" opacity="0.35" />
+          <line x1="12" y1="42" x2="88" y2="42" stroke="#4338CA" strokeWidth="0.25" opacity="0.35" />
+          <line x1="12" y1="58" x2="88" y2="58" stroke="#4338CA" strokeWidth="0.25" opacity="0.35" />
+        </motion.g>
+
+        {/* Layer 2: Neon Circuit Traces — energy flowing inside wallet */}
+        <motion.g style={{ translateZ: layer2Z }}>
+          {/* Horizontal energy conduits */}
           <path
-            d="M22 22 L28 28 M72 22 L78 28 M22 72 L28 78 M72 72 L78 78"
-            stroke="#C7D2FE"
+            d="M18 38 H38 M62 38 H82"
+            stroke={NEON_CYAN}
+            strokeWidth="1.2"
+            opacity="0.85"
+            className="silicon-trace-neon"
+            style={{ filter: `drop-shadow(0 0 4px ${NEON_CYAN})` }}
+          />
+          <path
+            d="M18 52 H32 M68 52 H82"
+            stroke={NEON_CYAN_MID}
+            strokeWidth="0.8"
+            opacity="0.6"
+            className="silicon-trace-neon-secondary"
+            style={{ filter: `drop-shadow(0 0 3px ${NEON_CYAN_MID})` }}
+          />
+          <path
+            d="M18 66 H40 M60 66 H82"
+            stroke={NEON_CYAN_DEEP}
+            strokeWidth="0.6"
+            opacity="0.5"
+            className="silicon-trace-neon-secondary"
+            style={{ filter: `drop-shadow(0 0 2px ${NEON_CYAN_DEEP})` }}
+          />
+          {/* Wallet card chip — embedded payment chip detail */}
+          <rect x="20" y="30" width="22" height="16" rx="3" fill="none" stroke={NEON_CYAN_MID} strokeWidth="0.8" opacity="0.55" />
+          <line x1="20" y1="36" x2="42" y2="36" stroke={NEON_CYAN_MID} strokeWidth="0.4" opacity="0.35" />
+          <line x1="31" y1="30" x2="31" y2="46" stroke={NEON_CYAN_MID} strokeWidth="0.4" opacity="0.35" />
+          {/* Flap energy traces */}
+          <path
+            d="M34 6 V16 M50 6 V20 M66 6 V16"
+            stroke={NEON_CYAN}
             strokeWidth="0.4"
-            opacity="0.3"
-            className="silicon-trace-secondary"
+            opacity="0.4"
+            className="silicon-trace-neon-secondary"
+            style={{ filter: `drop-shadow(0 0 2px ${NEON_CYAN})` }}
           />
         </motion.g>
 
-        {/* Layer 3: Core Logic Block — bright indigo center with glow */}
+        {/* Layer 3: Core Energy Coin — glowing currency core */}
         <motion.g style={{ translateZ: layer3Z }}>
-          <rect
-            x="35" y="35" width="30" height="30" rx="8"
-            fill="url(#siliconCoreGradient)"
-            className={isActive ? 'silicon-core--active' : ''}
+          {/* Outer coin ring */}
+          <circle
+            cx="65" cy="52" r="14"
+            fill="url(#coinCoreGradient)"
+            className={isActive ? 'silicon-core-neon--active' : ''}
+            style={{ filter: isActive ? `drop-shadow(0 0 8px ${NEON_CYAN}) drop-shadow(0 0 16px rgba(0,240,255,0.3))` : '' }}
           />
-          {/* Inner detail — micro chip pattern */}
-          <rect x="41" y="41" width="18" height="18" rx="4" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="0.5" />
-          <rect x="45" y="45" width="10" height="10" rx="2" fill="url(#coreCenterGlow)" />
+          {/* Inner coin detail ring */}
+          <circle cx="65" cy="52" r="10" fill="none" stroke="rgba(0,240,255,0.25)" strokeWidth="0.5" />
+          {/* Currency symbol — geometric ₺ shape */}
+          <path
+            d="M62 46 L62 58 M59 49 L68 49 M59 53 L66 53"
+            stroke={NEON_CYAN}
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            opacity="0.9"
+          />
           {/* Center energy dot */}
-          <circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.3)" className={isActive ? 'silicon-core--active' : ''} />
+          <circle
+            cx="65" cy="52" r="2"
+            fill={NEON_CYAN}
+            className={isActive ? 'silicon-core-neon--active' : ''}
+            style={{ filter: `drop-shadow(0 0 6px ${NEON_CYAN}) drop-shadow(0 0 12px rgba(0,240,255,0.4))` }}
+          />
+          {/* Neon energy ring around coin */}
+          {isActive && (
+            <circle
+              cx="65" cy="52" r="18"
+              fill="none"
+              stroke={NEON_CYAN}
+              strokeWidth="0.3"
+              opacity="0.4"
+              className="silicon-neon-ring-pulse"
+              style={{ filter: `drop-shadow(0 0 4px ${NEON_CYAN})` }}
+            />
+          )}
         </motion.g>
 
-        {/* Layer 4 (top): Heat Spreader Frame — metallic edge, subtle */}
+        {/* Layer 4 (top): Wallet Frame — neon edge highlight */}
         <motion.g style={{ translateZ: layer4Z }}>
           <rect
-            x="10" y="10" width="80" height="80" rx="16"
+            x="12" y="24" width="76" height="56" rx="12"
             fill="none"
-            stroke="rgba(255,255,255,0.07)"
+            stroke="rgba(0,240,255,0.1)"
             strokeWidth="1.5"
           />
-          {/* Corner contact pads — brighter */}
-          <rect x="12" y="12" width="6" height="6" rx="1.5" fill="rgba(99,102,241,0.1)" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
-          <rect x="82" y="12" width="6" height="6" rx="1.5" fill="rgba(99,102,241,0.1)" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
-          <rect x="12" y="82" width="6" height="6" rx="1.5" fill="rgba(99,102,241,0.1)" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
-          <rect x="82" y="82" width="6" height="6" rx="1.5" fill="rgba(99,102,241,0.1)" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
+          <path
+            d="M24 24 V17 C24 11 29 6 35 6 L65 6 C71 6 76 11 76 17 L76 24"
+            fill="none"
+            stroke="rgba(0,240,255,0.08)"
+            strokeWidth="1"
+          />
+          {/* Corner accent pads */}
+          <rect x="14" y="26" width="5" height="5" rx="1.5" fill="rgba(0,240,255,0.05)" stroke="rgba(0,240,255,0.15)" strokeWidth="0.5" />
+          <rect x="81" y="26" width="5" height="5" rx="1.5" fill="rgba(0,240,255,0.05)" stroke="rgba(0,240,255,0.15)" strokeWidth="0.5" />
+          <rect x="14" y="73" width="5" height="5" rx="1.5" fill="rgba(0,240,255,0.05)" stroke="rgba(0,240,255,0.15)" strokeWidth="0.5" />
+          <rect x="81" y="73" width="5" height="5" rx="1.5" fill="rgba(0,240,255,0.05)" stroke="rgba(0,240,255,0.15)" strokeWidth="0.5" />
         </motion.g>
 
-        {/* Gradient definitions */}
+        {/* Gradient definitions — Neon Wallet Resonance */}
         <defs>
-          <linearGradient id="substrateGradient" x1="10" y1="10" x2="90" y2="90">
+          <linearGradient id="walletBodyGradient" x1="12" y1="24" x2="88" y2="80">
             <stop offset="0%" stopColor="#1e1b4b" />
-            <stop offset="50%" stopColor="#252262" />
-            <stop offset="100%" stopColor="#1e1b4b" />
+            <stop offset="50%" stopColor="#1a1a3e" />
+            <stop offset="100%" stopColor="#0f0f2e" />
           </linearGradient>
-          <linearGradient id="siliconCoreGradient" x1="35" y1="35" x2="65" y2="65">
-            <stop offset="0%" stopColor="#4F46E5" />
-            <stop offset="40%" stopColor="#6366F1" />
-            <stop offset="70%" stopColor="#818CF8" />
-            <stop offset="100%" stopColor="#A5B4FC" />
+          <linearGradient id="walletFlapGradient" x1="24" y1="6" x2="76" y2="24">
+            <stop offset="0%" stopColor="#1e1b4b" />
+            <stop offset="100%" stopColor="#151332" />
           </linearGradient>
-          <radialGradient id="coreCenterGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(165,180,252,0.3)" />
-            <stop offset="100%" stopColor="rgba(99,102,241,0.05)" />
+          <radialGradient id="coinCoreGradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#3730A3" />
+            <stop offset="40%" stopColor="#4F46E5" />
+            <stop offset="70%" stopColor="#00B8D4" />
+            <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.6" />
+          </radialGradient>
+          <radialGradient id="neonHaloGradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="rgba(0,240,255,0.3)" />
+            <stop offset="40%" stopColor="rgba(0,184,212,0.15)" />
+            <stop offset="70%" stopColor="rgba(79,70,229,0.05)" />
+            <stop offset="100%" stopColor="transparent" />
           </radialGradient>
         </defs>
       </motion.svg>

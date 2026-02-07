@@ -43,12 +43,12 @@ export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
     insights.push({
       id: nextId(),
       type: 'summary',
-      title: 'Aylik Ozet',
-      content: `Toplam geliriniz ${formatCurrency(snapshot.totalIncome)}, toplam harcamaniz ${formatCurrency(snapshot.totalExpenses)}. ` +
+      title: 'Aylık Özet',
+      content: `Toplam geliriniz ${formatCurrency(snapshot.totalIncome)}, toplam harcamanız ${formatCurrency(snapshot.totalExpenses)}. ` +
         `Bakiyeniz ${formatCurrency(snapshot.balance)}. ` +
         (snapshot.savingsRate > 0
-          ? `Tasarruf oraniniz %${snapshot.savingsRate}.`
-          : 'Bu ay tasarruf yapilmadi.'),
+          ? `Tasarruf oranınız %${snapshot.savingsRate}.`
+          : 'Bu ay tasarruf yapılmadı.'),
       confidence: conf.level,
       priority: 8,
       createdAt: now,
@@ -64,10 +64,10 @@ export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
 
     if (trend.previousTotal > 0) {
       const trendText = trend.direction === 'up'
-        ? `Bu ay harcamalariniz gecen aya gore %${trend.changePercent} artti (${formatCurrency(trend.currentTotal)} vs ${formatCurrency(trend.previousTotal)}).`
+        ? `Bu ay harcamalarınız geçen aya göre %${trend.changePercent} arttı (${formatCurrency(trend.currentTotal)} vs ${formatCurrency(trend.previousTotal)}).`
         : trend.direction === 'down'
-        ? `Bu ay harcamalariniz gecen aya gore %${Math.abs(trend.changePercent)} azaldi. Harika!`
-        : `Harcamalariniz gecen aya gore sabit kaldi.`;
+        ? `Bu ay harcamalarınız geçen aya göre %${Math.abs(trend.changePercent)} azaldı. Harika!`
+        : `Harcamalarınız geçen aya göre sabit kaldı.`;
 
       insights.push({
         id: nextId(),
@@ -90,9 +90,9 @@ export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
       insights.push({
         id: nextId(),
         type: 'trend',
-        title: 'En Buyuk Harcama',
-        content: `Bu ayin en buyuk harcama kalemi: ${breakdown[0].categoryName} (${formatCurrency(breakdown[0].total)}, %${breakdown[0].percentage}). ` +
-          (breakdown[1] ? `Ikinci sirada ${breakdown[1].categoryName} (${formatCurrency(breakdown[1].total)}).` : ''),
+        title: 'En Büyük Harcama',
+        content: `Bu ayın en büyük harcama kalemi: ${breakdown[0].categoryName} (${formatCurrency(breakdown[0].total)}, %${breakdown[0].percentage}). ` +
+          (breakdown[1] ? `İkinci sırada ${breakdown[1].categoryName} (${formatCurrency(breakdown[1].total)}).` : ''),
         confidence: 'high',
         priority: 6,
         createdAt: now,
@@ -126,13 +126,13 @@ export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
     insights.push({
       id: nextId(),
       type: 'health',
-      title: 'Butce Sagligi',
-      content: `Butce saglik puaniniz: ${health.score}/100 (${health.grade}). ` +
+      title: 'Bütçe Sağlığı',
+      content: `Bütçe sağlık puanınız: ${health.score}/100 (${health.grade}). ` +
         health.factors
           .filter((f) => f.score < 50)
           .map((f) => f.detail)
           .join('. ') +
-        (health.score >= 70 ? ' Finansal durumunuz iyi gorunuyor!' : ''),
+        (health.score >= 70 ? ' Finansal durumunuz iyi görünüyor!' : ''),
       confidence: conf.level,
       priority: 8,
       createdAt: now,
@@ -145,15 +145,15 @@ export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
   const goalInsights = analyzeGoals(snapshot.goals);
   for (const gi of goalInsights) {
     const conf = estimateConfidence(snapshot.dataAvailability, 'goal');
-    let content = `"${gi.goal.name}" hedefi: %${gi.progressPercent} tamamlandi.`;
+    let content = `"${gi.goal.name}" hedefi: %${gi.progressPercent} tamamlandı.`;
 
     if (gi.daysRemaining !== null && gi.daysRemaining > 0) {
-      content += ` ${gi.daysRemaining} gun kaldi.`;
+      content += ` ${gi.daysRemaining} gün kaldı.`;
       if (gi.dailySavingsNeeded !== null) {
-        content += ` Gunluk ${formatCurrency(gi.dailySavingsNeeded)} biriktirmeniz gerekiyor.`;
+        content += ` Günlük ${formatCurrency(gi.dailySavingsNeeded)} biriktirmeniz gerekiyor.`;
       }
       if (gi.onTrack === false) {
-        content += ' Hedefinizin gerisinde kaliyor olabilirsiniz.';
+        content += ' Hedefinizin gerisinde kalıyor olabilirsiniz.';
       }
     }
 
@@ -175,8 +175,8 @@ export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
     insights.push({
       id: nextId(),
       type: 'tip',
-      title: 'Ipucu',
-      content: 'Harcamalarinizi kaydetmeye baslayin! Ne kadar cok veri olursa, analizlerim o kadar dogru olur.',
+      title: 'İpucu',
+      content: 'Harcamalarınızı kaydetmeye başlayın! Ne kadar çok veri olursa, analizlerim o kadar doğru olur.',
       confidence: 'high',
       priority: 6,
       createdAt: now,
@@ -187,8 +187,8 @@ export function generateInsights(snapshot: FinancialSnapshot): Insight[] {
     insights.push({
       id: nextId(),
       type: 'tip',
-      title: 'Tasarruf Onerisi',
-      content: 'Gelirinizin en az %20\'sini biriktirmeyi hedefleyin. 50/30/20 kurali iyi bir baslangic noktasidir.',
+      title: 'Tasarruf Önerisi',
+      content: 'Gelirinizin en az %20\'sini biriktirmeyi hedefleyin. 50/30/20 kuralı iyi bir başlangıç noktasıdır.',
       confidence: 'high',
       priority: 6,
       createdAt: now,
@@ -212,11 +212,11 @@ export function answerQuery(query: string, snapshot: FinancialSnapshot): string 
     const top3 = breakdown.slice(0, 3);
 
     if (total === 0) {
-      return 'Bu ay henuz harcama kaydiniz bulunmuyor. Harcamalarinizi kaydetmeye baslayin!';
+      return 'Bu ay henüz harcama kaydınız bulunmuyor. Harcamalarınızı kaydetmeye başlayın!';
     }
 
-    let response = `Bu ay toplam ${formatCurrency(total)} harcadiniz.\n\n`;
-    response += 'En buyuk harcama kalemleri:\n';
+    let response = `Bu ay toplam ${formatCurrency(total)} harcadınız.\n\n`;
+    response += 'En büyük harcama kalemleri:\n';
     for (const cat of top3) {
       response += `- ${cat.categoryName}: ${formatCurrency(cat.total)} (%${cat.percentage})\n`;
     }
@@ -225,20 +225,20 @@ export function answerQuery(query: string, snapshot: FinancialSnapshot): string 
 
   if (lower.includes('tasarruf') || lower.includes('biriktir')) {
     if (snapshot.totalIncome === 0) {
-      return 'Gelirinizi kaydederek baslayin. Boylece tasarruf oraninizi hesaplayabilirim.';
+      return 'Gelirinizi kaydederek başlayın. Böylece tasarruf oranınızı hesaplayabilirim.';
     }
 
     const rate = snapshot.savingsRate;
-    let response = `Tasarruf oraniniz: %${rate}.\n\n`;
+    let response = `Tasarruf oranınız: %${rate}.\n\n`;
 
     if (rate >= 20) {
-      response += 'Harika! %20 ve uzerinde tasarruf yapiyorsunuz. Bu orani korumaya devam edin.';
+      response += 'Harika! %20 ve üzerinde tasarruf yapıyorsunuz. Bu oranı korumaya devam edin.';
     } else if (rate > 0) {
-      response += `Hedefiniz en az %20 olmali. Ayda ${formatCurrency(snapshot.totalIncome * 0.2 - (snapshot.totalIncome - snapshot.totalExpenses))} daha biriktirmeniz gerekiyor.`;
+      response += `Hedefiniz en az %20 olmalı. Ayda ${formatCurrency(snapshot.totalIncome * 0.2 - (snapshot.totalIncome - snapshot.totalExpenses))} daha biriktirmeniz gerekiyor.`;
     } else {
-      response += 'Bu ay tasarruf yapilmamis. Kucuk adimlarla baslayin:\n';
+      response += 'Bu ay tasarruf yapılmamış. Küçük adımlarla başlayın:\n';
       response += '1. Gereksiz abonelikleri iptal edin\n';
-      response += '2. Kahve/atistirmalik harcamalarini azaltin\n';
+      response += '2. Kahve/atıştırmalık harcamalarını azaltın\n';
       response += '3. Otomatik tasarruf kurun';
     }
     return response;
@@ -247,21 +247,21 @@ export function answerQuery(query: string, snapshot: FinancialSnapshot): string 
   if (lower.includes('hedef') || lower.includes('yakin')) {
     const goalInsights = analyzeGoals(snapshot.goals);
     if (goalInsights.length === 0) {
-      return 'Henuz aktif hedefiniz yok. Hedefler sekmesinden yeni bir tasarruf hedefi olusturabilirsiniz.';
+      return 'Henüz aktif hedefiniz yok. Hedefler sekmesinden yeni bir tasarruf hedefi oluşturabilirsiniz.';
     }
 
     let response = `${goalInsights.length} aktif hedefiniz var:\n\n`;
     for (const gi of goalInsights) {
       response += `- ${gi.goal.name}: %${gi.progressPercent}`;
-      if (gi.daysRemaining !== null) response += ` (${gi.daysRemaining} gun kaldi)`;
+      if (gi.daysRemaining !== null) response += ` (${gi.daysRemaining} gün kaldı)`;
       response += '\n';
     }
     return response;
   }
 
-  if (lower.includes('saglik') || lower.includes('puan') || lower.includes('skor')) {
+  if (lower.includes('sağlık') || lower.includes('saglik') || lower.includes('puan') || lower.includes('skor')) {
     const health = calculateHealthScore(snapshot);
-    let response = `Butce saglik puaniniz: ${health.score}/100 (${health.grade})\n\n`;
+    let response = `Bütçe sağlık puanınız: ${health.score}/100 (${health.grade})\n\n`;
     response += 'Detaylar:\n';
     for (const f of health.factors) {
       response += `- ${f.name}: ${Math.round(f.score)}/100 — ${f.detail}\n`;
@@ -272,7 +272,7 @@ export function answerQuery(query: string, snapshot: FinancialSnapshot): string 
   // Default: return summary + tips
   const insights = generateInsights(snapshot);
   if (insights.length === 0) {
-    return 'Verilerinizi kaydetmeye baslayin! Gelir ve giderlerinizi ekledikce size daha iyi yardimci olabilirim.';
+    return 'Verilerinizi kaydetmeye başlayın! Gelir ve giderlerinizi ekledikçe size daha iyi yardımcı olabilirim.';
   }
 
   return insights.slice(0, 3).map((i) => `${i.title}: ${i.content}`).join('\n\n');

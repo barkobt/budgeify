@@ -19,7 +19,7 @@ import { TrendingUp, TrendingDown, Target, BarChart3, Sparkles } from 'lucide-re
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { formatCurrencyCompact } from '@/utils';
 import { OracleModuleChip, type ChipDockState } from './OracleModuleChip';
-import { SiliconDie } from './SiliconDie';
+import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 
 export type WalletModuleId = 'income' | 'expense' | 'goals' | 'analytics' | 'insights';
 type OracleState = 'dormant' | 'assembling' | 'active';
@@ -55,12 +55,6 @@ function getChipDockState(progress: number, scrollEnd: number): ChipDockState {
   return 'docked';
 }
 
-// M12: Die size from oracle state + dock phase
-function getDieSize(state: OracleState, dockProgress: number): 'dormant' | 'active' | 'docked' {
-  if (state === 'dormant') return 'dormant';
-  if (dockProgress > 0.85) return 'docked';
-  return 'active';
-}
 
 interface OracleHeroProps {
   onModuleClick?: (moduleId: WalletModuleId) => void;
@@ -159,9 +153,6 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
   // Silicon glow class
   const siliconGlowClass = oracleState === 'active' ? 'silicon-glow--active' : 'silicon-glow';
 
-  // Die size state
-  const dieSize = getDieSize(oracleState, scrollYProgress.get());
-
   // Status display
   const hoveredModule = hoveredId ? MODULES.find((m) => m.id === hoveredId) : null;
 
@@ -218,18 +209,27 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
               style={{ scale: coreScale, y: coreDockY }}
             >
               <div className="relative">
-                {/* Ambient glow behind die */}
+                {/* Ambient glow behind die — dual-tone neon cyan + indigo */}
                 <motion.div
-                  className="absolute -inset-8 rounded-3xl bg-indigo-600/25 blur-2xl"
-                  style={{ opacity: coreGlow }}
+                  className="absolute -inset-12 rounded-full blur-3xl"
+                  style={{
+                    opacity: coreGlow,
+                    background: 'radial-gradient(circle, rgba(0,240,255,0.3) 0%, rgba(0,184,212,0.15) 30%, rgba(79,70,229,0.1) 60%, transparent 80%)'
+                  }}
                 />
 
-                {/* M12: Silicon Die — 4-layer SVG hardware chip */}
-                <SiliconDie
-                  size={dieSize}
-                  scrollProgress={scrollYProgress}
-                  layoutId="silicon-die-core"
-                />
+                {/* Neon Wallet Icon — unified brand icon */}
+                <motion.div layoutId="neon-wallet-core">
+                  <NeonWalletIcon
+                    size={80}
+                    className="oracle-center-wallet"
+                    style={{
+                      filter: oracleState === 'active'
+                        ? 'drop-shadow(0 0 16px rgba(0,240,255,0.5)) drop-shadow(0 0 40px rgba(0,184,212,0.35))'
+                        : 'drop-shadow(0 0 8px rgba(0,240,255,0.25)) drop-shadow(0 0 20px rgba(79,70,229,0.15))'
+                    }}
+                  />
+                </motion.div>
 
                 {/* Data Readout — Ignition phase (50–70%) */}
                 <AnimatePresence>
@@ -256,13 +256,22 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
                   )}
                 </AnimatePresence>
 
-                {/* Pulse ring around die — active state */}
+                {/* Pulse ring around die — neon cyan active state */}
                 {oracleState === 'active' && (
-                  <motion.div
-                    className="absolute -inset-3 rounded-3xl border border-indigo-400/20"
-                    animate={{ scale: [1, 1.12, 1], opacity: [0.4, 0, 0.4] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                  />
+                  <>
+                    <motion.div
+                      className="absolute -inset-3 rounded-3xl border"
+                      style={{ borderColor: 'rgba(0,240,255,0.25)' }}
+                      animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0, 0.5] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                    <motion.div
+                      className="absolute -inset-6 rounded-3xl border"
+                      style={{ borderColor: 'rgba(0,240,255,0.12)' }}
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0, 0.3] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                    />
+                  </>
                 )}
               </div>
             </motion.div>
@@ -282,17 +291,19 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
             {hoveredModule ? (
               <>
                 <hoveredModule.Icon size={12} style={{ color: hoveredModule.color }} strokeWidth={2} />
-                <span className="text-xs font-medium text-zinc-300">{hoveredModule.label} modulu</span>
+                <span className="text-xs font-medium text-zinc-300">{hoveredModule.label} modülü</span>
               </>
             ) : (
               <>
-                <div className={`h-1.5 w-1.5 rounded-full ${oracleState === 'active' ? 'bg-emerald-400' : 'bg-indigo-400'} animate-pulse`} />
+                <div className={`h-1.5 w-1.5 rounded-full ${oracleState === 'active' ? 'bg-cyan-400' : 'bg-indigo-400'} animate-pulse`}
+                  style={oracleState === 'active' ? { boxShadow: '0 0 6px rgba(0,240,255,0.6)' } : {}}
+                />
                 <span className="text-xs font-medium text-zinc-500">
                   {oracleState === 'active'
-                    ? `${savingsRate}% tasarruf orani`
+                    ? `${savingsRate}% tasarruf oranı`
                     : oracleState === 'assembling'
-                      ? 'Moduller yukleniyor...'
-                      : 'Oracle Core hazir'}
+                      ? 'Modüller yükleniyor...'
+                      : 'Oracle Core hazır'}
                 </span>
               </>
             )}
@@ -301,7 +312,7 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
 
         {/* Title */}
         <h2 className="mt-3 text-center text-lg font-bold text-white tracking-tight">
-          Oracle <span className="bg-linear-to-r from-indigo-400 to-indigo-600 bg-clip-text text-transparent">Core</span>
+          Oracle <span className="bg-linear-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent">Core</span>
         </h2>
         <p className="mt-1 text-center text-xs text-zinc-500 max-w-65 leading-relaxed">
           Modullere tiklayarak hizli islem yapin.

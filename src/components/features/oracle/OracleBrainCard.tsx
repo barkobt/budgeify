@@ -45,19 +45,19 @@ function computeBrainMetrics(): BrainMetrics {
     const trend = getSpendingTrend(snapshot.currentMonthExpenses, snapshot.previousMonthExpenses);
     if (trend.previousTotal > 0) {
       if (trend.direction === 'up') {
-        velocityLabel = `Harcama hizi %${trend.changePercent} artti`;
+        velocityLabel = `Harcama hızı %${trend.changePercent} arttı`;
       } else if (trend.direction === 'down') {
-        velocityLabel = `Harcama hizi %${Math.abs(trend.changePercent)} azaldi`;
+        velocityLabel = `Harcama hızı %${Math.abs(trend.changePercent)} azaldı`;
       } else {
-        velocityLabel = 'Harcama hizi sabit';
+        velocityLabel = 'Harcama hızı sabit';
       }
     } else {
-      velocityLabel = 'Ilk ay verisi toplaniyor';
+      velocityLabel = 'İlk ay verisi toplanıyor';
     }
   }
 
   // Goal Pace — closest active goal
-  let goalPaceLabel = 'Hedef belirlenmemis';
+  let goalPaceLabel = 'Hedef belirlenmemiş';
   const goalInsights = analyzeGoals(snapshot.goals);
   if (goalInsights.length > 0) {
     const closest = goalInsights.reduce((best, gi) =>
@@ -65,9 +65,9 @@ function computeBrainMetrics(): BrainMetrics {
     , goalInsights[0]);
     const remaining = 100 - closest.progressPercent;
     if (remaining <= 0) {
-      goalPaceLabel = `${closest.goal.name} tamamlandi!`;
+      goalPaceLabel = `${closest.goal.name} tamamlandı!`;
     } else {
-      goalPaceLabel = `${closest.goal.name} hedefine %${remaining} kaldi`;
+      goalPaceLabel = `${closest.goal.name} hedefine %${remaining} kaldı`;
     }
   }
 

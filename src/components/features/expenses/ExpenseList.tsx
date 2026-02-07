@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
-import { formatCurrency, formatDate } from '@/utils';
+import { formatCurrencyCompact, formatDate } from '@/utils';
 import { getCategoryIcon } from '@/lib/category-icons';
 import { Trash2, ClipboardList, FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
@@ -51,9 +51,9 @@ export const ExpenseList = () => {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
               <FileText size={32} className="text-slate-500" />
             </div>
-            <p className="text-slate-300 font-medium">Henuz harcama eklenmemis</p>
+            <p className="text-slate-300 font-medium">Henüz harcama eklenmemiş</p>
             <p className="text-sm text-slate-500 mt-2">
-              Ilk harcamanizi ekleyerek baslayin
+              İlk harcamanızı ekleyerek başlayın
             </p>
           </div>
         </CardContent>
@@ -83,7 +83,7 @@ export const ExpenseList = () => {
                     {formatDate(date)}
                   </h3>
                   <span className="text-sm font-medium text-rose-400 tabular-nums">
-                    {formatCurrency(dayTotal, currency)}
+                    {formatCurrencyCompact(dayTotal, currency)}
                   </span>
                 </div>
 
@@ -128,7 +128,7 @@ export const ExpenseList = () => {
 
                         {/* Amount */}
                         <span className="text-sm font-semibold text-white tabular-nums">
-                          {formatCurrency(expense.amount, currency)}
+                          {formatCurrencyCompact(expense.amount, currency)}
                         </span>
 
                         {/* Delete Button */}

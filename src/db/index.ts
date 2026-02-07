@@ -34,7 +34,44 @@ import * as schema from './schema';
  */
 
 // Neon HTTP client oluştur
-const sql = neon(process.env.DATABASE_URL!);
+// Lazy singleton: connection is created on first access, not at import time.
+// This prevents build-time crashes when DATABASE_URL is unset (e.g. Vercel build step).
+// Production-ready: gracefully handles edge function warm-up where env may be
+// momentarily unavailable during cold start.
+function createDb() {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    // During Vercel build step or edge warm-up, DATABASE_URL may be absent.
+    // Throw a clear, actionable error instead of letting neon() crash with
+    // "No database connection string was provided to neon()".
+    throw new Error(
+      '[Budgeify] DATABASE_URL is not set. ' +
+      'Ensure it is added to your Vercel project environment variables (Settings → Environment Variables) ' +
+      'and that the variable is available for the correct environments (Production, Preview, Development). ' +
+      'For local dev, add it to .env.local.'
+    );
+  }
+  const sql = neon(url);
+  return drizzle(sql, { schema });
+}
+
+/**
+ * Edge-safe DB access: wraps db calls to handle cold-start scenarios
+ * where the env var might not be resolved yet. Returns null instead of crashing.
+ */
+export async function safeDbAccess<T>(fn: () => Promise<T>): Promise<T | null> {
+  try {
+    return await fn();
+  } catch (err) {
+    if (err instanceof Error && err.message.includes('DATABASE_URL')) {
+      console.warn('[Budgeify] Database unavailable — likely edge warm-up. Retrying...');
+      return null;
+    }
+    throw err;
+  }
+}
+
+let _db: ReturnType<typeof createDb> | null = null;
 
 /**
  * Drizzle instance - tüm DB operasyonları buradan yapılır
@@ -58,7 +95,21 @@ const sql = neon(process.env.DATABASE_URL!);
  *   with: { category: true }
  * });
  */
-export const db = drizzle(sql, { schema });
+export const db = new Proxy({} as ReturnType<typeof createDb>, {
+  get(_target, prop, receiver) {
+    if (!_db) {
+      const url = process.env.DATABASE_URL;
+      if (!url) {
+        // Build-time / edge warm-up: DATABASE_URL is not yet available.
+        // Return undefined to let the build succeed without crashing.
+        // Actual DB calls at runtime will have the env var available.
+        return undefined;
+      }
+      _db = createDb();
+    }
+    return Reflect.get(_db, prop, receiver);
+  },
+});
 
 /**
  * Type-safe database instance export

@@ -15,7 +15,7 @@ import {
 } from 'recharts';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { calculateMonthlyTrend } from '@/lib/analytics';
-import { formatCurrency, formatCompactNumber } from '@/utils';
+import { formatCurrencyCompact, formatCompactNumber } from '@/utils';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { TrendingUp, BarChart3, LineChart as LineChartIcon } from 'lucide-react';
@@ -87,7 +87,7 @@ export const ExpenseChart = () => {
           <EmptyState
             variant="trend"
             title="Trend verisi yok"
-            description="Harcama ekledikce trend grafigi burada gorunecek"
+            description="Harcama ekledikçe trend grafiği burada görünecek"
           />
         </CardContent>
       </Card>
@@ -152,7 +152,7 @@ export const ExpenseChart = () => {
                 />
                 <Tooltip
                   formatter={(value: number) => (
-                    <span className="tabular-nums">{formatCurrency(value)}</span>
+                    <span className="tabular-nums">{formatCurrencyCompact(value)}</span>
                   )}
                   contentStyle={{
                     backgroundColor: 'rgba(21, 30, 49, 0.95)',
@@ -205,7 +205,7 @@ export const ExpenseChart = () => {
                 />
                 <Tooltip
                   formatter={(value: number) => (
-                    <span className="tabular-nums">{formatCurrency(value)}</span>
+                    <span className="tabular-nums">{formatCurrencyCompact(value)}</span>
                   )}
                   contentStyle={{
                     backgroundColor: 'rgba(21, 30, 49, 0.95)',
@@ -249,7 +249,7 @@ export const ExpenseChart = () => {
           </ResponsiveContainer>
         </div>
         <p className="mt-4 text-xs text-slate-400 text-center">
-          En cok harcama yapilan 3 kategorinin aylik trendi
+          En çok harcama yapılan 3 kategorinin aylık trendi
         </p>
       </CardContent>
     </Card>

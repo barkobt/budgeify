@@ -43,7 +43,7 @@ export function getCategoryBreakdown(
       const cat = categories.find((c) => c.id === categoryId);
       return {
         categoryId,
-        categoryName: cat?.name ?? 'Diger',
+        categoryName: cat?.name ?? 'Diğer',
         color: cat?.color ?? '#6B7280',
         total,
         count,
@@ -112,7 +112,7 @@ export function detectAnomalies(snapshot: FinancialSnapshot): Anomaly[] {
         const cat = categories.find((c) => c.id === e.categoryId);
         anomalies.push({
           type: 'large_transaction',
-          description: `${cat?.name ?? 'Diger'} kategorisinde buyuk harcama`,
+          description: `${cat?.name ?? 'Diğer'} kategorisinde büyük harcama`,
           amount: e.amount,
           severity: e.amount > monthlyIncome * 0.5 ? 'high' : 'medium',
         });
@@ -131,7 +131,7 @@ export function detectAnomalies(snapshot: FinancialSnapshot): Anomaly[] {
       if (increase > 50) {
         anomalies.push({
           type: 'spike',
-          description: `${current.categoryName} harcamalari gecen aya gore %${Math.round(increase)} artti`,
+          description: `${current.categoryName} harcamaları geçen aya göre %${Math.round(increase)} arttı`,
           amount: current.total - previous.total,
           severity: increase > 100 ? 'high' : 'medium',
         });
@@ -166,24 +166,24 @@ export function calculateHealthScore(snapshot: FinancialSnapshot): HealthScore {
   const savingsRate = snapshot.savingsRate;
   const savingsScore = Math.min(100, Math.max(0, savingsRate * 5)); // 20% = 100
   factors.push({
-    name: 'Tasarruf Orani',
+    name: 'Tasarruf Oranı',
     score: savingsScore,
     weight: 30,
-    detail: `%${savingsRate} tasarruf orani`,
+    detail: `%${savingsRate} tasarruf oranı`,
   });
 
   // Factor 2: Spending Control (weight: 25)
   const trend = getSpendingTrend(snapshot.currentMonthExpenses, snapshot.previousMonthExpenses);
   const controlScore = trend.direction === 'down' ? 100 : trend.direction === 'stable' ? 70 : Math.max(0, 70 - trend.changePercent);
   factors.push({
-    name: 'Harcama Kontrolu',
+    name: 'Harcama Kontrolü',
     score: controlScore,
     weight: 25,
     detail: trend.direction === 'down'
-      ? `Harcamalar %${Math.abs(trend.changePercent)} azaldi`
+      ? `Harcamalar %${Math.abs(trend.changePercent)} azaldı`
       : trend.direction === 'stable'
       ? 'Harcamalar sabit'
-      : `Harcamalar %${trend.changePercent} artti`,
+      : `Harcamalar %${trend.changePercent} arttı`,
   });
 
   // Factor 3: Goal Progress (weight: 20)
@@ -197,12 +197,12 @@ export function calculateHealthScore(snapshot: FinancialSnapshot): HealthScore {
     goalScore = avgProgress;
   }
   factors.push({
-    name: 'Hedef Ilerlemesi',
+    name: 'Hedef İlerlemesi',
     score: goalScore,
     weight: 20,
     detail: activeGoals.length > 0
       ? `${activeGoals.length} aktif hedef`
-      : 'Henuz hedef belirlenmemis',
+      : 'Henüz hedef belirlenmemiş',
   });
 
   // Factor 4: Diversification (weight: 15)
@@ -210,11 +210,11 @@ export function calculateHealthScore(snapshot: FinancialSnapshot): HealthScore {
   const topCategoryPercent = breakdown[0]?.percentage ?? 0;
   const diversityScore = topCategoryPercent > 60 ? 30 : topCategoryPercent > 40 ? 60 : 90;
   factors.push({
-    name: 'Harcama Cesitliligi',
+    name: 'Harcama Çeşitliliği',
     score: diversityScore,
     weight: 15,
     detail: breakdown[0]
-      ? `En buyuk kategori: ${breakdown[0].categoryName} (%${breakdown[0].percentage})`
+      ? `En büyük kategori: ${breakdown[0].categoryName} (%${breakdown[0].percentage})`
       : 'Harcama verisi yok',
   });
 

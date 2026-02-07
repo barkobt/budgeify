@@ -24,30 +24,30 @@ type SuggestionContext = 'home' | 'spending' | 'health' | 'goals' | 'savings';
 /** Context-aware suggestion sets */
 const SUGGESTION_MAP: Record<SuggestionContext, string[]> = {
   home: [
-    'Bu ay ne kadar harcadim?',
-    'Butce saglik puanim kac?',
-    'Hedeflerime ne kadar yakinim?',
-    'Tasarruf onerisi ver',
+    'Bu ay ne kadar harcadım?',
+    'Bütçe sağlık puanım kaç?',
+    'Hedeflerime ne kadar yakınım?',
+    'Tasarruf önerisi ver',
   ],
   spending: [
-    'En cok hangi kategoriye harcadim?',
-    'Gecen aya gore degisim ne?',
-    'Harcamalarimda anormal bir sey var mi?',
+    'En çok hangi kategoriye harcadım?',
+    'Geçen aya göre değişim ne?',
+    'Harcamalarımda anormal bir şey var mı?',
   ],
   health: [
-    'Puanimi nasil arttirabilirim?',
-    'En buyuk risk faktorum ne?',
-    'Tasarruf onerisi ver',
+    'Puanımı nasıl artırabilirim?',
+    'En büyük risk faktörüm ne?',
+    'Tasarruf önerisi ver',
   ],
   goals: [
-    'Gunluk ne kadar biriktirmeliyim?',
-    'Hedefime ne zaman ulasabilirim?',
-    'Yeni hedef onerisi ver',
+    'Günlük ne kadar biriktirmeliyim?',
+    'Hedefime ne zaman ulaşabilirim?',
+    'Yeni hedef önerisi ver',
   ],
   savings: [
     'Nerelerden kesinti yapabilirim?',
-    'Bu ay ne kadar harcadim?',
-    'Hedeflerime ne kadar yakinim?',
+    'Bu ay ne kadar harcadım?',
+    'Hedeflerime ne kadar yakınım?',
   ],
 };
 
@@ -55,9 +55,9 @@ const SUGGESTION_MAP: Record<SuggestionContext, string[]> = {
 function getNextContext(query: string): SuggestionContext {
   const q = query.toLowerCase();
   if (q.includes('harca') || q.includes('gider') || q.includes('kategori')) return 'spending';
-  if (q.includes('saglik') || q.includes('puan') || q.includes('skor')) return 'health';
-  if (q.includes('hedef') || q.includes('birikim') || q.includes('yakin')) return 'goals';
-  if (q.includes('tasarruf') || q.includes('kesinti') || q.includes('oneri')) return 'savings';
+  if (q.includes('sağlık') || q.includes('saglik') || q.includes('puan') || q.includes('skor')) return 'health';
+  if (q.includes('hedef') || q.includes('birikim') || q.includes('yakın') || q.includes('yakin')) return 'goals';
+  if (q.includes('tasarruf') || q.includes('kesinti') || q.includes('öneri') || q.includes('oneri')) return 'savings';
   return 'home';
 }
 
@@ -100,14 +100,14 @@ export const AIAssistant: React.FC = () => {
 
     const hasData = snapshot.dataAvailability.hasExpenses || snapshot.dataAvailability.hasIncomes;
 
-    let greeting = 'Merhaba! Ben Oracle AI, finansal danismaniniz.';
+    let greeting = 'Merhaba! Ben Oracle AI, finansal danışmanınız.';
 
     if (hasData && insights.length > 0) {
       const topInsight = insights[0];
       greeting += `\n\n${topInsight.title}: ${topInsight.content}`;
-      greeting += '\n\nAlttan bir konu secin veya serbest soru sorun.';
+      greeting += '\n\nAlttan bir konu seçin veya serbest soru sorun.';
     } else {
-      greeting += '\n\nGelir ve giderlerinizi kaydetmeye baslayin, size kisisel analizler sunayim.';
+      greeting += '\n\nGelir ve giderlerinizi kaydetmeye başlayın, size kişisel analizler sunayım.';
     }
 
     setMessages([{
@@ -130,6 +130,9 @@ export const AIAssistant: React.FC = () => {
     if (isOpen) {
       initializeChat();
       setTimeout(() => inputRef.current?.focus(), 300);
+      window.dispatchEvent(new CustomEvent('overlay:show'));
+    } else {
+      window.dispatchEvent(new CustomEvent('overlay:hide'));
     }
   }, [isOpen, initializeChat]);
 
@@ -183,7 +186,7 @@ export const AIAssistant: React.FC = () => {
     const resetMsg: Message = {
       id: Date.now().toString(),
       role: 'assistant',
-      content: 'Ana menuye dondum. Size nasil yardimci olabilirim?',
+      content: 'Ana menüye döndüm. Size nasıl yardımcı olabilirim?',
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, resetMsg]);
@@ -253,7 +256,7 @@ export const AIAssistant: React.FC = () => {
               <h3 className="text-base font-semibold text-white">Oracle AI</h3>
               <div className="flex items-center gap-1.5">
                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <p className="text-xs text-slate-400">Gercek veri analizi</p>
+                <p className="text-xs text-slate-400">Gerçek veri analizi</p>
               </div>
             </div>
           </div>
@@ -266,7 +269,7 @@ export const AIAssistant: React.FC = () => {
                 const summaryMsg: Message = {
                   id: Date.now().toString(),
                   role: 'assistant',
-                  content: insights.slice(0, 3).map((i) => `${i.title}: ${i.content}`).join('\n\n') || 'Analiz icin veri bekleniyor.',
+                  content: insights.slice(0, 3).map((i) => `${i.title}: ${i.content}`).join('\n\n') || 'Analiz için veri bekleniyor.',
                   timestamp: new Date(),
                 };
                 setMessages((prev) => [...prev, summaryMsg]);
@@ -313,35 +316,35 @@ export const AIAssistant: React.FC = () => {
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {message.insights.some((i) => i.type === 'trend' || i.type === 'anomaly') && (
                       <button
-                        onClick={() => processQuery('Harcamalarimi nasil azaltabilirim?')}
+                        onClick={() => processQuery('Harcamalarımı nasıl azaltabilirim?')}
                         className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold
                                    bg-rose-500/15 text-rose-300 border border-rose-500/20
                                    hover:bg-rose-500/25 transition-all active:scale-95"
                       >
                         <BarChart3 size={10} />
-                        Butceyi Ayarla
+                        Bütçeyi Ayarla
                       </button>
                     )}
                     {message.insights.some((i) => i.type === 'goal') && (
                       <button
-                        onClick={() => processQuery('Hedeflerime ne kadar yakinim?')}
+                        onClick={() => processQuery('Hedeflerime ne kadar yakınım?')}
                         className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold
                                    bg-violet-500/15 text-violet-300 border border-violet-500/20
                                    hover:bg-violet-500/25 transition-all active:scale-95"
                       >
                         <Target size={10} />
-                        Hedefleri Gor
+                        Hedefleri Gör
                       </button>
                     )}
                     {message.insights.some((i) => i.type === 'health') && (
                       <button
-                        onClick={() => processQuery('Butce saglik puanim kac?')}
+                        onClick={() => processQuery('Bütçe sağlık puanım kaç?')}
                         className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold
                                    bg-amber-500/15 text-amber-300 border border-amber-500/20
                                    hover:bg-amber-500/25 transition-all active:scale-95"
                       >
                         <Activity size={10} />
-                        Saglik Analizi
+                        Sağlık Analizi
                       </button>
                     )}
                   </div>
@@ -403,14 +406,14 @@ export const AIAssistant: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
               >
                 <RotateCcw size={11} strokeWidth={2.5} />
-                Ana Menu
+                Ana Menü
               </motion.button>
             )}
 
             {/* Analiz Et chip — contextual quick action */}
             {suggestionCtx !== 'home' && (
               <motion.button
-                onClick={() => handleSuggestedAction('Detayli analiz goster')}
+                onClick={() => handleSuggestedAction('Detaylı analiz göster')}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold
                            bg-emerald-500/15 text-emerald-300 border border-emerald-500/25
                            backdrop-blur-sm transition-all hover:bg-emerald-500/25 hover:border-emerald-400/40"
@@ -455,6 +458,7 @@ export const AIAssistant: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Bir soru sorun..."
+              lang="tr"
               className="flex-1 h-12 px-4 rounded-xl
                          bg-white/5 border border-white/10
                          text-white placeholder-slate-500

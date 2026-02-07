@@ -4,7 +4,7 @@ import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { groupExpensesByCategory } from '@/lib/analytics';
-import { formatCurrency } from '@/utils';
+import { formatCurrencyCompact } from '@/utils';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PieChart as PieChartIcon } from 'lucide-react';
@@ -55,8 +55,8 @@ export const CategoryChart = () => {
         <CardContent>
           <EmptyState
             variant="chart"
-            title="Henuz harcama yok"
-            description="Harcama eklediginizde kategori analizi burada gorunecek"
+            title="Henüz harcama yok"
+            description="Harcama eklediğinizde kategori analizi burada görünecek"
           />
         </CardContent>
       </Card>
@@ -96,7 +96,7 @@ export const CategoryChart = () => {
                 </Pie>
                 <Tooltip
                   formatter={(value: number) => (
-                    <span className="tabular-nums">{formatCurrency(value)}</span>
+                    <span className="tabular-nums">{formatCurrencyCompact(value)}</span>
                   )}
                   contentStyle={{
                     backgroundColor: 'rgba(21, 30, 49, 0.95)',
@@ -151,7 +151,7 @@ export const CategoryChart = () => {
                       %{item.percentage}
                     </span>
                     <span className="text-sm font-bold text-slate-100 tabular-nums">
-                      {formatCurrency(item.total)}
+                      {formatCurrencyCompact(item.total)}
                     </span>
                   </div>
                 </div>

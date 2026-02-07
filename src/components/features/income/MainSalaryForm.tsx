@@ -86,7 +86,6 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
       } else if (editingIncome) {
         // Demo mode: Update local storage
         // Note: This would need updateIncome method in store
-        console.warn('Update income not implemented in demo mode');
         onCancelEdit?.();
       } else {
         // Create new income

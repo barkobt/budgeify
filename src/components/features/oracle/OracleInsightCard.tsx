@@ -74,7 +74,7 @@ export function OracleInsightCard() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold text-slate-200">Oracle AI</p>
-            <p className="text-xs text-slate-500">Veri ekleyin, analiz baslayacak</p>
+            <p className="text-xs text-slate-500">Veri ekleyin, analiz başlayacak</p>
           </div>
         </div>
       </div>
@@ -173,7 +173,7 @@ export function OracleInsightCard() {
         <div className="flex items-center gap-2 pt-1 border-t border-white/5">
           <Shield size={12} className="text-slate-500" strokeWidth={2} />
           <p className="text-[11px] text-slate-500 flex-1">
-            Butce Sagligi: <span className={`font-semibold ${getScoreColor(health.score)}`}>Derece {health.grade}</span>
+            Bütçe Sağlığı: <span className={`font-semibold ${getScoreColor(health.score)}`}>Derece {health.grade}</span>
           </p>
           <ChevronRight size={12} className="text-slate-600" />
         </div>

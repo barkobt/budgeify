@@ -988,7 +988,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Active tab energy glow halo */
+/* Active tab energy glow halo — neon cyan */
 .dock-item--active::after {
   content: '';
   position: absolute;
@@ -998,27 +998,27 @@
   width: 24px;
   height: 4px;
   border-radius: 100px;
-  background: rgba(79, 70, 229, 0.8);
+  background: rgba(0, 240, 255, 0.8);
   box-shadow:
-    0 0 12px rgba(79, 70, 229, 0.6),
-    0 0 24px rgba(79, 70, 229, 0.3),
-    0 4px 8px rgba(79, 70, 229, 0.2);
+    0 0 12px rgba(0, 240, 255, 0.6),
+    0 0 24px rgba(0, 184, 212, 0.3),
+    0 4px 8px rgba(0, 240, 255, 0.2);
   animation: energy-glow 2s ease-in-out infinite;
 }
 
 @keyframes energy-glow {
   0%, 100% {
     box-shadow:
-      0 0 12px rgba(79, 70, 229, 0.6),
-      0 0 24px rgba(79, 70, 229, 0.3),
-      0 4px 8px rgba(79, 70, 229, 0.2);
+      0 0 12px rgba(0, 240, 255, 0.6),
+      0 0 24px rgba(0, 184, 212, 0.3),
+      0 4px 8px rgba(0, 240, 255, 0.2);
     opacity: 1;
   }
   50% {
     box-shadow:
-      0 0 16px rgba(79, 70, 229, 0.8),
-      0 0 32px rgba(79, 70, 229, 0.4),
-      0 6px 12px rgba(79, 70, 229, 0.3);
+      0 0 16px rgba(0, 240, 255, 0.8),
+      0 0 32px rgba(0, 184, 212, 0.4),
+      0 6px 12px rgba(0, 240, 255, 0.3);
     opacity: 0.85;
   }
 }
@@ -1314,42 +1314,101 @@
 .silicon-die--active   { width: 120px; height: 120px; }
 .silicon-die--docked   { width: 64px;  height: 64px;  }
 
-/* Circuit trace stroke animation for die */
-.silicon-trace {
+/* Neon circuit trace stroke animation — flowing electricity */
+.silicon-trace-neon {
   stroke-dasharray: 60;
   stroke-dashoffset: 60;
-  animation: silicon-trace-draw 2s var(--ease-out-expo) forwards;
+  animation: silicon-neon-trace-flow 2s var(--ease-out-expo) forwards,
+             silicon-neon-trace-pulse 3s ease-in-out 2s infinite;
 }
 
-.silicon-trace-secondary {
+.silicon-trace-neon-secondary {
   stroke-dasharray: 40;
   stroke-dashoffset: 40;
-  animation: silicon-trace-draw-secondary 2.5s var(--ease-out-expo) 0.3s forwards;
+  animation: silicon-neon-trace-flow-secondary 2.5s var(--ease-out-expo) 0.3s forwards,
+             silicon-neon-trace-pulse 4s ease-in-out 2.8s infinite;
 }
 
-@keyframes silicon-trace-draw {
+@keyframes silicon-neon-trace-flow {
   from { stroke-dashoffset: 60; }
   to   { stroke-dashoffset: 0; }
 }
 
-@keyframes silicon-trace-draw-secondary {
+@keyframes silicon-neon-trace-flow-secondary {
   from { stroke-dashoffset: 40; }
   to   { stroke-dashoffset: 0; }
 }
 
-/* Core logic block glow pulse */
-@keyframes silicon-core-glow {
+@keyframes silicon-neon-trace-pulse {
   0%, 100% {
-    filter: drop-shadow(0 0 4px rgba(79, 70, 229, 0.3));
+    opacity: 0.6;
+    filter: drop-shadow(0 0 2px rgba(0, 240, 255, 0.3));
   }
   50% {
-    filter: drop-shadow(0 0 12px rgba(79, 70, 229, 0.6))
-           drop-shadow(0 0 24px rgba(79, 70, 229, 0.3));
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.7))
+           drop-shadow(0 0 12px rgba(0, 240, 255, 0.3));
   }
 }
 
-.silicon-core--active {
-  animation: silicon-core-glow 2s ease-in-out infinite;
+/* Neon Core Reactor glow pulse — primary light source */
+@keyframes silicon-neon-core-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.4))
+           drop-shadow(0 0 12px rgba(0, 184, 212, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.8))
+           drop-shadow(0 0 24px rgba(0, 240, 255, 0.4))
+           drop-shadow(0 0 40px rgba(0, 184, 212, 0.2));
+  }
+}
+
+.silicon-core-neon--active {
+  animation: silicon-neon-core-glow 2s ease-in-out infinite;
+}
+
+/* Neon energy ring pulse around core */
+@keyframes silicon-neon-ring-expand {
+  0%, 100% {
+    opacity: 0.3;
+    r: 16;
+  }
+  50% {
+    opacity: 0.6;
+    r: 20;
+  }
+}
+
+.silicon-neon-ring-pulse {
+  animation: silicon-neon-ring-expand 3s ease-in-out infinite;
+}
+
+/* Neon Ambient Halo — large radiating glow behind die assembly */
+.silicon-neon-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250%;
+  height: 250%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.18) 0%,
+    rgba(0, 184, 212, 0.10) 25%,
+    rgba(79, 70, 229, 0.05) 50%,
+    transparent 70%
+  );
+  filter: blur(30px);
+  pointer-events: none;
+  will-change: opacity, transform;
+  animation: silicon-halo-breathe 4s ease-in-out infinite;
+}
+
+@keyframes silicon-halo-breathe {
+  0%, 100% { filter: blur(30px); transform: translate(-50%, -50%) scale(1); }
+  50%      { filter: blur(35px); transform: translate(-50%, -50%) scale(1.05); }
 }
 
 /* Light Leaks — radial gradient overlays at die edges */
@@ -1366,7 +1425,7 @@
   left: -15%;
   width: 55%;
   height: 55%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, rgba(99, 102, 241, 0.15) 40%, transparent 70%);
 }
 
 .silicon-light-leak--br {
@@ -1374,15 +1433,19 @@
   right: -15%;
   width: 55%;
   height: 55%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 184, 212, 0.22) 0%, rgba(139, 92, 246, 0.12) 40%, transparent 70%);
 }
 
-.silicon-light-leak--tr {
-  top: -10%;
-  right: -10%;
-  width: 45%;
-  height: 45%;
-  background: radial-gradient(circle, rgba(165, 180, 252, 0.22) 0%, transparent 70%);
+/* Center neon light leak — core reactor spill */
+.silicon-light-leak--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.35) 0%, rgba(0, 184, 212, 0.15) 30%, transparent 65%);
+  filter: blur(16px);
+  will-change: opacity;
 }
 
 /* ========================================

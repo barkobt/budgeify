@@ -34,13 +34,4 @@ const nextConfig = {
   },
 };
 
-// Bundle analyzer only when ANALYZE=true (dev-only tool)
-let config = nextConfig;
-if (process.env.ANALYZE === 'true') {
-  const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
-    enabled: true,
-  });
-  config = withBundleAnalyzer(nextConfig);
-}
-
-export default config;
+export default nextConfig;

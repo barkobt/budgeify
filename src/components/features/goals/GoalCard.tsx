@@ -5,8 +5,33 @@ import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { calculateSavingsGoal } from '@/lib/analytics';
 import { formatCurrencyCompact, formatDate } from '@/utils';
-import { Target, TrendingUp, Calendar, Trash2, Check, X, Plus } from 'lucide-react';
+import {
+  Target, TrendingUp, Calendar, Trash2, Check, X, Plus,
+  Home, Car, Plane, Heart, GraduationCap, Laptop,
+  PiggyBank, Umbrella, Gift, Smartphone, Trophy,
+  type LucideIcon,
+} from 'lucide-react';
 import type { Goal } from '@/types';
+
+/** Map goal icon labels (stored in DB) back to Lucide icons */
+const GOAL_ICON_MAP: Record<string, LucideIcon> = {
+  'Ev': Home,
+  'Araba': Car,
+  'Tatil': Plane,
+  'Sağlık': Heart,
+  'Eğitim': GraduationCap,
+  'Teknoloji': Laptop,
+  'Hedef': Target,
+  'Tasarruf': PiggyBank,
+  'Acil Durum': Umbrella,
+  'Hediye': Gift,
+  'Telefon': Smartphone,
+  'Başarı': Trophy,
+};
+
+function getGoalIcon(label: string): LucideIcon {
+  return GOAL_ICON_MAP[label] ?? Target;
+}
 
 interface GoalCardProps {
   goal: Goal;
@@ -148,25 +173,32 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
       )}
 
       {/* Header */}
-      <div className="mb-4 flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl ${
-              isCompleted
-                ? 'bg-emerald-500/20 border border-emerald-500/30'
-                : 'bg-accent-500/15 border border-accent-500/20'
-            }`}
-          >
-            {goal.icon}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-semibold text-white truncate max-w-45 md:max-w-60">{goal.name}</h3>
-            <p className="text-sm text-slate-400 tabular-nums truncate">
-              {formatCurrencyCompact(goal.currentAmount, currency)} / {formatCurrencyCompact(goal.targetAmount, currency)}
-            </p>
-          </div>
+      <div className="mb-4 grid grid-cols-[auto_1fr_auto] items-center gap-3">
+        {(() => {
+          const GoalIcon = getGoalIcon(goal.icon);
+          return (
+            <div
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl backdrop-blur-sm ${
+                isCompleted
+                  ? 'bg-emerald-500/15 border border-emerald-500/25 shadow-[0_0_12px_rgba(16,185,129,0.1)]'
+                  : 'bg-accent-500/10 border border-accent-500/20 shadow-[0_0_12px_rgba(99,102,241,0.1)]'
+              }`}
+            >
+              <GoalIcon
+                size={20}
+                strokeWidth={1.8}
+                className={isCompleted ? 'text-emerald-400' : 'text-accent-400'}
+              />
+            </div>
+          );
+        })()}
+        <div className="min-w-0 overflow-hidden">
+          <h3 className="text-base font-semibold text-white truncate">{goal.name}</h3>
+          <p className="text-xs text-slate-400 tabular-nums truncate">
+            {formatCurrencyCompact(goal.currentAmount, currency)} / {formatCurrencyCompact(goal.targetAmount, currency)}
+          </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           {isCompleted ? (
             <span className="flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
               <Check size={12} />
@@ -221,10 +253,10 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
       {/* Stats */}
       {!isCompleted && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
+          <div className="min-w-0 rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
             <div className="mb-1 flex items-center gap-1 text-slate-500">
-              <Target className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">Kalan</span>
+              <Target className="h-3.5 w-3.5 shrink-0" />
+              <span className="text-xs font-medium truncate">Kalan</span>
             </div>
             <p className="text-sm font-bold text-slate-200 tabular-nums truncate">
               {formatCurrencyCompact(remaining, currency)}
@@ -232,17 +264,17 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
           </div>
           {goal.targetDate && (
             <>
-              <div className="rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
+              <div className="min-w-0 rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
                 <div className="mb-1 flex items-center gap-1 text-slate-500">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">Süre</span>
+                  <Calendar className="h-3.5 w-3.5 shrink-0" />
+                  <span className="text-xs font-medium truncate">Süre</span>
                 </div>
-                <p className="text-sm font-bold text-slate-200 tabular-nums">{daysLeft} gün</p>
+                <p className="text-sm font-bold text-slate-200 tabular-nums truncate">{daysLeft} gün</p>
               </div>
-              <div className="rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
+              <div className="min-w-0 rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
                 <div className="mb-1 flex items-center gap-1 text-slate-500">
-                  <TrendingUp className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">Günlük</span>
+                  <TrendingUp className="h-3.5 w-3.5 shrink-0" />
+                  <span className="text-xs font-medium truncate">Günlük</span>
                 </div>
                 <p className="text-sm font-bold text-slate-200 tabular-nums truncate">
                   {formatCurrencyCompact(dailySavingsNeeded, currency)}
@@ -254,7 +286,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
       )}
 
       {goal.targetDate && !isCompleted && (
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-slate-500 truncate">
           Hedef Tarihi: {formatDate(goal.targetDate)}
         </p>
       )}
