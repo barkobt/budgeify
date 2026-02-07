@@ -144,10 +144,6 @@ export const DockBar: React.FC<DockBarProps> = ({
         animate={{ y: hidden ? 100 : 0, opacity: hidden ? 0 : 1 }}
         transition={springs.heavy}
       >
-        {/* Version Tag */}
-        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] tabular-nums font-medium text-white/20 select-none pointer-events-none">
-          v5.0-final
-        </span>
         <div className="flex items-center justify-around">
           {/* Left nav items */}
           {navItems.map((item) => (
@@ -209,6 +205,8 @@ interface DockItemProps {
 }
 
 const DockItem: React.FC<DockItemProps> = ({ icon: Icon, label, isActive, onClick }) => {
+  const isNeonWallet = Icon === NeonWalletIcon;
+
   return (
     <motion.button
       className={`dock-item ${isActive ? 'dock-item--active' : ''}`}
@@ -227,11 +225,21 @@ const DockItem: React.FC<DockItemProps> = ({ icon: Icon, label, isActive, onClic
           size={22}
           strokeWidth={1.5}
           className={
-            isActive
-              ? 'text-cyan-400'
-              : 'text-zinc-500'
+            isNeonWallet
+              ? ''
+              : isActive
+                ? 'text-cyan-400'
+                : 'text-zinc-500'
           }
-          style={isActive ? { filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))' } : {}}
+          style={
+            isNeonWallet
+              ? isActive
+                ? { filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))', transition: 'filter 0.2s ease' }
+                : { filter: 'grayscale(1) brightness(0.5)', transition: 'filter 0.2s ease' }
+              : isActive
+                ? { filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))' }
+                : {}
+          }
         />
       </motion.div>
 

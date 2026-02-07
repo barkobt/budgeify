@@ -100,9 +100,12 @@ export const db = new Proxy({} as ReturnType<typeof createDb>, {
     if (!_db) {
       const url = process.env.DATABASE_URL;
       if (!url) {
-        // Build-time / edge warm-up: DATABASE_URL is not yet available.
-        // Return undefined to let the build succeed without crashing.
-        // Actual DB calls at runtime will have the env var available.
+        // Build-time: return undefined silently
+        if (typeof window === 'undefined' && process.env.NEXT_PHASE === 'phase-production-build') {
+          return undefined;
+        }
+        // Runtime cold-start: warn
+        console.warn('[Budgeify] DATABASE_URL not yet available — edge cold-start');
         return undefined;
       }
       _db = createDb();

@@ -74,6 +74,73 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
    * Sync data from server to local store
    * All fetches return ActionResult<T> — extract .data on success
    */
+  const silentSyncData = useCallback(async () => {
+    if (!isSignedIn || operationLockRef.current) return;
+    try {
+      operationLockRef.current = true;
+
+      const [incomesResult, expensesResult, goalsResult] = await Promise.all([
+        getIncomes(),
+        getExpenses(),
+        getGoals(),
+        getCategories(),
+      ]) as [Awaited<ReturnType<typeof getIncomes>>, Awaited<ReturnType<typeof getExpenses>>, Awaited<ReturnType<typeof getGoals>>, unknown];
+
+      const serverIncomes = incomesResult.success ? incomesResult.data : [];
+      const serverExpenses = expensesResult.success ? expensesResult.data : [];
+      const serverGoals = goalsResult.success ? goalsResult.data : [];
+      const pendingDeletes = pendingDeletesRef.current;
+
+      const localIncomes = serverIncomes
+        .filter((income) => !pendingDeletes.has(income.id))
+        .map((income) => ({
+          id: income.id,
+          type: 'salary' as const,
+          category: 'salary' as const,
+          amount: parseFloat(income.amount),
+          description: income.description ?? undefined,
+          isRecurring: income.isRecurring,
+          createdAt: income.createdAt.toISOString(),
+          updatedAt: income.updatedAt.toISOString(),
+        }));
+
+      const localExpenses = serverExpenses
+        .filter((expense) => !pendingDeletes.has(expense.id))
+        .map((expense) => ({
+          id: expense.id,
+          categoryId: expense.categoryId ?? 'cat_other',
+          amount: parseFloat(expense.amount),
+          note: expense.note ?? undefined,
+          date: expense.date.toISOString().split('T')[0],
+          createdAt: expense.createdAt.toISOString(),
+          updatedAt: expense.updatedAt.toISOString(),
+        }));
+
+      const localGoals = serverGoals
+        .filter((goal) => !pendingDeletes.has(goal.id))
+        .map((goal) => ({
+          id: goal.id,
+          name: goal.name,
+          targetAmount: parseFloat(goal.targetAmount),
+          currentAmount: parseFloat(goal.currentAmount),
+          icon: goal.icon,
+          targetDate: goal.targetDate?.toISOString().split('T')[0],
+          status: goal.status,
+          createdAt: goal.createdAt.toISOString(),
+        }));
+
+      useBudgetStore.setState({
+        incomes: localIncomes,
+        expenses: localExpenses,
+        goals: localGoals,
+      });
+    } catch {
+      // Silent sync — swallow errors
+    } finally {
+      operationLockRef.current = false;
+    }
+  }, [isSignedIn]);
+
   const syncData = useCallback(async () => {
     if (!isSignedIn) {
       setIsLoading(false);
@@ -148,6 +215,9 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         goals: localGoals,
       });
 
+      // M24-E: Rehydrate localStorage for non-server state (e.g. currency preference)
+      useBudgetStore.persist.rehydrate();
+
       setIsSynced(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Veri senkronizasyonu başarısız';
@@ -166,6 +236,37 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   }, [isLoaded, isSignedIn, syncData]);
+
+  // M24-A: Visibility-based re-sync — cross-device consistency
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible' && isSignedIn && !operationLockRef.current) {
+        syncData();
+      }
+    };
+    const handleFocus = () => {
+      if (isSignedIn && !operationLockRef.current) {
+        syncData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [isSignedIn, syncData]);
+
+  // M24-B: Periodic background sync — 60s interval, silent
+  useEffect(() => {
+    if (!isSignedIn) return;
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible' && !operationLockRef.current) {
+        silentSyncData();
+      }
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [isSignedIn, silentSyncData]);
 
   /**
    * Create Income — ActionResult pattern
@@ -203,7 +304,10 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         i.id === tempId ? { ...i, id: result.data.id } : i
       ),
     }));
-  }, [store]);
+
+    // M24-C: Pull confirmed server state
+    await syncData();
+  }, [store, syncData]);
 
   /**
    * Create Expense — ActionResult pattern
@@ -240,7 +344,10 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         e.id === tempId ? { ...e, id: result.data.id } : e
       ),
     }));
-  }, [store]);
+
+    // M24-C: Pull confirmed server state
+    await syncData();
+  }, [store, syncData]);
 
   /**
    * Create Goal — ActionResult pattern (no double-throw)
@@ -278,7 +385,10 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         g.id === tempId ? { ...g, id: result.data.id } : g
       ),
     }));
-  }, [store]);
+
+    // M24-C: Pull confirmed server state
+    await syncData();
+  }, [store, syncData]);
 
   /**
    * Update Income — Optimistic + ActionResult
@@ -304,8 +414,11 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       // Rollback
       store.updateIncome(id, current);
       setLastError(result.error);
+    } else {
+      // M24-C: Pull confirmed server state
+      await syncData();
     }
-  }, [store]);
+  }, [store, syncData]);
 
   /**
    * Update Expense — Optimistic + ActionResult
@@ -330,8 +443,11 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       // Rollback
       store.updateExpense(id, current);
       setLastError(result.error);
+    } else {
+      // M24-C: Pull confirmed server state
+      await syncData();
     }
-  }, [store]);
+  }, [store, syncData]);
 
   /**
    * Remove Income — pending deletes + ActionResult
@@ -353,7 +469,9 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       }
     }
     pendingDeletesRef.current.delete(id);
-  }, [store]);
+    // M24-C: Pull confirmed server state
+    await syncData();
+  }, [store, syncData]);
 
   /**
    * Remove Expense — pending deletes + ActionResult
@@ -375,7 +493,9 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       }
     }
     pendingDeletesRef.current.delete(id);
-  }, [store]);
+    // M24-C: Pull confirmed server state
+    await syncData();
+  }, [store, syncData]);
 
   /**
    * Remove Goal — pending deletes + ActionResult (no double-throw)
@@ -397,7 +517,9 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       }
     }
     pendingDeletesRef.current.delete(id);
-  }, [store]);
+    // M24-C: Pull confirmed server state
+    await syncData();
+  }, [store, syncData]);
 
   const removeGoal = deleteGoal;
 
@@ -419,8 +541,10 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         setLastError(result.error);
         return;
       }
+      // M24-C: Pull confirmed server state
+      await syncData();
     }
-  }, [store]);
+  }, [store, syncData]);
 
   const value: DataSyncContextType = {
     isLoading,

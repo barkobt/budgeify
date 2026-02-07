@@ -206,7 +206,7 @@ export const AIAssistant: React.FC = () => {
         {!isOpen && (
           <motion.button
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full
+            className="fixed bottom-32 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full
                       ai-gradient ai-glow animate-pulse-glow"
             aria-label="Oracle AI Asistan"
             initial={{ scale: 0, opacity: 0 }}
@@ -216,7 +216,7 @@ export const AIAssistant: React.FC = () => {
             whileTap={{ scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           >
-            <Sparkles size={24} className="text-white" strokeWidth={2} />
+            <Sparkles size={20} className="text-white" strokeWidth={2} />
           </motion.button>
         )}
       </AnimatePresence>

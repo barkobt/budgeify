@@ -465,13 +465,13 @@
 }
 
 [vaul-drawer-overlay] {
-  background: rgba(0, 0, 0, 0.85) !important;
+  background: rgba(5, 5, 8, 0.85) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 [vaul-drawer-content] {
-  background: rgba(24, 24, 27, 0.98) !important;
+  background: linear-gradient(180deg, rgba(13, 13, 31, 0.98) 0%, rgba(10, 10, 26, 0.98) 100%) !important;
   border-top-left-radius: 24px !important;
   border-top-right-radius: 24px !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -533,6 +533,14 @@
 /* Text gradient */
 .text-gradient {
   background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Neon cyan text gradient — brand identity */
+.text-gradient-neon {
+  background: linear-gradient(135deg, #00F0FF 0%, #00D4E8 40%, #4F46E5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -649,16 +657,17 @@
   height: 250vh;
 }
 
-/* Responsive assembly container — wider on large screens */
+/* Responsive assembly container — elliptical for better mobile fit */
 .oracle-assembly-container {
-  height: 380px;
-  max-width: 380px;
+  height: 360px;
+  max-width: 420px;
+  border-radius: 45% / 40%;
 }
 
 @media (min-width: 768px) {
   .oracle-assembly-container {
-    height: 440px;
-    max-width: 440px;
+    height: 400px;
+    max-width: 480px;
   }
 
   .chip-ring-1 { width: 220px; height: 220px; }
@@ -668,8 +677,8 @@
 
 @media (min-width: 1024px) {
   .oracle-assembly-container {
-    height: 500px;
-    max-width: 500px;
+    height: 440px;
+    max-width: 540px;
   }
 
   .chip-ring-1 { width: 240px; height: 240px; }
@@ -959,7 +968,7 @@
   margin-left: auto;
   margin-right: auto;
   z-index: 50;
-  max-width: 380px;
+  max-width: 360px;
   width: calc(100% - 48px);
   border-radius: 24px;
   background: rgba(10, 10, 20, 0.65);

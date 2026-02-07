@@ -73,10 +73,6 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
   const balance = useBudgetStore((s) => s.getBalance());
   const savingsRate = useBudgetStore((s) => s.getSavingsRate());
   const currency = useBudgetStore((s) => s.currency);
-  const totalGoalSavings = useBudgetStore((s) =>
-    s.goals.reduce((sum, g) => sum + g.currentAmount, 0)
-  );
-
   // Scroll-driven assembly over 200vh runway
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -172,7 +168,7 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
       <div className="flex flex-col items-center justify-center min-h-[60vh] py-6">
         {/* Silicon Assembly Container */}
         <div
-          className={`relative w-full mx-auto rounded-full ${siliconGlowClass} ${showChromatic ? 'chromatic-pulse' : ''} oracle-assembly-container`}
+          className={`relative w-full mx-auto ${siliconGlowClass} ${showChromatic ? 'chromatic-pulse' : ''} oracle-assembly-container`}
         >
           <LayoutGroup>
             {/* 3-Speed Concentric Rings — fade out in Phase 4 */}
@@ -218,43 +214,37 @@ export function OracleHero({ onModuleClick, onScrollProgress }: OracleHeroProps)
                   }}
                 />
 
-                {/* Neon Wallet Icon — unified brand icon */}
-                <motion.div layoutId="neon-wallet-core">
+                {/* Neon Wallet Icon — transparent, no purple box */}
+                <motion.div layoutId="neon-wallet-core" className="relative">
                   <NeonWalletIcon
-                    size={80}
+                    size={120}
                     className="oracle-center-wallet"
                     style={{
                       filter: oracleState === 'active'
-                        ? 'drop-shadow(0 0 16px rgba(0,240,255,0.5)) drop-shadow(0 0 40px rgba(0,184,212,0.35))'
-                        : 'drop-shadow(0 0 8px rgba(0,240,255,0.25)) drop-shadow(0 0 20px rgba(79,70,229,0.15))'
+                        ? 'drop-shadow(0 0 20px rgba(0,240,255,0.4)) drop-shadow(0 0 50px rgba(0,184,212,0.2))'
+                        : 'drop-shadow(0 0 10px rgba(0,240,255,0.15))',
+                      transition: 'filter 0.5s ease',
                     }}
                   />
-                </motion.div>
-
-                {/* Data Readout — Ignition phase (50–70%) */}
-                <AnimatePresence>
-                  {oracleState === 'active' && (
-                    <motion.div
-                      className="absolute inset-0 flex flex-col items-center justify-center"
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={ASSEMBLY_SPRING}
-                      style={{ opacity: dataReadoutOpacity }}
-                      role="status"
-                      aria-label={`Bakiye: ${formatCurrencyCompact(balance, currency)}`}
-                    >
-                      <span className="text-sm font-bold tabular-nums text-white leading-none drop-shadow-lg max-w-[90%] truncate text-center">
-                        {formatCurrencyCompact(balance, currency)}
-                      </span>
-                      {totalGoalSavings > 0 && (
-                        <span className="text-[8px] font-medium text-indigo-200/70 mt-0.5 drop-shadow-sm max-w-[90%] truncate text-center">
-                          {formatCurrencyCompact(totalGoalSavings, currency)}
+                  {/* Balance overlay — dead center */}
+                  <AnimatePresence>
+                    {oracleState === 'active' && (
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ opacity: dataReadoutOpacity }}
+                        role="status"
+                        aria-label={`Bakiye: ${formatCurrencyCompact(balance, currency)}`}
+                      >
+                        <span className="text-base font-black tabular-nums text-white drop-shadow-lg">
+                          {formatCurrencyCompact(balance, currency)}
                         </span>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
 
                 {/* Pulse ring around die — neon cyan active state */}
                 {oracleState === 'active' && (

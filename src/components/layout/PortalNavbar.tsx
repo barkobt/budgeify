@@ -45,18 +45,15 @@ export const PortalNavbar: React.FC<PortalNavbarProps> = ({ activeTab = 'dashboa
 
   return (
     <nav className="portal-navbar" role="navigation" aria-label="Portal navigation">
-      <div className="max-w-lg md:max-w-xl lg:max-w-2xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
+      <div className="max-w-lg md:max-w-xl lg:max-w-2xl mx-auto px-3 sm:px-5 h-full flex items-center justify-between">
         {/* Left: Neon Wallet Logo + Budgeify Text */}
         <button
           onClick={handleLogoClick}
-          className="flex items-center gap-2 rounded-xl px-2 py-1.5
-                     bg-accent-600/10 hover:bg-accent-600/20
-                     transition-all duration-200 active:scale-95
-                     shadow-glow-sm hover:shadow-glow"
+          className="flex items-center gap-2 transition-transform duration-200 hover:scale-105 active:scale-95"
           aria-label="Dashboard ana ekranına dön"
         >
-          <NeonWalletIcon size={22} />
-          <span className="text-sm font-bold tracking-widest text-gradient select-none">
+          <NeonWalletIcon size={24} style={{ filter: 'drop-shadow(0 0 6px rgba(0,240,255,0.5))' }} />
+          <span className="text-[15px] font-bold tracking-widest text-gradient-neon select-none">
             Budgeify
           </span>
         </button>

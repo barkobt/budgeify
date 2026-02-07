@@ -213,6 +213,7 @@ export const useBudgetStore = create<BudgetStoreState>()(
     {
       name: 'budgeify-store',
       version: 2,
+      skipHydration: true,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as Record<string, unknown>;
         if (version < 2) {

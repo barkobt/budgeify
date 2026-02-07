@@ -726,6 +726,13 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | 2026-02-07 | v5.0 Stabilization: Emergency Protocol | Completed | **Task 1**: db/index.ts — safeDbAccess() edge warm-up helper + improved error message. **Task 2**: NeonWalletIcon.tsx shared component (useId for unique gradient IDs) — unified across DockBar Home, Auth spinners, PortalNavbar. OracleHero uses SiliconDie (wallet form). **Task 3**: PortalNavbar — NeonWalletIcon + "Budgeify" text (tracking-widest), oracle:reset-dashboard on click. **Task 4**: GoalCard — min-w-0 + shrink-0 on stat grid children, truncate on Hedef Tarihi. Turkish chars ✅ (v4.9). DockBar overlay-aware hide ✅ (v4.9). |
 | 2026-02-07 | v5.0 Final Handover: Neon Wallet Mandate | Completed | **DB**: Proxy build-safe — returns undefined when DATABASE_URL missing (prevents Vercel build crash). **Icon Unification**: OracleHero center SiliconDie → NeonWalletIcon (size 80, scroll-driven scale/glow preserved). Preflight chip SVG → NeonWalletIcon. NeonWalletIcon now used in ALL surfaces: PortalNavbar, DockBar, Auth spinners, OracleHero center, Preflight screen. **Verified**: PortalNavbar (NeonWalletIcon + Budgeify tracking-widest + oracle:reset-dashboard), GoalCard (formatCurrencyCompact + min-w-0 + truncate), AIAssistant (Turkish ğüşıöç + lang=tr), DockBar (overlay:show/hide auto-hide). |
 | 2026-02-07 | v5.0 Final Stabilization: Contrast & Git Sync | Completed | **Drawer Dark Theme**: `Drawer.tsx` converted from `bg-white` to sovereign depth gradient (`rgba(13,13,31,0.98)→rgba(10,10,26,0.98)`), handle `bg-white/20`, title `text-white`, close button `bg-white/10`, border `border-white/10`. Income/Expense/Goal drawers now match dark UI. **Console Cleanup**: Removed stray `console.warn` from `MainSalaryForm.tsx`. **Verified**: DB lazy proxy ✅, NeonWalletIcon unified ✅, GoalCard grid+compact ✅, AIAssistant Turkish ✅, DockBar overlay-hide ✅, Analytics dark-themed ✅. **Git**: Staged + pushed to main for Vercel deployment. |
+| 2026-02-08 | v6.0 M24: Database Resilience & Cross-Device Sync | Completed | **M24-A**: Visibility+focus re-sync (visibilitychange+focus events trigger syncData). **M24-B**: 60s periodic silent sync (silentSyncData — no loading flash). **M24-C**: Post-mutation server confirmation (syncData after every create/update/delete). **M24-D**: DB Proxy edge retry with build-phase detection (NEXT_PHASE check). **M24-E**: Zustand skipHydration:true + persist.rehydrate() after sync for currency preference preservation. |
+| 2026-02-08 | v6.0 M25: Visual Identity — Navbar & DockBar | Completed | **M25-A**: `.text-gradient-neon` CSS class (cyan→indigo brand gradient). **M25-B**: PortalNavbar — icon 28→24px, font text-lg→text-[15px], gap 2.5→2, padding tightened, text-gradient-neon applied. **M25-C**: DockBar NeonWalletIcon grey/active state sync (grayscale+brightness inactive, neon glow active). **M25-D**: Removed floating version tag from DockBar, added subtle `Budgeify v6.0` at page bottom. |
+| 2026-02-08 | v6.0 M26: Oracle Hero — Transparent Wallet Center | Completed | **M26-A**: Removed purple box (blur glow + ai-gradient container), NeonWalletIcon rendered directly at 120px with ambient drop-shadow only. **M26-B**: Balance text dead-center overlay inside wallet SVG (absolute inset-0 flex items-center justify-center). **M26-C**: Elliptical assembly container (border-radius 45%/40%, responsive 360→400→440px height, 420→480→540px max-width), removed rounded-full class. |
+| 2026-02-08 | v6.0 M27: Drawer Contrast & Forms Dark Theme | Completed | **M27-A**: `[vaul-drawer-content]` background fixed from zinc rgba(24,24,27) to sovereign depth gradient rgba(13,13,31)→rgba(10,10,26). `[vaul-drawer-overlay]` from rgba(0,0,0) to rgba(5,5,8,0.85). |
+| 2026-02-08 | v6.0 M28: Mobile Safety & AI Button Fix | Completed | **M28-A**: AI button moved from bottom-24 right-5 h-14 w-14 to bottom-32 right-4 h-12 w-12 (clears DockBar, Apple HIG 48px min tap target). Sparkles icon 24→20. **M28-B**: DockBar max-width 380→360px for mobile breathing room. |
+| 2026-02-08 | v6.0 M29: Goals UI & Turkish Final Audit | Completed | **M29-A**: GoalCard stat grid gap-3→gap-2 sm:gap-3 (responsive for 320px iPhone SE). **M29-B**: Turkish audit — all SUGGESTION_MAP, getNextContext, initializeChat, handleResetContext, aria-labels verified ğüşıöç correct. lang="tr" on input confirmed. No changes needed. |
+| 2026-02-08 | v6.0 M30: Git Sync & CONVENTIONS Update | Completed | CONVENTIONS.md updated with v6.0 milestone log + registry. Version footer updated to v6.0. Build ✅ green. |
 
 ---
 
@@ -784,6 +791,13 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | M21 | Vercel Deployment Fix (Lazy DB Proxy) | v5.0 | ✅ |
 | M22 | Silicon Wallet Resurrection (Logo SVG) | v5.0 | ✅ |
 | M23 | Final Polish Sweep (Turkish/Auth/DockBar) | v5.0 | ✅ |
+| M24 | Database Resilience & Cross-Device Sync | v6.0 | ✅ |
+| M25 | Visual Identity — Navbar & DockBar | v6.0 | ✅ |
+| M26 | Oracle Hero — Transparent Wallet Center | v6.0 | ✅ |
+| M27 | Drawer Contrast & Forms Dark Theme | v6.0 | ✅ |
+| M28 | Mobile Safety & AI Button Fix | v6.0 | ✅ |
+| M29 | Goals UI & Turkish Final Audit | v6.0 | ✅ |
+| M30 | Git Sync & CONVENTIONS Update | v6.0 | ✅ |
 
 ---
 
@@ -818,17 +832,400 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 
 ---
 
-*Project Brain v5.0-final-stabilized - Budgeify Sovereign: The Final Form*
+*Project Brain v6.0-sovereign - Budgeify: App-Store Ready*
 *Stack: Next.js 14 | Clerk Auth | Drizzle ORM | Neon PostgreSQL | Tailwind CSS 4*
-*Design: Depth Black (atmosphere) | Indigo Glow #4F46E5 | Neon Cyan #00F0FF | Glassmorphism blur(12px) + inner light | Spring Physics 260/20/1*
-*API: ActionResult<T> + Zod universal mandate | Oracle: Chip Core 4-phase cinematic | Runway 250vh*
-*DB: Lazy Proxy singleton + safeDbAccess() — build-time safe, edge warm-up resilient*
-*Bento: 8px gap, high-density 1×1 widgets | Currency: TRY/USD/EUR with convertAmount + formatCurrencyCompact universal*
-*Navigation: Portal Navbar (NeonWalletIcon + "Budgeify" tracking-widest) + Dock Bar (NeonWalletIcon Home, floating pill, center FAB, overlay-aware hide)*
-*Oracle AI v2.0: BrainCard → AIAssistant (Turkish ğüşıöç, Actionable Insights, context-aware chips)*
-*Analytics: SpendingVelocity (daily rate, projected monthly, category deltas) + CategoryChart + ExpenseChart*
-*Icon: NeonWalletIcon.tsx shared component — unified across Auth, Navbar, DockBar, OracleHero center, Preflight screen*
+*Design: Depth Black | Indigo Glow #4F46E5 | Neon Cyan #00F0FF | Glassmorphism blur(12px) | Spring 260/20/1*
+*DB: Lazy Proxy + Cross-Device Sync (visibility + 60s interval + post-mutation) — server-first authority, skipHydration*
+*Navigation: Portal Navbar (NeonWalletIcon + neon gradient "Budgeify") + Dock Bar (grey/neon state sync, no floating version)*
+*Oracle: Transparent wallet center (120px, no purple box), dead-center balance, elliptical assembly container*
+*Drawer: Sovereign Depth (rgba(13,13,31)) — !important override fixed*
+*AI Button: bottom-32 right-4 h-12 w-12 — clears DockBar (360px max-width)*
+*Goals: Responsive stat gap (gap-2 sm:gap-3) — iPhone SE safe*
+*Turkish: Full ğüşıöç audit verified — all AIAssistant strings correct*
 
-*Drawer: Sovereign Depth dark theme (rgba(13,13,31) gradient) — zero white backgrounds remain*
+**✅ Sovereign v6.0 — App-Store Ready — All Milestones M24→M30 Complete**
 
-**✅ Sovereign v5.0-final-stabilized — Production Ready — Contrast Fixed — Git Synced — Neon Wallet Mandate Complete**
+---
+
+## 🚀 Sovereign v6.0: The Final Stabilization — Executable Plan
+
+**Status**: ✅ Completed
+**Date**: 2026-02-08
+**Goal**: App-Store Ready quality. Zero amateur touches. Production-grade DB sync. Premium visual identity.
+
+### Execution Rules
+- Execute milestones **in order** (M24 → M25 → M26 → M27 → M28 → M29 → M30)
+- Run `npm run build` after **each milestone** — must be ✅ green before proceeding
+- **Never** break ActionResult<T> + Zod patterns
+- **Never** break Spring 260/20/1 canonical or M10 Bento Density (8px gap)
+- Respect `prefers-reduced-motion` — 60fps only transform+opacity
+- After all milestones: `git add . && git commit -m "feat(v6.0): sovereign final polish — app-store ready stabilization" && git push origin main`
+
+---
+
+### M24: Database Resilience & Cross-Device Sync (PRIORITY ALPHA)
+
+**Problem**: User logs into the same Clerk account on different devices but sees different data. Root cause: `DataSyncProvider.syncData()` only runs once on mount. Zustand `persist` middleware writes to localStorage per-device. No re-sync on tab focus, no periodic refresh, no post-mutation server confirmation. Stale localStorage loads instantly and masks server state.
+
+**Files to modify**:
+- `src/providers/DataSyncProvider.tsx`
+- `src/db/index.ts`
+- `src/store/useBudgetStore.ts`
+
+**Tasks**:
+
+**M24-A: Visibility-Based Re-Sync** (`DataSyncProvider.tsx`)
+Add a `visibilitychange` + `focus` event listener that triggers `syncData()` when user returns to the tab/app. This is the #1 fix for cross-device consistency — when user switches from Device A to Device B and focuses the tab, fresh server data loads.
+```tsx
+// Inside DataSyncProvider, add useEffect:
+useEffect(() => {
+  const handleVisibility = () => {
+    if (document.visibilityState === 'visible' && isSignedIn && !operationLockRef.current) {
+      syncData();
+    }
+  };
+  const handleFocus = () => {
+    if (isSignedIn && !operationLockRef.current) {
+      syncData();
+    }
+  };
+  document.addEventListener('visibilitychange', handleVisibility);
+  window.addEventListener('focus', handleFocus);
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibility);
+    window.removeEventListener('focus', handleFocus);
+  };
+}, [isSignedIn, syncData]);
+```
+
+**M24-B: Periodic Background Sync** (`DataSyncProvider.tsx`)
+Add a 60-second interval sync when the tab is active. Silent — no loading state change (use a separate `isSilentSync` flag to skip `setIsLoading(true)` during interval syncs). This catches any server-side changes without user action.
+```tsx
+useEffect(() => {
+  if (!isSignedIn) return;
+  const interval = setInterval(() => {
+    if (document.visibilityState === 'visible' && !operationLockRef.current) {
+      // Silent sync — don't flash loading state
+      silentSyncData();
+    }
+  }, 60_000);
+  return () => clearInterval(interval);
+}, [isSignedIn]);
+```
+Create `silentSyncData()` — identical to `syncData()` but skips `setIsLoading(true/false)` calls.
+
+**M24-C: Server-First Data Authority** (`DataSyncProvider.tsx`)
+After every successful create/update/delete mutation, call `syncData()` to pull the confirmed server state. This ensures the optimistic UI gets replaced with the real server IDs and timestamps. Currently, only the temp ID gets swapped — but amounts, dates, and other fields aren't re-confirmed.
+```tsx
+// At the end of each create/update/delete callback, after the server call succeeds:
+await syncData(); // Pull confirmed server state
+```
+
+**M24-D: DB Proxy Edge Retry** (`src/db/index.ts`)
+Strengthen the Proxy getter: if `DATABASE_URL` is missing at runtime (not build-time), log a warning and retry once after 100ms before returning undefined. This covers Vercel Edge cold-start timing.
+```tsx
+get(_target, prop, receiver) {
+  if (!_db) {
+    const url = process.env.DATABASE_URL;
+    if (!url) {
+      // Build-time: return undefined silently
+      if (typeof window === 'undefined' && process.env.NEXT_PHASE === 'phase-production-build') {
+        return undefined;
+      }
+      // Runtime cold-start: warn
+      console.warn('[Budgeify] DATABASE_URL not yet available — edge cold-start');
+      return undefined;
+    }
+    _db = createDb();
+  }
+  return Reflect.get(_db, prop, receiver);
+}
+```
+
+**M24-E: Zustand Hydration Guard** (`src/store/useBudgetStore.ts`)
+Add `skipHydration: true` to the persist config so server data from DataSyncProvider always takes priority over stale localStorage. Zustand's persist middleware currently hydrates from localStorage BEFORE DataSyncProvider's server fetch completes — causing a flash of stale data that can confuse the sync.
+```tsx
+{
+  name: 'budgeify-store',
+  version: 2,
+  skipHydration: true, // Server data takes priority
+  // ...existing migrate config
+}
+```
+Then in `DataSyncProvider`, after successful sync, call `useBudgetStore.persist.rehydrate()` to load any localStorage data that wasn't overwritten by the server (like currency preference).
+
+**Verification**: Open app on two browser tabs. Add income on Tab A. Switch to Tab B — data must appear within seconds (visibility re-sync). Wait 60s on Tab B without switching — data must appear (periodic sync).
+
+---
+
+### M25: Visual Identity — Navbar & DockBar (PRIORITY BETA)
+
+**Files to modify**:
+- `src/components/layout/PortalNavbar.tsx`
+- `src/components/layout/DockBar.tsx`
+- `src/app/globals.css`
+
+**Tasks**:
+
+**M25-A: Neon Cyan Text Gradient** (`globals.css`)
+Add a new `.text-gradient-neon` class for the "Budgeify" brand text. The current `.text-gradient` uses indigo→violet which doesn't match the neon cyan wallet icon palette.
+```css
+.text-gradient-neon {
+  background: linear-gradient(135deg, #00F0FF 0%, #00D4E8 40%, #4F46E5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+```
+
+**M25-B: PortalNavbar Logo Refinement** (`PortalNavbar.tsx`)
+- Replace `text-gradient` class → `text-gradient-neon`
+- Reduce icon size: 28 → 24px
+- Reduce font: `text-lg` → `text-[15px]`
+- Tighten gap: `gap-2.5` → `gap-2`
+- Reduce padding: `px-4 sm:px-6` → `px-3 sm:px-5`
+
+**M25-C: DockBar Icon State Sync** (`DockBar.tsx`)
+The NeonWalletIcon has a permanent cyan glow via its built-in `filter: drop-shadow(...)` in the SVG. When inactive, it must match the grey/muted look of other Lucide icons (`text-zinc-500`).
+- In `DockItem`, when rendering `NeonWalletIcon` (detected by checking `icon === NeonWalletIcon` or via a prop):
+  - **Inactive**: Apply `style={{ filter: 'grayscale(1) brightness(0.5)', transition: 'filter 0.2s ease' }}`
+  - **Active**: Apply `style={{ filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))', transition: 'filter 0.2s ease' }}`
+- Ensure `size={22}` matches other icons (already correct).
+
+**M25-D: Version Tag — Professional Placement** (`DockBar.tsx` + `globals.css`)
+Remove the amateur `v5.0-final` tag floating above the DockBar. Replace with a subtle, professional version indicator:
+- Remove the `<span className="absolute -top-5 ...">v5.0-final</span>` from DockBar
+- Add a minimal version line at the very bottom of the dashboard page content (inside `DashboardClient.tsx`), below all bento cards:
+```tsx
+<p className="text-center text-[10px] text-white/10 py-4 select-none">
+  Budgeify v6.0
+</p>
+```
+This is the Apple approach — version info at the bottom of scrollable content, never floating over UI.
+
+**Verification**: Navbar text has neon cyan→indigo gradient. DockBar wallet icon is grey when inactive, neon cyan when active. No floating version tag above DockBar. Subtle version at page bottom.
+
+---
+
+### M26: Oracle Hero — Transparent Wallet Center (PRIORITY BETA)
+
+**Files to modify**:
+- `src/components/features/oracle/OracleHero.tsx`
+- `src/app/globals.css`
+
+**Tasks**:
+
+**M26-A: Remove Purple Box** (`OracleHero.tsx`)
+The current center die has:
+1. A `blur-lg` glow div with `linear-gradient(135deg, #00F0FF, #4F46E5, #00B8D4)`
+2. An `ai-gradient p-4 rounded-2xl` solid purple/indigo background container
+3. NeonWalletIcon at 80px inside it
+
+Replace with:
+- Remove the `<div className="absolute inset-0 rounded-2xl blur-lg opacity-60" ...>` (inner blur glow)
+- Remove the `<div className="relative ai-gradient p-4 rounded-2xl ...">` wrapper (solid purple box)
+- Render NeonWalletIcon directly at **size={120}**, transparent (no background), with only a subtle ambient drop-shadow
+- Keep the outer `motion.div` with `coreScale` and `coreDockY` transforms
+
+Result structure:
+```tsx
+<motion.div layoutId="neon-wallet-core">
+  <NeonWalletIcon
+    size={120}
+    className="oracle-center-wallet"
+    style={{
+      filter: oracleState === 'active'
+        ? 'drop-shadow(0 0 20px rgba(0,240,255,0.4)) drop-shadow(0 0 50px rgba(0,184,212,0.2))'
+        : 'drop-shadow(0 0 10px rgba(0,240,255,0.15))',
+      transition: 'filter 0.5s ease',
+    }}
+  />
+</motion.div>
+```
+
+**M26-B: Dead-Center Balance Text** (`OracleHero.tsx`)
+Move the balance `<Counter />` (the `formatCurrencyCompact` readout) to be **absolutely centered inside the wallet SVG** using `absolute inset-0 flex items-center justify-center`. The balance text should overlap the wallet center.
+```tsx
+<motion.div layoutId="neon-wallet-core" className="relative">
+  <NeonWalletIcon size={120} ... />
+  {/* Balance overlay — dead center */}
+  <AnimatePresence>
+    {oracleState === 'active' && (
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{ opacity: dataReadoutOpacity }}
+      >
+        <span className="text-base font-black tabular-nums text-white drop-shadow-lg">
+          {formatCurrencyCompact(balance, currency)}
+        </span>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</motion.div>
+```
+Remove the old separate `absolute inset-0 flex flex-col` data readout div that was positioned over the purple box.
+
+**M26-C: Elliptical Assembly Shape** (`globals.css`)
+Change `.oracle-assembly-container` from circular to wider ellipse for better mobile fit:
+```css
+.oracle-assembly-container {
+  height: 360px;
+  max-width: 420px;
+  border-radius: 45% / 40%;  /* wider, shallower ellipse */
+}
+
+@media (min-width: 768px) {
+  .oracle-assembly-container {
+    height: 400px;
+    max-width: 480px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .oracle-assembly-container {
+    height: 440px;
+    max-width: 540px;
+  }
+}
+```
+Remove the `rounded-full` class from OracleHero's container div (it was overriding CSS).
+
+**Verification**: Oracle center shows a large transparent wallet SVG with no purple/indigo box behind it. Balance text is dead-center over the wallet. Assembly shape is an elegant ellipse, not a perfect circle.
+
+---
+
+### M27: Drawer Contrast & Forms Dark Theme (PRIORITY GAMMA)
+
+**Files to modify**:
+- `src/app/globals.css`
+
+**Tasks**:
+
+**M27-A: Vaul Drawer Sovereign Depth** (`globals.css`)
+The `[vaul-drawer-content]` CSS uses `rgba(24, 24, 27, 0.98) !important` — a **zinc** tone that clashes with the sovereign indigo depth palette. The component's inline style sets `rgba(13, 13, 31, 0.98)` but the `!important` overrides it.
+```css
+[vaul-drawer-content] {
+  background: linear-gradient(180deg, rgba(13, 13, 31, 0.98) 0%, rgba(10, 10, 26, 0.98) 100%) !important;
+  /* ...keep other properties unchanged */
+}
+```
+Also update `[vaul-drawer-overlay]`:
+```css
+[vaul-drawer-overlay] {
+  background: rgba(5, 5, 8, 0.85) !important;
+  /* ...keep blur unchanged */
+}
+```
+
+**Verification**: Open Income or Expense drawer. Background should be deep indigo-tinted black, NOT grey zinc. Overlay should match sovereign body tint.
+
+---
+
+### M28: Mobile Safety & AI Button Fix (PRIORITY GAMMA)
+
+**Files to modify**:
+- `src/components/features/ai/AIAssistant.tsx`
+- `src/app/globals.css`
+
+**Tasks**:
+
+**M28-A: AI Button Position** (`AIAssistant.tsx`)
+Move the floating AI button from `bottom-24 right-5` (96px) to `bottom-32 right-4` (128px) to clear the DockBar which occupies ~118px from viewport bottom (48px offset + 70px height). Also reduce from `h-14 w-14` → `h-12 w-12` for tighter mobile fit (48px = Apple HIG minimum tap target).
+```tsx
+<motion.button
+  className="fixed bottom-32 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full ai-gradient ai-glow animate-pulse-glow"
+  ...
+>
+  <Sparkles size={20} className="text-white" strokeWidth={2} />
+</motion.button>
+```
+
+**M28-B: DockBar AI-Safe Zone** (`globals.css`)
+Add a `max-width` constraint to prevent DockBar from becoming too wide on tablets and overlapping the AI button area:
+```css
+.dock-bar {
+  max-width: 360px; /* was 380px — tighter for mobile breathing room */
+}
+```
+
+**Verification**: On 375px (iPhone) viewport, AI button must NOT overlap DockBar. Tap targets are clear and distinct.
+
+---
+
+### M29: Goals UI & Turkish Final Audit (PRIORITY GAMMA)
+
+**Files to modify**:
+- `src/components/features/goals/GoalCard.tsx`
+- `src/components/features/ai/AIAssistant.tsx` (audit only)
+
+**Tasks**:
+
+**M29-A: Stat Grid Responsive Gap** (`GoalCard.tsx`)
+On very narrow screens (320px iPhone SE), the 3-column stat grid with `gap-3` can feel tight. Change to responsive gap:
+```tsx
+<div className="grid grid-cols-3 gap-2 sm:gap-3">
+```
+
+**M29-B: Turkish Character Audit** (`AIAssistant.tsx`)
+Verify ALL hardcoded strings use proper Turkish: ğ, ü, ş, ı, ö, ç. Check:
+- `SUGGESTION_MAP` entries
+- `getNextContext` keyword matching (must match both ASCII and Turkish variants)
+- `initializeChat` greeting
+- `handleResetContext` message
+- All `aria-label` attributes
+
+This is an **audit-only** task. If all strings are already correct (they should be from v4.9/v5.0), no changes needed. Document the verification.
+
+**Verification**: Open AI Assistant. All Turkish text renders correctly. Goal stat grid doesn't overflow on small screens.
+
+---
+
+### M30: Git Sync & CONVENTIONS Update (FINAL)
+
+**Tasks**:
+1. Update CONVENTIONS.md: Mark M24–M29 as Completed in the milestone log table
+2. Update the milestone registry table with new entries
+3. Update version footer in CONVENTIONS.md to v6.0
+4. Run: `npm run build` — must be ✅ green
+5. Run: `git add . && git commit -m "feat(v6.0): sovereign final polish — app-store ready stabilization" && git push origin main`
+
+---
+
+### v6.0 Files Impact Matrix
+
+| File | Milestones | Changes |
+|------|-----------|---------|
+| `src/providers/DataSyncProvider.tsx` | M24-A,B,C,E | Visibility re-sync, periodic 60s sync, post-mutation re-sync, hydration control |
+| `src/db/index.ts` | M24-D | Edge cold-start build-phase detection |
+| `src/store/useBudgetStore.ts` | M24-E | `skipHydration: true` for server-first authority |
+| `src/components/layout/PortalNavbar.tsx` | M25-B | Logo sizing, neon text gradient |
+| `src/components/layout/DockBar.tsx` | M25-C,D | Icon grey/active states, remove version tag |
+| `src/app/(dashboard)/dashboard/DashboardClient.tsx` | M25-D | Version at page bottom |
+| `src/components/features/oracle/OracleHero.tsx` | M26-A,B | Transparent wallet, dead-center balance |
+| `src/app/globals.css` | M25-A, M26-C, M27-A, M28-B | Neon gradient, ellipse shape, drawer contrast, dock width |
+| `src/components/features/ai/AIAssistant.tsx` | M28-A, M29-B | Button position, Turkish audit |
+| `src/components/features/goals/GoalCard.tsx` | M29-A | Responsive stat gap |
+| `CONVENTIONS.md` | M30 | Milestone log + version |
+
+### Constraints Preserved
+- **ActionResult\<T\> + Zod** — untouched
+- **M10 Bento Density** — 8px gap preserved
+- **Spring 260/20/1** — canonical
+- **prefers-reduced-motion** — respected
+- **60fps** — only transform+opacity animations
+- **Event System** — oracle:open-assistant, oracle:reset-dashboard, overlay:show/hide unchanged
+
+---
+
+*Project Brain v6.0-sovereign - Budgeify: App-Store Ready*
+*Stack: Next.js 14 | Clerk Auth | Drizzle ORM | Neon PostgreSQL | Tailwind CSS 4*
+*Design: Depth Black | Indigo Glow #4F46E5 | Neon Cyan #00F0FF | Glassmorphism blur(12px) | Spring 260/20/1*
+*DB: Lazy Proxy + Cross-Device Sync (visibility + 60s interval + post-mutation) — server-first authority*
+*Navigation: Portal Navbar (NeonWalletIcon + neon gradient "Budgeify") + Dock Bar (grey/neon state sync, no floating version)*
+*Oracle: Transparent wallet center, dead-center balance, elliptical assembly container*
+*Drawer: Sovereign Depth (rgba(13,13,31)) — !important override fixed*
+
+**✅ Sovereign v6.0 — Execution Complete — Build Green — App-Store Ready**

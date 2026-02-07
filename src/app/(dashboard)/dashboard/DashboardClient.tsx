@@ -498,6 +498,10 @@ export default function DashboardClient() {
               </motion.div>
             </motion.div>
           )}
+        {/* Version — bottom of scrollable content */}
+        <p className="text-center text-[10px] text-white/10 py-4 select-none">
+          Budgeify v6.0
+        </p>
         </div>
       </main>
       </PageWrapper>
