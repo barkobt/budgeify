@@ -1,4 +1,4 @@
-# Skill: Bento Grid Layout — Sovereign v4.0
+# Skill: Bento Grid Layout — Sovereign v4.5
 
 > Apple Control Center / Widget-inspired spatial dashboard layout.
 > Canonical source: `skills/ui/bento.md` — CONVENTIONS.md references this file.
@@ -29,7 +29,7 @@ Ilham Kaynaklari:
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;                          /* Tight spacing for cohesion */
+  gap: 8px;                           /* v4.5: Ultra-tight for Control Center density */
   padding: 0;
   width: 100%;
 }
@@ -102,35 +102,35 @@ Dashboard Layout (Mobile 375px, 2-col):
 ### Size Variants
 
 ```css
-/* 1×1 — Single cell */
+/* 1×1 — Single cell (v4.5: tighter) */
 .bento-1x1 {
   grid-column: span 1;
   grid-row: span 1;
-  padding: 16px;
-  min-height: 100px;
+  padding: 12px;
+  min-height: 88px;
 }
 
 /* 2×1 — Full width, single row */
 .bento-2x1 {
   grid-column: span 2;
   grid-row: span 1;
-  padding: 20px;
-  min-height: 100px;
+  padding: 14px;
+  min-height: 88px;
 }
 
 /* 1×2 — Single column, double row */
 .bento-1x2 {
   grid-column: span 1;
   grid-row: span 2;
-  padding: 20px;
+  padding: 14px;
 }
 
 /* 2×2 — Full width, double row */
 .bento-2x2 {
   grid-column: span 2;
   grid-row: span 2;
-  padding: 24px;
-  min-height: 200px;
+  padding: 16px;
+  min-height: 160px;
 }
 
 /* Full — breaks out of grid, full width */
@@ -203,13 +203,13 @@ const bentoItem: Variants = {
 /* Mobile (375px) — default 2-col */
 .bento-grid {
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 8px;
 }
 
-/* Tablet (768px) — wider gaps */
+/* Tablet (768px) */
 @media (min-width: 768px) {
   .bento-grid {
-    gap: 16px;
+    gap: 10px;
   }
 }
 ```
@@ -303,7 +303,8 @@ const bentoItem: Variants = {
 
 ---
 
-*Skill Module: Bento Grid Layout — Sovereign v4.0*
-*Grid: 2-col CSS Grid | Gap: 12px | Sizes: 1×1, 2×1, 1×2, 2×2, full*
+*Skill Module: Bento Grid Layout — Sovereign v4.5*
+*Grid: 2-col CSS Grid | Gap: 8px (v4.5 density) | Sizes: 1×1, 2×1, 1×2, 2×2, full*
 *Style: Glassmorphism blur(12px) + VisionOS inner light + 20px border-radius*
 *Animation: Framer Motion stagger (0.06s) + spring entry (260/24/0.8)*
+*Density: M10 Control Center aesthetic — prefer 1×1 widgets over 2×1*

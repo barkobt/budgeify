@@ -21,6 +21,21 @@ export const springs = {
   heavy: { type: 'spring', stiffness: 200, damping: 28, mass: 1.2 } as Transition,
 } as const;
 
+/** v4.6: Canonical assembly spring — scroll-driven convergence */
+export const ASSEMBLY_SPRING = {
+  type: 'spring' as const,
+  stiffness: 260,
+  damping: 20,
+  mass: 1,
+};
+
+/** v4.6: Dock Bar hover bounce — fast & reactive (Apple-tier) */
+export const DOCK_SPRING = {
+  type: 'spring' as const,
+  stiffness: 400,
+  damping: 10,
+};
+
 // ========================================
 // FADE VARIANTS
 // ========================================

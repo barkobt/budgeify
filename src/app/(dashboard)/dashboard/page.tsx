@@ -1,9 +1,12 @@
 'use client';
 
 /**
- * Dashboard Page — Sovereign v4.0 (Bento Grid)
+ * Dashboard Page — Sovereign v4.6 (Bento Grid + Dock Bar)
  *
  * Spatial Bento Grid layout: Apple Control Center / Widget-inspired.
+ * M13-C: PortalNavbar (command strip) + DockBar (floating pill, center FAB).
+ * M9: Sticky Oracle Hero, M10: High-density bento,
+ * M6: Currency globalization, M7: Oracle Brain card.
  * Hydration-safe: uses isMounted guard for store-derived values.
  * All data pulled from useBudgetStore — no hardcoded values.
  * Spec: skills/ui/bento.md
@@ -12,7 +15,8 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PortalNavbar } from '@/components/layout/PortalNavbar';
+import { DockBar } from '@/components/layout/DockBar';
 import { Drawer } from '@/components/ui/Drawer';
 import { PageWrapper } from '@/components/ui/PageWrapper';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
@@ -24,14 +28,14 @@ import {
   fadeInUp,
 } from '@/lib/motion';
 import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
-import type { Income } from '@/types';
+import type { Income, CurrencyCode } from '@/types';
 import {
-  Plus,
   TrendingUp,
   Target,
   ArrowUpRight,
   ArrowDownRight,
   PiggyBank,
+  Globe,
 } from 'lucide-react';
 
 // Dynamic imports with skeleton loaders
@@ -83,6 +87,10 @@ const OracleInsightCard = dynamic(
   () => import('@/components/features/oracle/OracleInsightCard').then((mod) => ({ default: mod.OracleInsightCard })),
   { ssr: false }
 );
+const OracleBrainCard = dynamic(
+  () => import('@/components/features/oracle/OracleBrainCard').then((mod) => ({ default: mod.OracleBrainCard })),
+  { ssr: false }
+);
 
 type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
 type DrawerType = 'income' | 'expense' | null;
@@ -126,11 +134,20 @@ export default function DashboardPage() {
     }
   };
 
+  const currency = useBudgetStore((s) => s.currency);
+  const setCurrency = useBudgetStore((s) => s.setCurrency);
+
   const transactionCount = isMounted ? expenses.length : 0;
   const goalCount = isMounted ? getActiveGoals().length : 0;
   const savingsRate = isMounted ? getSavingsRate() : 0;
   const savingsTarget = 30;
   const savingsProgress = savingsTarget > 0 ? Math.min(Math.round((savingsRate / savingsTarget) * 100), 100) : 0;
+
+  const CURRENCIES: CurrencyCode[] = ['TRY', 'USD', 'EUR'];
+  const cycleCurrency = () => {
+    const idx = CURRENCIES.indexOf(currency);
+    setCurrency(CURRENCIES[(idx + 1) % CURRENCIES.length]);
+  };
 
   return (
     <>
@@ -224,53 +241,80 @@ export default function DashboardPage() {
                 </div>
               </BentoCard>
 
+              {/* Oracle Brain — 1×1 AI widget (M7) */}
+              <BentoCard
+                size="1x1"
+                pressable
+                ariaLabel="Oracle AI durumu"
+              >
+                <OracleBrainCard />
+              </BentoCard>
+
+              {/* Savings — 1×1 compact widget */}
+              <BentoCard size="1x1" ariaLabel="Tasarruf orani">
+                <div className="flex flex-col h-full justify-between">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/15">
+                    <PiggyBank size={14} className="text-violet-400" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-xl font-black text-white tabular-nums">%{savingsRate}</p>
+                    <div className="mt-1">
+                      <div
+                        className="h-1 rounded-full bg-white/10 overflow-hidden"
+                        role="progressbar"
+                        aria-valuenow={savingsProgress}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label="Tasarruf ilerlemesi"
+                      >
+                        <motion.div
+                          className="h-full rounded-full bg-violet-400"
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${savingsProgress}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-0.5">Tasarruf</p>
+                    </div>
+                  </div>
+                </div>
+              </BentoCard>
+
               {/* Oracle AI Insight — 2×1 (child has own glass-card styling) */}
               <BentoCard size="2x1" bare>
                 <OracleInsightCard />
               </BentoCard>
 
-              {/* Savings Insight — 2×1 premium gradient */}
-              <BentoCard size="2x1" bare>
-                <section
-                  className="rounded-[20px] ai-gradient p-5 shadow-lg shadow-accent-500/20"
-                  aria-label="Tasarruf durumu"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-                      <PiggyBank size={22} className="text-white" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs font-medium text-white/70 uppercase tracking-wider">Tasarruf Orani</p>
-                      <div className="flex items-baseline gap-2">
-                        <p className="text-2xl font-black text-white tabular-nums">%{savingsRate}</p>
-                        <p className="text-sm text-white/60 tabular-nums">/ %{savingsTarget} hedef</p>
-                      </div>
-                    </div>
+              {/* Currency Selector — 1×1 (M6) */}
+              <BentoCard
+                size="1x1"
+                pressable
+                onClick={cycleCurrency}
+                ariaLabel={`Para birimi: ${currency}, degistirmek icin tiklayin`}
+              >
+                <div className="flex flex-col h-full justify-between">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-500/15">
+                    <Globe size={14} className="text-accent-400" strokeWidth={2} />
                   </div>
-                  <div className="mt-4">
-                    <div
-                      className="h-1.5 rounded-full bg-white/20 overflow-hidden"
-                      role="progressbar"
-                      aria-valuenow={savingsProgress}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-label="Tasarruf ilerlemesi"
-                    >
-                      <motion.div
-                        className="h-full rounded-full bg-white"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${savingsProgress}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-                      />
-                    </div>
-                    <p className="mt-2 text-right text-xs text-white/70">
-                      {savingsProgress > 0
-                        ? `Hedefe %${savingsProgress} ulastin`
-                        : 'Gelir ekleyerek tasarruf takibini baslatin'}
-                    </p>
+                  <div>
+                    <p className="text-lg font-bold text-white">{currency}</p>
+                    <p className="text-[10px] text-slate-500">Para Birimi</p>
                   </div>
-                </section>
+                </div>
+              </BentoCard>
+
+              {/* Savings Target — 1×1 */}
+              <BentoCard size="1x1" ariaLabel="Tasarruf hedefi">
+                <div className="flex flex-col h-full justify-between">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15">
+                    <Target size={14} className="text-emerald-400" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-white tabular-nums">%{savingsTarget}</p>
+                    <p className="text-[10px] text-slate-500">Hedef Oran</p>
+                  </div>
+                </div>
               </BentoCard>
             </BentoGrid>
           )}
@@ -360,24 +404,6 @@ export default function DashboardPage() {
       </main>
       </PageWrapper>
 
-      {/* FAB - Transactions Tab Only */}
-      {activeTab === 'transactions' && (
-        <motion.button
-          onClick={() => setOpenDrawer('expense')}
-          className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full
-                     ai-gradient shadow-lg shadow-accent-500/30"
-          aria-label="Gider Ekle"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        >
-          <Plus size={24} strokeWidth={2} className="text-white" />
-        </motion.button>
-      )}
-
       {/* Drawers */}
       <Drawer
         open={openDrawer === 'income' || !!editingIncome}
@@ -406,8 +432,9 @@ export default function DashboardPage() {
       {/* AI Assistant */}
       <AIAssistant />
 
-      {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* v4.6: Portal Navbar + Dock Bar */}
+      <PortalNavbar activeTab={activeTab} />
+      <DockBar activeTab={activeTab} onTabChange={setActiveTab} onOpenDrawer={setOpenDrawer} />
     </>
   );
 }

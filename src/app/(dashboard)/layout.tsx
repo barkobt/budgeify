@@ -16,7 +16,6 @@
  * Zustand store ile Neon database arasında senkronizasyon sağlar.
  */
 
-import Header from '@/components/layout/Header';
 import { DataSyncProvider } from '@/providers/DataSyncProvider';
 import { SkipNav } from '@/components/ui/SkipNav';
 
@@ -28,10 +27,9 @@ export default function DashboardLayout({
   return (
     <DataSyncProvider>
       <SkipNav />
-      <div className="min-h-screen pt-16 pb-24">
-        <Header />
+      <div className="min-h-screen pt-14 pb-24">
         {children}
-        {/* BottomNav is rendered in page.tsx with tab state */}
+        {/* PortalNavbar + DockBar rendered in page.tsx with activeTab state */}
       </div>
     </DataSyncProvider>
   );

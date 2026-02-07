@@ -5,7 +5,7 @@
 
 ---
 
-## Project Structure v4.0
+## Project Structure v4.5
 
 ### Execution Zone Principle
 - **src/**: **ONLY** directory for functional code execution
@@ -436,10 +436,11 @@ if (!result.success) {
 
 ---
 
-## 7. UI & Design System (Sovereign v4.0)
+## 7. UI & Design System (Sovereign v4.6: The Mechanical Heart)
 
 > **Canonical Source**: `skills/ui/styles.md` — full specifications live there.
 > **Oracle Chip Core**: `skills/ui/oracle.md` — Oracle visual spec.
+> **v4.6 Execution Spec**: `skills/architect/v46-plan.md` — full milestone details.
 > This section is the executive summary.
 
 ### Design Vision: Depth Black + Indigo Glow + Glassmorphism
@@ -692,10 +693,24 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | 2026-02-06 | v4.0 M4: Depth Layer System | Completed | globals.css → v4.0 (atmospheric gradient body, noise texture body::after, ambient orbs, glassmorphism blur(12px)+inner light, indigo #4F46E5 palette), layout.tsx ambient layer |
 | 2026-02-06 | v4.0 M5: Oracle Chip Core | Completed | OracleHero/OracleModuleChip rewritten — 3-speed rings, central die, 3-state machine, layoutId assembly, circuit-trace, silicon-glow |
 | 2026-02-06 | v4.0 M8: Bento Grid v2.0 | Completed | skills/ui/bento.md spec, BentoGrid+BentoCard components, globals.css bento system, dashboard refactored to spatial grid layout |
+| 2026-02-06 | v4.5 Plan Created | Planned | archive/v4_PLAN.md updated — M9 Sticky Oracle, M10 Bento Density, M6 Currency, M7 Oracle AI v2.0 |
+| 2026-02-06 | v4.5 M9: Sticky Oracle Hero | Completed | oracle-runway (150vh) + oracle-sticky (position:sticky, 100vh) CSS, OracleHero scroll-driven 3-state pinned in viewport |
+| 2026-02-06 | v4.5 M10: Bento Density | Completed | Gap 12px→8px, padding reduced across all sizes, 2×1 cards broken into 1×1 high-density widgets, Control Center aesthetic |
+| 2026-02-06 | v4.5 M6: Currency Globalization | Completed | convertAmount() utility in src/utils, currency selector 1×1 widget, cycleCurrency on dashboard |
+| 2026-02-06 | v4.5 M7: Oracle Brain Card | Completed | OracleBrainCard.tsx — 1×1 AI widget with animated health score ring + top insight preview |
+| 2026-02-07 | v4.6 Plan: The Mechanical Heart | Approved | Full spec: `skills/architect/v46-plan.md` — 5 milestones below |
+| 2026-02-07 | v4.6 M13-C: Portal Navbar + Dock Bar | Completed | `PortalNavbar.tsx` (command strip, context title, Clerk UserBtn) + `DockBar.tsx` (atmospheric glass blur(20px)+saturate(180%), DOCK_SPRING 400/10 bounce, energy glow halo, center FAB with radial quick-add + blur overlay) — replaces Header+BottomNav in dashboard |
+| 2026-02-07 | v4.6 M13-A: Pre-flight Screen | Completed | `dashboard/loading.tsx` rewrite — 4-layer Silicon Die SVG (substrate→traces→core→heatspreader), CSS-only preflight-rotate (4s) + preflight-pulse (2s), circuit trace stroke-dashoffset animation, 4-phase sequential status text (800ms each), ambient glow ring, indigo progress sweep bar |
+| 2026-02-07 | v4.6 M13-B: Auth Streamline | Planned | Clerk `afterSignInUrl`/`afterSignUpUrl` → `/dashboard` direct redirect, eliminate intermediate step |
+| 2026-02-07 | v4.6 M11: Cinematic Assembly | Planned | 200vh runway, 4-phase choreography (Awakening→Assembly→Ignition→Dock), ambient layer ignition, scroll progress indicator, seamless handover via layoutId, chromatic aberration + screen shake on dock |
+| 2026-02-07 | v4.6 M12: Silicon Die | Planned | `SiliconDie.tsx` — 4-layer SVG (substrate→traces→core→heatspreader), Z-axis parallax, light leaks, 3 size states (100/120/64px), replaces Wallet icon |
 
 ---
 
-*Project Brain v4.0 - Budgeify Sovereign*
+*Project Brain v4.6 - Budgeify Sovereign: The Mechanical Heart*
 *Stack: Next.js 14 | Clerk Auth | Drizzle ORM | Neon PostgreSQL | Tailwind CSS 4*
 *Design: Depth Black (atmosphere) | Indigo Glow #4F46E5 | Glassmorphism blur(12px) + inner light | Spring Physics 260/20/1*
-*API: ActionResult<T> + Zod universal mandate | Oracle: Chip Core 3-state machine*
+*API: ActionResult<T> + Zod universal mandate | Oracle: Chip Core 4-phase cinematic | Runway 200vh*
+*Bento: 8px gap, high-density 1×1 widgets | Currency: TRY/USD/EUR with convertAmount*
+*Navigation: Portal Navbar (top command strip) + Dock Bar (floating pill, center FAB)*
+*Execution Spec: skills/architect/v46-plan.md*

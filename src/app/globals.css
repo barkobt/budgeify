@@ -633,6 +633,27 @@
 }
 
 /* ========================================
+   v4.5: ORACLE STICKY RUNWAY — M9
+   Scroll-driven assembly stays pinned while
+   scrollYProgress advances 0→1 over 150vh.
+   ======================================== */
+
+.oracle-runway {
+  position: relative;
+  height: 150vh;
+}
+
+.oracle-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ========================================
    v4.0: ORACLE CHIP CORE — Silicon Assembly
    ======================================== */
 
@@ -777,13 +798,13 @@
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 8px;
   width: 100%;
 }
 
 @media (min-width: 768px) {
   .bento-grid {
-    gap: 16px;
+    gap: 10px;
   }
 }
 
@@ -813,28 +834,28 @@
 .bento-1x1 {
   grid-column: span 1;
   grid-row: span 1;
-  padding: 16px;
-  min-height: 100px;
+  padding: 12px;
+  min-height: 88px;
 }
 
 .bento-2x1 {
   grid-column: span 2;
   grid-row: span 1;
-  padding: 20px;
-  min-height: 100px;
+  padding: 14px;
+  min-height: 88px;
 }
 
 .bento-1x2 {
   grid-column: span 1;
   grid-row: span 2;
-  padding: 20px;
+  padding: 14px;
 }
 
 .bento-2x2 {
   grid-column: span 2;
   grid-row: span 2;
-  padding: 24px;
-  min-height: 200px;
+  padding: 16px;
+  min-height: 160px;
 }
 
 .bento-full {
@@ -858,6 +879,318 @@
     0 4px 24px rgba(0, 0, 0, 0.3),
     0 0 24px rgba(79, 70, 229, 0.10),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ========================================
+   v4.6: PORTAL NAVBAR — Command Strip
+   ======================================== */
+
+.portal-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 56px;
+  background: rgba(5, 5, 5, 0.70);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ========================================
+   v4.6: DOCK BAR — macOS Floating Pill
+   ======================================== */
+
+.dock-bar {
+  position: fixed;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  max-width: 380px;
+  width: calc(100% - 48px);
+  border-radius: 24px;
+  background: rgba(10, 10, 20, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 8px 4px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Dock navigation item */
+.dock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 52px;
+  padding: 6px 0;
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Active tab energy glow halo */
+.dock-item--active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 4px;
+  border-radius: 100px;
+  background: rgba(79, 70, 229, 0.8);
+  box-shadow:
+    0 0 12px rgba(79, 70, 229, 0.6),
+    0 0 24px rgba(79, 70, 229, 0.3),
+    0 4px 8px rgba(79, 70, 229, 0.2);
+  animation: energy-glow 2s ease-in-out infinite;
+}
+
+@keyframes energy-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(79, 70, 229, 0.6),
+      0 0 24px rgba(79, 70, 229, 0.3),
+      0 4px 8px rgba(79, 70, 229, 0.2);
+    opacity: 1;
+  }
+  50% {
+    box-shadow:
+      0 0 16px rgba(79, 70, 229, 0.8),
+      0 0 32px rgba(79, 70, 229, 0.4),
+      0 6px 12px rgba(79, 70, 229, 0.3);
+    opacity: 0.85;
+  }
+}
+
+/* Dock center FAB */
+.dock-fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Dock blur overlay — covers dashboard behind DockBar */
+.dock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.60);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Radial action button — quick-add items */
+.dock-radial-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========================================
+   v4.6: PRE-FLIGHT SCREEN — M13-A
+   Cinematic loading. CSS-only (RSC constraint).
+   ======================================== */
+
+/* Full-screen pre-flight container */
+.preflight-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    #0a0a1a 0%,
+    #050508 50%,
+    #000000 100%
+  );
+  overflow: hidden;
+}
+
+/* Ambient indigo glow ring behind die */
+.preflight-ambient {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(79, 70, 229, 0.15) 0%,
+    rgba(79, 70, 229, 0.06) 40%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  animation: preflight-ambient-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes preflight-ambient-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+
+/* Die container — rotation + scale pulse */
+.preflight-die-container {
+  position: relative;
+  z-index: 1;
+  animation:
+    preflight-rotate 4s cubic-bezier(0.4, 0, 0.2, 1) infinite,
+    preflight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes preflight-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes preflight-pulse {
+  0%, 100% { transform: scale(0.95); }
+  50%      { transform: scale(1.05); }
+}
+
+/* Die SVG — indigo glow shadow */
+.preflight-die {
+  filter:
+    drop-shadow(0 0 12px rgba(79, 70, 229, 0.4))
+    drop-shadow(0 0 32px rgba(79, 70, 229, 0.2));
+}
+
+/* Circuit trace stroke animation */
+.preflight-trace {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: preflight-trace-draw 2s ease-in-out infinite alternate;
+}
+
+.preflight-trace-secondary {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: preflight-trace-draw-secondary 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes preflight-trace-draw {
+  from { stroke-dashoffset: 60; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes preflight-trace-draw-secondary {
+  from { stroke-dashoffset: 40; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Core logic block pulse */
+.preflight-core {
+  animation: preflight-core-glow 2s ease-in-out infinite;
+}
+
+@keyframes preflight-core-glow {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+/* Status text container */
+.preflight-status {
+  position: relative;
+  z-index: 1;
+  height: 24px;
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Individual status text — absolute stacked, sequentially animated */
+.preflight-text {
+  position: absolute;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(161, 161, 170, 0.9);
+  opacity: 0;
+  white-space: nowrap;
+}
+
+/* 4-phase text sequence: each visible for ~800ms, total ~3.2s cycle */
+.preflight-text-1 {
+  animation: preflight-text-phase 3.2s ease-in-out infinite;
+  animation-delay: 0s;
+}
+.preflight-text-2 {
+  animation: preflight-text-phase 3.2s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+.preflight-text-3 {
+  animation: preflight-text-phase 3.2s ease-in-out infinite;
+  animation-delay: 1.6s;
+}
+.preflight-text-4 {
+  animation: preflight-text-phase 3.2s ease-in-out infinite;
+  animation-delay: 2.4s;
+}
+
+@keyframes preflight-text-phase {
+  0%    { opacity: 0; transform: translateY(6px); }
+  6%    { opacity: 1; transform: translateY(0); }
+  19%   { opacity: 1; transform: translateY(0); }
+  25%   { opacity: 0; transform: translateY(-6px); }
+  100%  { opacity: 0; transform: translateY(-6px); }
+}
+
+/* Progress bar — indigo sweep */
+.preflight-progress {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 2px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.preflight-progress-bar {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, #4F46E5, #818CF8);
+  animation: preflight-progress-sweep 2.4s ease-in-out infinite;
+}
+
+@keyframes preflight-progress-sweep {
+  0%   { width: 0%;   margin-left: 0; }
+  50%  { width: 100%; margin-left: 0; }
+  100% { width: 0%;   margin-left: 100%; }
 }
 
 /* ========================================

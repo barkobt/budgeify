@@ -103,3 +103,27 @@ export function formatCompactNumber(num: number): string {
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
+
+/**
+ * Statik kur tablosu — TRY bazlı
+ * Production'da API ile güncellenebilir.
+ */
+const EXCHANGE_RATES: Record<CurrencyCode, number> = {
+  TRY: 1,
+  USD: 0.029,
+  EUR: 0.027,
+};
+
+/**
+ * Para birimini dönüştürür
+ * @example convertAmount(1000, 'TRY', 'USD') => 29
+ */
+export function convertAmount(
+  amount: number,
+  from: CurrencyCode,
+  to: CurrencyCode,
+): number {
+  if (from === to) return amount;
+  const inTRY = amount / EXCHANGE_RATES[from];
+  return Math.round(inTRY * EXCHANGE_RATES[to] * 100) / 100;
+}

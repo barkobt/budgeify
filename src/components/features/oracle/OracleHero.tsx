@@ -110,8 +110,9 @@ export function OracleHero({ onModuleClick }: OracleHeroProps) {
   const handleHover = useCallback((id: string | null) => setHoveredId(id), []);
 
   return (
-    <div ref={containerRef} className="relative">
-      <div className="flex flex-col items-center py-6">
+    <div ref={containerRef} className="oracle-runway">
+      <div className="oracle-sticky">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] py-6">
         {/* Silicon Assembly Container */}
         <div
           className={`relative w-full mx-auto rounded-full ${siliconGlowClass}`}
@@ -241,6 +242,7 @@ export function OracleHero({ onModuleClick }: OracleHeroProps) {
         <p className="mt-1 text-center text-xs text-zinc-500 max-w-65 leading-relaxed">
           Modullere tiklayarak hizli islem yapin.
         </p>
+      </div>
       </div>
     </div>
   );
