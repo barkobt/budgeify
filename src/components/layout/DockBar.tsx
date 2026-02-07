@@ -140,6 +140,10 @@ export const DockBar: React.FC<DockBarProps> = ({
         animate={{ y: 0, opacity: 1 }}
         transition={springs.heavy}
       >
+        {/* Version Tag */}
+        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] tabular-nums font-medium text-white/20 select-none pointer-events-none">
+          v4.8-sovereign
+        </span>
         <div className="flex items-center justify-around">
           {/* Left nav items */}
           {navItems.map((item) => (

@@ -117,6 +117,13 @@ export default function DashboardClient() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Logo click → reset to dashboard tab
+  useEffect(() => {
+    const handler = () => setActiveTab('dashboard');
+    window.addEventListener('oracle:reset-dashboard', handler);
+    return () => window.removeEventListener('oracle:reset-dashboard', handler);
+  }, []);
+
   // M11: Ambient ignition — drive orb opacity via CSS custom properties
   const handleScrollProgress = (progress: number) => {
     setScrollProgress(progress);

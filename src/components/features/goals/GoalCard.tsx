@@ -148,10 +148,10 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
       )}
 
       {/* Header */}
-      <div className="mb-4 flex items-start justify-between">
-        <div className="flex items-center gap-3">
+      <div className="mb-4 flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <div
-            className={`flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl ${
               isCompleted
                 ? 'bg-emerald-500/20 border border-emerald-500/30'
                 : 'bg-accent-500/15 border border-accent-500/20'
@@ -159,14 +159,14 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
           >
             {goal.icon}
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">{goal.name}</h3>
-            <p className="text-sm text-slate-400 tabular-nums truncate max-w-45">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-semibold text-white truncate max-w-45 md:max-w-60">{goal.name}</h3>
+            <p className="text-sm text-slate-400 tabular-nums truncate">
               {formatCurrencyCompact(goal.currentAmount, currency)} / {formatCurrencyCompact(goal.targetAmount, currency)}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {isCompleted ? (
             <span className="flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
               <Check size={12} />
@@ -208,7 +208,12 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
                 ? 'bg-linear-to-r from-emerald-400 to-emerald-500'
                 : 'bg-linear-to-r from-accent-500 to-accent-700'
             }`}
-            style={{ width: `${progress}%` }}
+            style={{
+              width: `${progress}%`,
+              boxShadow: isCompleted
+                ? '0 0 8px rgba(16, 185, 129, 0.5), 0 0 16px rgba(16, 185, 129, 0.25)'
+                : '0 0 8px rgba(79, 70, 229, 0.5), 0 0 16px rgba(79, 70, 229, 0.25)',
+            }}
           />
         </div>
       </div>

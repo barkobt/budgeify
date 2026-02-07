@@ -8,14 +8,14 @@
  * Compact "Control Center" aesthetic — no padding waste.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Brain } from 'lucide-react';
 import {
   getFinancialSnapshot,
-  generateInsights,
   calculateHealthScore,
-  type Insight,
+  getSpendingTrend,
+  analyzeGoals,
   type HealthScore,
 } from '@/lib/oracle';
 
@@ -31,18 +31,63 @@ function getScoreTextClass(score: number): string {
   return 'text-rose-400';
 }
 
+interface BrainMetrics {
+  velocityLabel: string;
+  goalPaceLabel: string;
+}
+
+function computeBrainMetrics(): BrainMetrics {
+  const snapshot = getFinancialSnapshot();
+
+  // Spending Velocity
+  let velocityLabel = 'Harcama verisi bekleniyor';
+  if (snapshot.dataAvailability.hasExpenses) {
+    const trend = getSpendingTrend(snapshot.currentMonthExpenses, snapshot.previousMonthExpenses);
+    if (trend.previousTotal > 0) {
+      if (trend.direction === 'up') {
+        velocityLabel = `Harcama hizi %${trend.changePercent} artti`;
+      } else if (trend.direction === 'down') {
+        velocityLabel = `Harcama hizi %${Math.abs(trend.changePercent)} azaldi`;
+      } else {
+        velocityLabel = 'Harcama hizi sabit';
+      }
+    } else {
+      velocityLabel = 'Ilk ay verisi toplaniyor';
+    }
+  }
+
+  // Goal Pace — closest active goal
+  let goalPaceLabel = 'Hedef belirlenmemis';
+  const goalInsights = analyzeGoals(snapshot.goals);
+  if (goalInsights.length > 0) {
+    const closest = goalInsights.reduce((best, gi) =>
+      gi.progressPercent > best.progressPercent ? gi : best
+    , goalInsights[0]);
+    const remaining = 100 - closest.progressPercent;
+    if (remaining <= 0) {
+      goalPaceLabel = `${closest.goal.name} tamamlandi!`;
+    } else {
+      goalPaceLabel = `${closest.goal.name} hedefine %${remaining} kaldi`;
+    }
+  }
+
+  return { velocityLabel, goalPaceLabel };
+}
+
 export function OracleBrainCard() {
   const [health, setHealth] = useState<HealthScore | null>(null);
-  const [topInsight, setTopInsight] = useState<Insight | null>(null);
+  const [metrics, setMetrics] = useState<BrainMetrics | null>(null);
 
   useEffect(() => {
     const snapshot = getFinancialSnapshot();
-    const insights = generateInsights(snapshot);
-    if (insights.length > 0) setTopInsight(insights[0]);
-
     if (snapshot.dataAvailability.hasExpenses || snapshot.dataAvailability.hasIncomes) {
       setHealth(calculateHealthScore(snapshot));
     }
+    setMetrics(computeBrainMetrics());
+  }, []);
+
+  const handleClick = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('oracle:open-assistant'));
   }, []);
 
   const score = health?.score ?? 0;
@@ -50,7 +95,13 @@ export function OracleBrainCard() {
   const strokeDash = (score / 100) * circumference;
 
   return (
-    <div className="flex flex-col h-full justify-between">
+    <div
+      className="flex flex-col h-full justify-between cursor-pointer"
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && handleClick()}
+    >
       <div className="flex items-center justify-between">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg ai-gradient">
           <Brain size={14} className="text-white" strokeWidth={2} />
@@ -84,13 +135,13 @@ export function OracleBrainCard() {
       </div>
 
       <div className="mt-auto">
-        {topInsight ? (
+        {metrics ? (
           <>
             <p className="text-[11px] font-semibold text-slate-200 line-clamp-1">
-              {topInsight.title}
+              {metrics.velocityLabel}
             </p>
             <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">
-              {topInsight.content}
+              {metrics.goalPaceLabel}
             </p>
           </>
         ) : (

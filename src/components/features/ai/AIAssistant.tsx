@@ -119,6 +119,13 @@ export const AIAssistant: React.FC = () => {
     }]);
   }, []);
 
+  // Listen for BrainCard open event
+  useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('oracle:open-assistant', handler);
+    return () => window.removeEventListener('oracle:open-assistant', handler);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       initializeChat();
@@ -301,6 +308,44 @@ export const AIAssistant: React.FC = () => {
                 }`}
               >
                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                {/* Actionable Insight Buttons — only on assistant messages with insights */}
+                {message.role === 'assistant' && message.insights && message.insights.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {message.insights.some((i) => i.type === 'trend' || i.type === 'anomaly') && (
+                      <button
+                        onClick={() => processQuery('Harcamalarimi nasil azaltabilirim?')}
+                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold
+                                   bg-rose-500/15 text-rose-300 border border-rose-500/20
+                                   hover:bg-rose-500/25 transition-all active:scale-95"
+                      >
+                        <BarChart3 size={10} />
+                        Butceyi Ayarla
+                      </button>
+                    )}
+                    {message.insights.some((i) => i.type === 'goal') && (
+                      <button
+                        onClick={() => processQuery('Hedeflerime ne kadar yakinim?')}
+                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold
+                                   bg-violet-500/15 text-violet-300 border border-violet-500/20
+                                   hover:bg-violet-500/25 transition-all active:scale-95"
+                      >
+                        <Target size={10} />
+                        Hedefleri Gor
+                      </button>
+                    )}
+                    {message.insights.some((i) => i.type === 'health') && (
+                      <button
+                        onClick={() => processQuery('Butce saglik puanim kac?')}
+                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold
+                                   bg-amber-500/15 text-amber-300 border border-amber-500/20
+                                   hover:bg-amber-500/25 transition-all active:scale-95"
+                      >
+                        <Activity size={10} />
+                        Saglik Analizi
+                      </button>
+                    )}
+                  </div>
+                )}
                 <div className={`flex items-center gap-2 mt-1.5 ${
                   message.role === 'user' ? 'justify-end' : 'justify-start'
                 }`}>

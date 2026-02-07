@@ -709,13 +709,19 @@ AI asistanlar görev türüne göre ilgili skill modülünü kullanır:
 | 2026-02-07 | v4.7 M15: Auth Pages Polish | Completed | `sign-in/page.tsx` + `sign-up/page.tsx` — replaced `cosmic-*` gradient bg with sovereign depth inline style, consistent visual language across all public pages |
 | 2026-02-07 | v4.7 M16: Cosmic Purge | Completed | Zero `cosmic-*` class usages remain in src/. `AIAssistant.tsx` overlay+drawer bg → sovereign depth inline (rgba(5,5,8) + linear-gradient rgba(13,13,31)). `BottomNav.tsx` bg → rgba(5,5,8,0.90). Chart files + EmptyState only had comment refs (no class changes needed). Full codebase unified to sovereign depth system. |
 | 2026-02-07 | v4.7 M17: Formatting & Popover Unification | Completed | `insights.ts` local `formatCurrency` replaced with `formatCurrencyCompact` from `@/utils` — eliminates misleading number format root cause. `Header.tsx` Clerk `UserButton` popover: added `userPreviewMainIdentifier: !text-white`, `userPreviewSecondaryIdentifier: !text-slate-400`, `userButtonPopoverActions: !bg-transparent` for dark-theme readability (matches PortalNavbar + layout.tsx). |
+| 2026-02-07 | v4.8 M19: Goals UI Surgical Fix | Completed | `GoalCard.tsx` — Responsive header layout (flex-col mobile, flex-row desktop), title truncate with max-w-45/md:max-w-60, min-w-0 flex overflow fix, progress bar glow (boxShadow indigo/emerald per state), all amounts formatCurrencyCompact |
+| 2026-02-07 | v4.8 M7: Oracle AI v2.0 "The Brain" | Completed | `OracleBrainCard.tsx` — Real-time Spending Velocity (getSpendingTrend) + Goal Pace (analyzeGoals, closest goal progress). Click dispatches `oracle:open-assistant` CustomEvent. `AIAssistant.tsx` — Listens for open event, Actionable Insight buttons (Butceyi Ayarla, Hedefleri Gor, Saglik Analizi) on assistant messages with insights |
+| 2026-02-07 | v4.8 Logo Refactor | Completed | `PortalNavbar.tsx` — Replaced Cpu icon with inline mini SiliconDie SVG (substrate+traces+core gradient). Click triggers smooth scroll-to-top + `oracle:reset-dashboard` event. `DashboardClient.tsx` listens and resets activeTab to 'dashboard' |
+| 2026-02-07 | v4.8 UI Polish & Versioning | Completed | `DockBar.tsx` — v4.8-sovereign version tag (text-[10px] text-white/20). safe-area-inset-bottom already correct. `globals.css` — SiliconDie wrapper `will-change: transform` + `contain: layout style paint` for 60fps GPU compositing |
+| 2026-02-07 | v4.8 Final Handover | Completed | No stray console.log found. Build ✅ green. All ActionResult+Zod patterns intact. Codebase ready for production handover |
 
 ---
 
-*Project Brain v4.7 - Budgeify Sovereign: The Living Interface*
+*Project Brain v4.8 - Budgeify Sovereign: Final Handover*
 *Stack: Next.js 14 | Clerk Auth | Drizzle ORM | Neon PostgreSQL | Tailwind CSS 4*
 *Design: Depth Black (atmosphere) | Indigo Glow #4F46E5 | Glassmorphism blur(12px) + inner light | Spring Physics 260/20/1*
 *API: ActionResult<T> + Zod universal mandate | Oracle: Chip Core 4-phase cinematic | Runway 250vh*
 *Bento: 8px gap, high-density 1×1 widgets | Currency: TRY/USD/EUR with convertAmount*
-*Navigation: Portal Navbar (top command strip) + Dock Bar (floating pill, center FAB)*
+*Navigation: Portal Navbar (SiliconDie logo) + Dock Bar (floating pill, center FAB, v4.8-sovereign tag)*
+*Oracle AI v2.0: BrainCard (Spending Velocity + Goal Pace) → AIAssistant (Actionable Insights)*
 *Execution Spec: skills/architect/v46-plan.md*
