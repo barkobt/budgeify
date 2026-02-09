@@ -57,7 +57,8 @@ interface TransactionTableProps {
   onAddIncome?: () => void;
   onAddExpense?: () => void;
   onAddTransaction?: () => void;
-  onDownload?: () => void;
+  onExportCSV?: () => void;
+  onExportPDF?: () => void;
 }
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 50];
@@ -72,7 +73,8 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   onAddIncome,
   onAddExpense,
   onAddTransaction,
-  onDownload,
+  onExportCSV,
+  onExportPDF,
 }) => {
   const [filterTab, setFilterTab] = useState<FilterTab>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -214,14 +216,8 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
             <Filter size={14} />
           </button>
 
-          {/* Download button */}
-          <button
-            onClick={onDownload}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:bg-white/8 hover:text-white transition-all"
-            aria-label="İndir"
-          >
-            <Download size={14} />
-          </button>
+          {/* Download dropdown */}
+          <ExportDropdown onExportCSV={onExportCSV} onExportPDF={onExportPDF} />
 
           {/* Add Transaction CTA — dropdown */}
           <TransactionAddDropdown
@@ -464,6 +460,57 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
     </div>
   );
 };
+
+// ── EXPORT DROPDOWN ──
+
+function ExportDropdown({
+  onExportCSV,
+  onExportPDF,
+}: {
+  onExportCSV?: () => void;
+  onExportPDF?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const handleExport = (fn?: () => void) => {
+    setOpen(false);
+    fn?.();
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:bg-white/8 hover:text-white transition-all"
+        aria-label="İndir"
+      >
+        <Download size={14} />
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-xl bg-card-dark border border-white/10 p-1 shadow-xl">
+            <button
+              onClick={() => handleExport(onExportCSV)}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+            >
+              <Download size={13} className="text-emerald-400" />
+              CSV İndir
+            </button>
+            <button
+              onClick={() => handleExport(onExportPDF)}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+            >
+              <Download size={13} className="text-rose-400" />
+              PDF İndir
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 // ── TRANSACTION ADD DROPDOWN ──
 
