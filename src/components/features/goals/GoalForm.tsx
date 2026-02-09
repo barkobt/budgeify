@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
-import { generateId, getCurrentISODate, getTodayDate, getCurrencySymbol } from '@/utils';
+import { generateId, getCurrentISODate, getTodayDate, getCurrencySymbol, toTitleCase } from '@/utils';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { reportError } from '@/lib/error-reporting';
@@ -50,7 +50,11 @@ const GOAL_ICONS = [
   { Icon: Trophy, id: 'trophy', label: 'Başarı' },
 ];
 
-export const GoalForm: React.FC = () => {
+interface GoalFormProps {
+  onSuccess?: () => void;
+}
+
+export const GoalForm: React.FC<GoalFormProps> = ({ onSuccess }) => {
   const { addGoal, currency } = useBudgetStore();
   const dataSync = useDataSyncOptional();
   const symbol = getCurrencySymbol(currency);
@@ -152,7 +156,10 @@ export const GoalForm: React.FC = () => {
       }
 
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onSuccess?.();
+      }, 1500);
 
       // Reset form
       setName('');
@@ -209,7 +216,7 @@ export const GoalForm: React.FC = () => {
             type="text"
             placeholder="Örn: Yeni Araba"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setName(toTitleCase(e.target.value))}
             error={errors.name}
             isRequired
             maxLength={50}

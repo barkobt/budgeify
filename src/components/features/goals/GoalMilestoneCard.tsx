@@ -19,9 +19,9 @@ import { motion } from 'framer-motion';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
 import { calculateSavingsGoal } from '@/lib/analytics';
-import { formatCurrency, formatDate } from '@/utils';
+import { formatCurrency, formatDate, toTitleCase, getTodayDate, getCurrencySymbol } from '@/utils';
 import {
-  Target, TrendingUp, Calendar, Trash2, Check, X, Plus,
+  Target, TrendingUp, Calendar, Trash2, Check, X, Plus, Settings,
   Home, Car, Plane, Heart, GraduationCap, Laptop,
   PiggyBank, Umbrella, Gift, Smartphone, Trophy,
   type LucideIcon,
@@ -118,8 +118,15 @@ export const GoalMilestoneCard: React.FC<GoalMilestoneCardProps> = ({
   const dataSync = useDataSyncOptional();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAddFunds, setShowAddFunds] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [addAmount, setAddAmount] = useState('');
   const [isAddingFunds, setIsAddingFunds] = useState(false);
+  const [editName, setEditName] = useState(goal.name);
+  const [editTargetAmount, setEditTargetAmount] = useState(goal.targetAmount.toString());
+  const [editTargetDate, setEditTargetDate] = useState(goal.targetDate || '');
+  const [editIcon, setEditIcon] = useState(goal.icon);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const symbol = getCurrencySymbol(currency);
 
   const theme = GRADIENT_THEMES[themeIndex % GRADIENT_THEMES.length];
   const progress = Math.min(
@@ -134,6 +141,43 @@ export const GoalMilestoneCard: React.FC<GoalMilestoneCardProps> = ({
   );
   const rangeBadge = getRangeBadge(goal.targetDate);
   const GoalIcon = getGoalIcon(goal.icon);
+
+  const handleOpenEdit = () => {
+    setEditName(goal.name);
+    setEditTargetAmount(goal.targetAmount.toString());
+    setEditTargetDate(goal.targetDate || '');
+    setEditIcon(goal.icon);
+    setShowEdit(true);
+  };
+
+  const handleSaveEdit = async () => {
+    const newTarget = parseFloat(editTargetAmount);
+    if (!editName.trim() || !newTarget || newTarget <= 0) return;
+    setIsSavingEdit(true);
+    try {
+      const updateData: { name?: string; targetAmount?: number; icon?: string; targetDate?: Date | null } = {};
+      if (editName.trim() !== goal.name) updateData.name = editName.trim();
+      if (newTarget !== goal.targetAmount) updateData.targetAmount = newTarget;
+      if (editIcon !== goal.icon) updateData.icon = editIcon;
+      if (editTargetDate !== (goal.targetDate || '')) {
+        updateData.targetDate = editTargetDate ? new Date(editTargetDate) : null;
+      }
+      if (Object.keys(updateData).length > 0) {
+        if (dataSync) {
+          await dataSync.updateGoal(goal.id, updateData);
+        } else {
+          const { updateGoal } = useBudgetStore.getState();
+          updateGoal(goal.id, {
+            ...updateData,
+            targetDate: updateData.targetDate === null ? undefined : updateData.targetDate?.toISOString().split('T')[0],
+          });
+        }
+      }
+      setShowEdit(false);
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (dataSync) {
@@ -206,6 +250,76 @@ export const GoalMilestoneCard: React.FC<GoalMilestoneCardProps> = ({
         </div>
       )}
 
+      {/* Overlay: Edit Goal */}
+      {showEdit && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-bg-dark/95 backdrop-blur-sm overflow-y-auto">
+          <div className="p-5 w-full max-w-xs space-y-3">
+            <p className="text-sm font-semibold text-white mb-3 font-display text-center">Hedefi Düzenle</p>
+            <input
+              type="text"
+              value={editName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditName(toTitleCase(e.target.value))}
+              placeholder="Hedef adı"
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+              maxLength={50}
+            />
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">{symbol}</span>
+              <input
+                type="number"
+                value={editTargetAmount}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditTargetAmount(e.target.value)}
+                placeholder="Hedef tutar"
+                className="w-full rounded-xl bg-white/5 border border-white/10 pl-8 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <input
+              type="date"
+              value={editTargetDate}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditTargetDate(e.target.value)}
+              min={getTodayDate()}
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+            />
+            <div className="grid grid-cols-6 gap-1.5">
+              {Object.entries(GOAL_ICON_MAP).map(([label, Icon]) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setEditIcon(label)}
+                  className={`flex items-center justify-center rounded-lg p-2 transition-all ${
+                    editIcon === label
+                      ? 'bg-primary/20 border border-primary/40 text-primary'
+                      : 'bg-white/5 border border-white/10 text-slate-400 hover:border-white/20'
+                  }`}
+                  title={label}
+                >
+                  <Icon size={14} />
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center justify-center gap-2 pt-1">
+              <button
+                onClick={handleSaveEdit}
+                disabled={!editName.trim() || !editTargetAmount || parseFloat(editTargetAmount) <= 0 || isSavingEdit}
+                className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Check size={14} />
+                {isSavingEdit ? 'Kaydediliyor...' : 'Kaydet'}
+              </button>
+              <button
+                onClick={() => setShowEdit(false)}
+                className="flex items-center gap-1.5 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-slate-300 transition-all hover:bg-white/15 active:scale-95"
+              >
+                <X size={14} />
+                İptal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Overlay: Delete Confirm */}
       {showDeleteConfirm && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-bg-dark/95 backdrop-blur-sm">
@@ -243,6 +357,16 @@ export const GoalMilestoneCard: React.FC<GoalMilestoneCardProps> = ({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
             <h3 className="text-base font-semibold text-white truncate font-display">{goal.name}</h3>
+            {!isCompleted && (
+              <button
+                onClick={handleOpenEdit}
+                className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:text-white hover:bg-white/10 transition-all shrink-0 opacity-0 group-hover:opacity-100"
+                aria-label="Hedefi düzenle"
+                title="Düzenle"
+              >
+                <Settings size={13} />
+              </button>
+            )}
             {isCompleted && (
               <span className="flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-300 uppercase tracking-wider shrink-0">
                 <Check size={10} />

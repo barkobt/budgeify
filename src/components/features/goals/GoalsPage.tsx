@@ -79,7 +79,7 @@ function InlineGoalForm({ onClose }: { onClose: () => void }) {
           <div className="h-8 w-8 rounded-full border-2 border-white/10 border-t-primary animate-spin" />
         </div>
       }>
-        <GoalFormDynamic />
+        <GoalFormDynamic onSuccess={onClose} />
       </React.Suspense>
     </motion.div>
   );

@@ -155,3 +155,15 @@ export function convertAmount(
   const inTRY = amount / EXCHANGE_RATES[from];
   return Math.round(inTRY * EXCHANGE_RATES[to] * 100) / 100;
 }
+
+/**
+ * Her kelimenin ilk harfini büyük yapar
+ * @example toTitleCase('yeni araba') => 'Yeni Araba'
+ */
+export function toTitleCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
