@@ -22,6 +22,9 @@ import {
   FileText,
   AlertCircle,
   Trash2,
+  Clock,
+  CheckCircle2,
+  Pencil,
 } from 'lucide-react';
 import { getCategoryIcon } from '@/lib/category-icons';
 import { formatCurrency, formatDate } from '@/utils';
@@ -32,6 +35,7 @@ interface TransactionDetailPanelProps {
   transaction: MergedTransaction | null;
   onClose: () => void;
   onDelete?: (id: string, type: 'income' | 'expense') => void;
+  onEdit?: (tx: MergedTransaction) => void;
   currency: CurrencyCode;
 }
 
@@ -55,6 +59,7 @@ export const TransactionDetailPanel: React.FC<TransactionDetailPanelProps> = ({
   transaction,
   onClose,
   onDelete,
+  onEdit,
   currency,
 }) => {
   return (
@@ -147,6 +152,19 @@ export const TransactionDetailPanel: React.FC<TransactionDetailPanelProps> = ({
                 value={transaction.description}
               />
             )}
+            <DetailField
+              icon={transaction.status === 'completed' ? CheckCircle2 : Clock}
+              label="Durum"
+              value={transaction.status === 'completed' ? 'Tamamlandı' : 'Bekliyor'}
+              valueColor={transaction.status === 'completed' ? 'text-emerald-400' : 'text-amber-400'}
+            />
+            {transaction.expectedDate && transaction.status === 'pending' && (
+              <DetailField
+                icon={Calendar}
+                label="Beklenen Tarih"
+                value={formatDate(transaction.expectedDate)}
+              />
+            )}
           </div>
 
           {/* Divider */}
@@ -154,6 +172,15 @@ export const TransactionDetailPanel: React.FC<TransactionDetailPanelProps> = ({
 
           {/* Actions */}
           <div className="flex flex-col gap-2">
+            {onEdit && (
+              <button
+                onClick={() => onEdit(transaction)}
+                className="flex items-center justify-center gap-2 rounded-xl bg-primary/10 border border-primary/20 px-4 py-2.5 text-xs font-medium text-primary hover:bg-primary/20 transition-all"
+              >
+                <Pencil size={13} />
+                Düzenle
+              </button>
+            )}
             {onDelete && (
               <button
                 onClick={() => onDelete(transaction.id, transaction.type)}

@@ -32,6 +32,7 @@ import {
 import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
 import type { Income, CurrencyCode } from '@/types';
 import type { MergedTransaction } from '@/components/features/transactions/TransactionTable';
+import { exportToCSV } from '@/lib/export';
 import {
   TrendingUp,
   Target,
@@ -243,6 +244,8 @@ export default function DashboardClient() {
 
   const currency = useBudgetStore((s) => s.currency);
   const setCurrency = useBudgetStore((s) => s.setCurrency);
+  const allIncomes = useBudgetStore((s) => s.incomes);
+  const getCategoryById = useBudgetStore((s) => s.getCategoryById);
 
   const transactionCount = isMounted ? expenses.length : 0;
   const goalCount = isMounted ? getActiveGoals().length : 0;
@@ -527,7 +530,30 @@ export default function DashboardClient() {
                     <TransactionTable
                       onSelectTransaction={setSelectedTransaction}
                       selectedId={selectedTransaction?.id ?? null}
-                      onAddTransaction={() => setOpenDrawer('expense')}
+                      onAddIncome={() => setOpenDrawer('income')}
+                      onAddExpense={() => setOpenDrawer('expense')}
+                      onDownload={() => {
+                        const merged: MergedTransaction[] = [];
+                        expenses.forEach((exp) => {
+                          const cat = getCategoryById(exp.categoryId);
+                          merged.push({
+                            id: exp.id, type: 'expense', label: cat?.name || 'Gider', description: exp.note || '',
+                            categoryId: exp.categoryId, categoryName: cat?.name || 'Diğer', categoryColor: cat?.color || '#6B7280',
+                            amount: exp.amount, date: exp.date || exp.createdAt, createdAt: exp.createdAt,
+                            status: exp.status ?? 'completed', expectedDate: exp.expectedDate,
+                          });
+                        });
+                        allIncomes.forEach((inc) => {
+                          merged.push({
+                            id: inc.id, type: 'income', label: inc.description || 'Gelir', description: inc.description || '',
+                            categoryId: inc.category, categoryName: inc.description || 'Gelir', categoryColor: '#10B981',
+                            amount: inc.amount, date: inc.date || inc.createdAt, createdAt: inc.createdAt,
+                            status: inc.status ?? 'completed', expectedDate: inc.expectedDate,
+                          });
+                        });
+                        merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                        exportToCSV(merged, currency as CurrencyCode);
+                      }}
                     />
                   </div>
 
@@ -537,6 +563,9 @@ export default function DashboardClient() {
                       <TransactionDetailPanel
                         transaction={selectedTransaction}
                         onClose={() => setSelectedTransaction(null)}
+                        onEdit={() => {
+                          // TODO: Wire to edit form in future milestone
+                        }}
                         currency={currency}
                       />
                     </div>
