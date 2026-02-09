@@ -28,7 +28,7 @@ import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 type DockIcon = React.ComponentType<any>;
 import { DOCK_SPRING, springs } from '@/lib/motion';
 
-type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
 type DrawerType = 'income' | 'expense' | null;
 
 interface DockBarProps {

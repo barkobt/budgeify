@@ -1,16 +1,14 @@
 /**
  * Dashboard Layout
  *
- * 🎓 MENTOR NOTU - Protected Layout:
- * ----------------------------------
- * Bu layout sadece authenticated kullanıcılar için.
- * Middleware zaten kontrol ediyor ama burada da Header ve
- * BottomNav'ı gösteriyoruz.
- *
  * Route Group Hierarchy:
  * / → Landing (public)
  * /sign-in → Auth pages (public)
  * /dashboard → This layout (protected)
+ *
+ * Responsive Strategy:
+ * - Mobile (< lg): PortalNavbar (top) + DockBar (bottom) — padding pt-14 pb-24
+ * - Desktop (≥ lg): Sidebar (left) — padding pl-64 (expanded) via CSS, no top/bottom padding
  *
  * DataSyncProvider:
  * Zustand store ile Neon database arasında senkronizasyon sağlar.
@@ -27,9 +25,9 @@ export default function DashboardLayout({
   return (
     <DataSyncProvider>
       <SkipNav />
-      <div className="min-h-screen pt-14 pb-24">
+      <div className="min-h-screen pt-14 pb-24 lg:pt-0 lg:pb-0">
         {children}
-        {/* PortalNavbar + DockBar rendered in page.tsx with activeTab state */}
+        {/* PortalNavbar + DockBar + Sidebar rendered in DashboardClient with activeTab state */}
       </div>
     </DataSyncProvider>
   );

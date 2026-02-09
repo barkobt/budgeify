@@ -13,7 +13,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 
-type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
 
 interface PortalNavbarProps {
   activeTab?: TabType;
@@ -24,6 +24,7 @@ const TAB_TITLES: Record<TabType, string> = {
   transactions: 'İşlemler',
   goals: 'Hedefler',
   analytics: 'Analiz',
+  settings: 'Ayarlar',
 };
 
 export const PortalNavbar: React.FC<PortalNavbarProps> = ({ activeTab = 'dashboard' }) => {
