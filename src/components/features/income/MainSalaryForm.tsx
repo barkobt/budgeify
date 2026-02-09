@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { useDataSyncOptional } from '@/providers/DataSyncProvider';
-import { generateId, getCurrentISODate, getCurrencySymbol } from '@/utils';
+import { generateId, getCurrentISODate, getCurrencySymbol, getTodayDate } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { reportError } from '@/lib/error-reporting';
-import type { IncomeCategory, Income } from '@/types';
+import type { IncomeCategory, Income, TransactionStatus } from '@/types';
 import { INCOME_CATEGORIES } from '@/constants/categories';
-import { Check, X } from 'lucide-react';
+import { Check, X, Clock, CheckCircle2 } from 'lucide-react';
 import { INCOME_ICON_MAP } from '@/lib/category-icons';
 
 /**
@@ -35,7 +35,10 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<IncomeCategory>('salary');
+  const [date, setDate] = useState(getTodayDate());
   const [isRecurring, setIsRecurring] = useState(true);
+  const [status, setStatus] = useState<TransactionStatus>('completed');
+  const [expectedDate, setExpectedDate] = useState('');
   const [errors, setErrors] = useState<{ amount?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -78,7 +81,9 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
         amount: parseFloat(amount),
         description: description.trim() || undefined,
         isRecurring,
-        date: new Date().toISOString().split('T')[0],
+        date,
+        status,
+        expectedDate: expectedDate || undefined,
       };
 
       if (editingIncome && dataSync) {
@@ -101,9 +106,10 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
             category,
             amount: parseFloat(amount),
             description: description.trim() || undefined,
-            date: new Date().toISOString().split('T')[0],
+            date,
             isRecurring,
-            status: 'completed',
+            status,
+            expectedDate: expectedDate || undefined,
             createdAt: getCurrentISODate(),
             updatedAt: getCurrentISODate(),
           });
@@ -115,7 +121,10 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
         setAmount('');
         setDescription('');
         setCategory('salary');
+        setDate(getTodayDate());
         setIsRecurring(true);
+        setStatus('completed');
+        setExpectedDate('');
       }
 
       setShowSuccess(true);
@@ -201,6 +210,69 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
         onChange={(e) => setDescription(e.target.value)}
         maxLength={100}
       />
+
+      {/* Date */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-slate-300">
+          Tarih
+        </label>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          max={getTodayDate()}
+          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+        />
+      </div>
+
+      {/* Status Toggle */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-slate-300">
+          Durum
+        </label>
+        <div className="flex rounded-xl bg-white/5 border border-white/10 p-1">
+          <button
+            type="button"
+            onClick={() => { setStatus('completed'); setExpectedDate(''); }}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+              status === 'completed'
+                ? 'bg-emerald-500/15 text-emerald-400 shadow-sm'
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <CheckCircle2 size={16} />
+            Tamamlandı
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatus('pending')}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+              status === 'pending'
+                ? 'bg-amber-500/15 text-amber-400 shadow-sm'
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Clock size={16} />
+            Bekliyor
+          </button>
+        </div>
+      </div>
+
+      {/* Expected Date — only visible when status is pending */}
+      {status === 'pending' && (
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Beklenen Tarih
+          </label>
+          <input
+            type="date"
+            value={expectedDate}
+            onChange={(e) => setExpectedDate(e.target.value)}
+            min={getTodayDate()}
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+          />
+        </div>
+      )}
 
       {/* Recurring Toggle */}
       <label className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 p-4 cursor-pointer">

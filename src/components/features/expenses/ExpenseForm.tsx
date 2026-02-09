@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { reportError } from '@/lib/error-reporting';
 import { DEFAULT_CATEGORIES } from '@/constants/categories';
-import { Check } from 'lucide-react';
+import { Check, Clock, CheckCircle2 } from 'lucide-react';
+import type { TransactionStatus } from '@/types';
 import { getCategoryIcon } from '@/lib/category-icons';
 
 /**
@@ -32,6 +33,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
   const [date, setDate] = useState(getTodayDate());
+  const [status, setStatus] = useState<TransactionStatus>('completed');
+  const [expectedDate, setExpectedDate] = useState('');
   const [errors, setErrors] = useState<{
     amount?: string;
     categoryId?: string;
@@ -68,6 +71,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
         note: note.trim() || undefined,
         categoryId,
         date,
+        status,
+        expectedDate: expectedDate || undefined,
       };
 
       // Use server persistence if available, otherwise fall back to local storage
@@ -81,7 +86,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
           amount: parseFloat(amount),
           note: note.trim() || undefined,
           date,
-          status: 'completed',
+          status,
+          expectedDate: expectedDate || undefined,
           createdAt: getCurrentISODate(),
           updatedAt: getCurrentISODate(),
         });
@@ -92,6 +98,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
       setCategoryId('');
       setNote('');
       setDate(getTodayDate());
+      setStatus('completed');
+      setExpectedDate('');
 
       setTimeout(() => {
         setShowSuccess(false);
@@ -196,6 +204,55 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
         />
       </div>
+
+      {/* Status Toggle */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-slate-300">
+          Durum
+        </label>
+        <div className="flex rounded-xl bg-white/5 border border-white/10 p-1">
+          <button
+            type="button"
+            onClick={() => { setStatus('completed'); setExpectedDate(''); }}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+              status === 'completed'
+                ? 'bg-emerald-500/15 text-emerald-400 shadow-sm'
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <CheckCircle2 size={16} />
+            Tamamlandı
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatus('pending')}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+              status === 'pending'
+                ? 'bg-amber-500/15 text-amber-400 shadow-sm'
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Clock size={16} />
+            Bekliyor
+          </button>
+        </div>
+      </div>
+
+      {/* Expected Date — only visible when status is pending */}
+      {status === 'pending' && (
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Beklenen Tarih
+          </label>
+          <input
+            type="date"
+            value={expectedDate}
+            onChange={(e) => setExpectedDate(e.target.value)}
+            min={getTodayDate()}
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+          />
+        </div>
+      )}
 
       {/* Note */}
       <Input
