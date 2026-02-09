@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
@@ -8,6 +8,13 @@ const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   display: 'swap',
   variable: '--font-inter',
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-display',
+  weight: ['400', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
@@ -54,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const inner = (
-    <html lang="tr" className={inter.variable}>
+    <html lang="tr" className={`${inter.variable} ${plusJakarta.variable}`}>
       <body className="min-h-screen antialiased font-sans">
         {/* v4.0: Ambient Gradient Orbs — Depth Layer System */}
         <div className="ambient-layer" aria-hidden="true">

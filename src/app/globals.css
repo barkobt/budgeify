@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 /* ========================================
-   Budgeify v4.0 — Sovereign Design System
+   Budgeify v6.0 — Sovereign + Stitch 3 Fusion
    Tailwind CSS v4 — CSS-First Configuration
-   Theme: Depth Black + Indigo Glow + Glassmorphism
+   Theme: Depth Navy-Black + Purple Glow + Cyan Accent
    Philosophy: "Siyah bir tuval değil, derinliği olan bir atmosfer."
    ======================================== */
 
@@ -60,8 +60,28 @@
   --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
+  /* v6.0: Stitch 3 — Fintech Desktop Palette */
+  --color-bg-dark: #050511;
+  --color-bg-sidebar: #0a0a16;
+  --color-card-dark: #121223;
+  --color-card-lighter: #1a1a2e;
+  --color-primary: #7C3AED;
+  --color-primary-hover: #6D28D9;
+  --color-secondary: #06B6D4;
+  --color-accent-purple: #8B5CF6;
+  --color-accent-cyan: #22D3EE;
+  --color-accent-emerald: #10B981;
+  --color-accent-rose: #F43F5E;
+  --color-accent-orange: #F97316;
+  --color-text-secondary-muted: #ad92c9;
+
+  /* v6.0: Stitch 3 — Neon Glow Shadows */
+  --shadow-neon-purple: 0 0 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(124, 58, 237, 0.3);
+  --shadow-neon-cyan: 0 0 10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.3);
+
   /* Typography */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Plus Jakarta Sans", var(--font-sans);
 }
 
 /* ========================================
@@ -82,9 +102,9 @@
     text-rendering: optimizeLegibility;
     background: radial-gradient(
       ellipse at 50% 0%,
-      #0a0a1a 0%,
-      #050508 50%,
-      #000000 100%
+      #0c0c1f 0%,
+      #050511 50%,
+      #030308 100%
     );
     background-attachment: fixed;
     min-height: 100vh;
@@ -1455,6 +1475,176 @@
   background: radial-gradient(circle, rgba(0, 240, 255, 0.35) 0%, rgba(0, 184, 212, 0.15) 30%, transparent 65%);
   filter: blur(16px);
   will-change: opacity;
+}
+
+/* ========================================
+   v6.0: STITCH 3 — Desktop Fintech Utilities
+   Glass panels, neon effects, chart grids,
+   display font, row animations
+   ======================================== */
+
+/* Stitch 3 tinted glass panel — dark blue-purple tint */
+.glass-panel {
+  background: rgba(18, 18, 35, 0.70);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Neon border variants — purple & cyan accent */
+.neon-border-purple {
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.2), inset 0 0 10px rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.50);
+}
+
+.neon-border-cyan {
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2), inset 0 0 10px rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.50);
+}
+
+/* Neon shadow utility classes */
+.neon-shadow-purple {
+  box-shadow: var(--shadow-neon-purple);
+}
+
+.neon-shadow-cyan {
+  box-shadow: var(--shadow-neon-cyan);
+}
+
+/* Neon text variants */
+.neon-text-purple {
+  color: var(--color-accent-purple);
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.neon-text-cyan {
+  color: var(--color-accent-cyan);
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+/* Display font — Plus Jakarta Sans for headings */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Chart grid background pattern */
+.chart-grid-bg {
+  background-image:
+    linear-gradient(rgba(124, 58, 237, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Stitch 3 custom scrollbar variant — purple tinted */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(18, 18, 35, 0.5);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.6);
+}
+
+/* Staggered row entrance animation */
+@keyframes slideInRow {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-row {
+  animation: slideInRow 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-row-delay-1 { animation-delay: 0.1s; }
+.animate-row-delay-2 { animation-delay: 0.15s; }
+.animate-row-delay-3 { animation-delay: 0.2s; }
+.animate-row-delay-4 { animation-delay: 0.25s; }
+.animate-row-delay-5 { animation-delay: 0.3s; }
+.animate-row-delay-6 { animation-delay: 0.35s; }
+.animate-row-delay-7 { animation-delay: 0.4s; }
+.animate-row-delay-8 { animation-delay: 0.45s; }
+
+/* Float animation variants from Stitch 3 milestones */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 6s ease-in-out infinite;
+}
+
+/* Pulse glow animation — stitch 3 style */
+@keyframes pulse-glow-stitch {
+  0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
+  50% { opacity: 0.8; box-shadow: 0 0 40px rgba(34, 211, 238, 0.6); }
+}
+
+.animate-pulse-glow-stitch {
+  animation: pulse-glow-stitch 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Gradient text — stitch 3 brand */
+.text-gradient-brand {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 3D card perspective hover — milestones page */
+.perspective-container {
+  perspective: 1000px;
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: translateZ(20px) scale(1.02);
+}
+
+/* Chart path draw animation — SVG line charts */
+@keyframes drawChart {
+  to { stroke-dashoffset: 0; }
+}
+
+.chart-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawChart 2s ease-out forwards 0.5s;
+}
+
+/* Fade-in-up animation — stitch 3 analysis page */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 
 /* ========================================

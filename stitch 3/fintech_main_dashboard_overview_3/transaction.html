@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Budgeify - Advanced Ledger</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C3AED", // Vibrant Purple
+                        secondary: "#06B6D4", // Cyan
+                        "background-light": "#F3F4F6",
+                        "background-dark": "#050511", // Very dark navy/black
+                        "card-dark": "#121223",
+                        "card-lighter": "#1a1a2e",
+                        "accent-purple": "#8B5CF6",
+                        "accent-cyan": "#22D3EE",
+                        "accent-emerald": "#10B981",
+                        "accent-rose": "#F43F5E",
+                    },
+                    fontFamily: {
+                        display: ["'Plus Jakarta Sans'", "sans-serif"],
+                        body: ["'Inter'", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .glass-panel {
+                @apply bg-[#121223]/80 backdrop-blur-xl border border-white/5 shadow-xl;
+            }
+            .neon-border-purple {
+                box-shadow: 0 0 10px rgba(124, 58, 237, 0.2), inset 0 0 10px rgba(124, 58, 237, 0.1);
+                @apply border border-primary/50;
+            }
+            .neon-border-cyan {
+                box-shadow: 0 0 10px rgba(6, 182, 212, 0.2), inset 0 0 10px rgba(6, 182, 212, 0.1);
+                @apply border border-secondary/50;
+            }.custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: rgba(18, 18, 35, 0.5);
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: rgba(124, 58, 237, 0.3);
+                border-radius: 3px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: rgba(124, 58, 237, 0.6);
+            }
+        }@keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-row {
+            animation: slideIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.15s; }
+        .delay-3 { animation-delay: 0.2s; }
+        .delay-4 { animation-delay: 0.25s; }
+        .delay-5 { animation-delay: 0.3s; }
+        .delay-6 { animation-delay: 0.35s; }
+        .delay-7 { animation-delay: 0.4s; }
+        .delay-8 { animation-delay: 0.45s; }
+        .delay-9 { animation-delay: 0.5s; }
+        .delay-10 { animation-delay: 0.55s; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-100 font-body antialiased selection:bg-primary selection:text-white transition-colors duration-300">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-20 lg:w-64 bg-white dark:bg-[#0a0a16] border-r border-gray-200 dark:border-gray-800 flex flex-col flex-shrink-0 z-30 transition-all duration-300">
+<div class="h-20 flex items-center justify-center lg:justify-start lg:px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white">account_balance_wallet</span>
+</div>
+<span class="hidden lg:block font-display font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-secondary to-primary">Budgeify</span>
+</div>
+</div>
+<nav class="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary dark:hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="hidden lg:block font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl bg-primary/10 text-primary dark:text-white dark:bg-primary/20 transition-colors group neon-border-purple" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="hidden lg:block font-medium">Transactions</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary dark:hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">track_changes</span>
+<span class="hidden lg:block font-medium">Goals</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary dark:hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="hidden lg:block font-medium">Cards</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-primary dark:hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="hidden lg:block font-medium">Reports</span>
+</a>
+</nav>
+<div class="p-4 border-t border-gray-200 dark:border-gray-800">
+<div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKTgUaSaPbEU4stsYbc6yV-ZE90FjubTUrjqXTjMXIN9TeNBNxDvv2xGOQon0EyFAGW5yF9CDfhVI9muSB14kD_o5ayL4EcI2kp_PzKWmZCHBTsAGSgg6eXsEkyPD2YtQDZFPyhe9kr9k3D_U0u3mPHuDs8zndG-FNwOA_FRp1hlOPtqnmtZ1Zq5iTbtmCbZNV_4W5xDDWqZIHsSWjptHCp9wDZR4GJWdT3nN5U5gc2HOHGu906_It8QSSDFo3JhbygP5RU-IIT3AR"/>
+<div class="hidden lg:block overflow-hidden">
+<p class="text-sm font-semibold text-gray-900 dark:text-white truncate">Alex Morgan</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 truncate">Pro Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col relative overflow-hidden bg-background-light dark:bg-background-dark">
+<div class="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none hidden dark:block"></div>
+<div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+<header class="flex items-center justify-between px-8 py-5 z-20 border-b border-gray-200 dark:border-white/5 bg-white/50 dark:bg-[#050511]/80 backdrop-blur-md">
+<div class="flex flex-col">
+<h1 class="text-2xl font-display font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            Transaction Ledger 
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-accent-cyan/10 text-accent-cyan font-medium border border-accent-cyan/20">Live Sync</span>
+</h1>
+<p class="text-sm text-gray-500 dark:text-gray-400">Detailed view of all incoming and outgoing movements.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-white dark:bg-card-dark/50 border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 w-72 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 transition-all">
+<span class="material-symbols-outlined text-gray-400 text-xl mr-2">search</span>
+<input class="bg-transparent border-none outline-none text-sm w-full text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:ring-0 p-0" placeholder="Filter by merchant, category..." type="text"/>
+<span class="text-xs text-gray-500 border border-gray-600 rounded px-1.5 py-0.5 ml-2">⌘K</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2.5 rounded-lg bg-white dark:bg-card-dark border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-300 hover:text-primary hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2.5 rounded-lg bg-white dark:bg-card-dark border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-300 hover:text-primary hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex-1 flex overflow-hidden z-10">
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+<div class="glass-panel rounded-2xl overflow-hidden">
+<div class="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-white">All</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Income</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Expense</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Pending</button>
+</div>
+<div class="text-xs text-gray-500 font-mono">Showing 10 of 248 transactions</div>
+</div>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-white/5 bg-[#0e0e1b]">
+<th class="px-6 py-4 w-12">
+<input class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</th>
+<th class="px-6 py-4">Transaction</th>
+<th class="px-6 py-4">Category</th>
+<th class="px-6 py-4">Date &amp; Time</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4 text-right">Amount</th>
+<th class="px-6 py-4 w-12"></th>
+</tr>
+</thead>
+<tbody class="text-sm divide-y divide-white/5">
+<tr class="group animate-row delay-1 bg-white/[0.02] hover:bg-white/[0.04] transition-colors border-l-2 border-primary">
+<td class="px-6 py-4">
+<input checked="" class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a1a2e] border border-primary/30 flex items-center justify-center shadow-[0_0_10px_rgba(124,58,237,0.15)]">
+<span class="material-symbols-outlined text-primary text-xl">shopping_cart</span>
+</div>
+<div>
+<div class="font-medium text-white">Apple Store 5th Ave</div>
+<div class="text-xs text-gray-500">**** 4242</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                            Electronics
+                                        </span>
+</td>
+<td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                        Oct 24, 2023 <span class="text-gray-600 ml-1">14:30</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+<span class="text-emerald-500 text-xs font-medium">Completed</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-white">
+                                        -$1,299.00
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group animate-row delay-2 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-gray-700">
+<td class="px-6 py-4">
+<input class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a1a2e] border border-secondary/30 flex items-center justify-center shadow-[0_0_10px_rgba(6,182,212,0.15)]">
+<span class="material-symbols-outlined text-secondary text-xl">local_gas_station</span>
+</div>
+<div>
+<div class="font-medium text-gray-200">Shell Station</div>
+<div class="text-xs text-gray-500">**** 4242</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                                            Transport
+                                        </span>
+</td>
+<td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                        Oct 23, 2023 <span class="text-gray-600 ml-1">18:45</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+<span class="text-emerald-500 text-xs font-medium">Completed</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-gray-200">
+                                        -$45.50
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group animate-row delay-3 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-gray-700">
+<td class="px-6 py-4">
+<input class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a1a2e] border border-emerald-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(16,185,129,0.15)]">
+<span class="material-symbols-outlined text-emerald-500 text-xl">payments</span>
+</div>
+<div>
+<div class="font-medium text-gray-200">Tech Solutions Inc.</div>
+<div class="text-xs text-gray-500">Direct Deposit</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            Income
+                                        </span>
+</td>
+<td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                        Oct 21, 2023 <span class="text-gray-600 ml-1">09:00</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+<span class="text-emerald-500 text-xs font-medium">Completed</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-emerald-400">
+                                        +$4,250.00
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group animate-row delay-4 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-gray-700">
+<td class="px-6 py-4">
+<input class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a1a2e] border border-orange-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(249,115,22,0.15)]">
+<span class="material-symbols-outlined text-orange-500 text-xl">restaurant</span>
+</div>
+<div>
+<div class="font-medium text-gray-200">Sushi Bar Tokyo</div>
+<div class="text-xs text-gray-500">**** 8899</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                                            Dining
+                                        </span>
+</td>
+<td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                        Oct 20, 2023 <span class="text-gray-600 ml-1">20:15</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></div>
+<span class="text-yellow-500 text-xs font-medium">Pending</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-gray-200">
+                                        -$88.40
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group animate-row delay-5 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-gray-700">
+<td class="px-6 py-4">
+<input class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a1a2e] border border-rose-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(244,63,94,0.15)]">
+<span class="material-symbols-outlined text-rose-500 text-xl">movie</span>
+</div>
+<div>
+<div class="font-medium text-gray-200">Netflix Subscription</div>
+<div class="text-xs text-gray-500">**** 4242</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                                            Subscription
+                                        </span>
+</td>
+<td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                        Oct 19, 2023 <span class="text-gray-600 ml-1">10:00</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+<span class="text-emerald-500 text-xs font-medium">Completed</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-gray-200">
+                                        -$15.99
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group animate-row delay-6 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-gray-700">
+<td class="px-6 py-4">
+<input class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a1a2e] border border-blue-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.15)]">
+<span class="material-symbols-outlined text-blue-500 text-xl">flight</span>
+</div>
+<div>
+<div class="font-medium text-gray-200">Delta Airlines</div>
+<div class="text-xs text-gray-500">**** 4242</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                            Travel
+                                        </span>
+</td>
+<td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                        Oct 15, 2023 <span class="text-gray-600 ml-1">11:20</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+<span class="text-emerald-500 text-xs font-medium">Completed</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-gray-200">
+                                        -$450.00
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group animate-row delay-7 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-gray-700">
+<td class="px-6 py-4">
+<input class="rounded border-gray-700 bg-white/5 text-primary focus:ring-offset-0 focus:ring-primary/50" type="checkbox"/>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a1a2e] border border-purple-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.15)]">
+<span class="material-symbols-outlined text-purple-500 text-xl">fitness_center</span>
+</div>
+<div>
+<div class="font-medium text-gray-200">Gold's Gym</div>
+<div class="text-xs text-gray-500">**** 8899</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                            Health
+                                        </span>
+</td>
+<td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                                        Oct 12, 2023 <span class="text-gray-600 ml-1">08:00</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+<span class="text-emerald-500 text-xs font-medium">Completed</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right font-mono font-medium text-gray-200">
+                                        -$60.00
+                                    </td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 border-t border-white/5 flex items-center justify-between bg-white/5">
+<button class="px-4 py-2 text-xs font-medium text-gray-400 bg-[#1a1a2e] border border-white/5 rounded-lg hover:text-white hover:border-white/20 transition-all">Previous</button>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs transition-colors">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs transition-colors">...</button>
+</div>
+<button class="px-4 py-2 text-xs font-medium text-gray-400 bg-[#1a1a2e] border border-white/5 rounded-lg hover:text-white hover:border-white/20 transition-all">Next</button>
+</div>
+</div>
+</div>
+<div class="w-96 border-l border-white/5 bg-[#0a0a16] p-6 overflow-y-auto custom-scrollbar hidden xl:block z-20 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-display font-bold text-lg text-white">Deep Dive</h3>
+<button class="text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="text-center mb-8 relative">
+<div class="w-20 h-20 mx-auto rounded-2xl bg-[#121223] border border-primary flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
+<span class="material-symbols-outlined text-4xl text-primary">shopping_cart</span>
+</div>
+<h2 class="text-2xl font-bold text-white mb-1">Apple Store</h2>
+<p class="text-gray-400 text-sm">Electronics &amp; Gadgets</p>
+<div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs font-mono text-emerald-400">Verified Purchase</span>
+</div>
+</div>
+<div class="bg-white/5 rounded-2xl p-6 border border-white/5 mb-6 text-center">
+<p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Total Amount</p>
+<h3 class="text-3xl font-mono font-bold text-white">$1,299.00</h3>
+<p class="text-xs text-gray-500 mt-2">Oct 24, 2023 • 2:30 PM</p>
+</div>
+<div class="mb-6">
+<h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg">location_on</span>
+                    Location
+                </h4>
+<div class="h-32 w-full rounded-xl overflow-hidden relative border border-white/10 group cursor-pointer">
+<div class="absolute inset-0 bg-[#1a1a2e] opacity-80 z-0">
+<svg class="w-full h-full opacity-20" height="100%" width="100%">
+<pattern height="20" id="grid" patternUnits="userSpaceOnUse" width="20">
+<path d="M 20 0 L 0 0 0 20" fill="none" stroke="gray" stroke-width="1"></path>
+</pattern>
+<rect fill="url(#grid)" height="100%" width="100%"></rect>
+</svg>
+</div>
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+<span class="material-symbols-outlined text-rose-500 text-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">location_on</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-gray-300">
+                        767 5th Ave, New York
+                    </div>
+</div>
+</div>
+<div class="mb-6">
+<h4 class="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">receipt_long</span>
+                    Receipt Scan
+                </h4>
+<div class="h-40 w-full rounded-xl bg-[#121223] border border-white/10 p-3 relative group overflow-hidden cursor-pointer hover:border-primary/50 transition-colors">
+<div class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 gap-2 z-10">
+<span class="material-symbols-outlined text-3xl">document_scanner</span>
+<span class="text-xs">Click to view receipt</span>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0a0a16] to-transparent opacity-80 z-0"></div>
+<div class="absolute top-0 left-0 w-full h-1 bg-primary/50 shadow-[0_0_15px_rgba(124,58,237,0.8)] animate-[scan_2s_ease-in-out_infinite]"></div>
+<style>
+                        @keyframes scan {
+                            0% { top: 0; opacity: 0; }
+                            10% { opacity: 1; }
+                            90% { opacity: 1; }
+                            100% { top: 100%; opacity: 0; }
+                        }
+                    </style>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-gray-300 mb-3">Item Breakdown</h4>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+<span class="text-gray-400">iPhone 15 Pro Max</span>
+<span class="text-white font-mono">$1,199.00</span>
+</div>
+<div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+<span class="text-gray-400">Silicone Case</span>
+<span class="text-white font-mono">$49.00</span>
+</div>
+<div class="flex justify-between items-center text-sm pb-2">
+<span class="text-gray-400">Tax (8.875%)</span>
+<span class="text-white font-mono">$51.00</span>
+</div>
+</div>
+</div>
+<div class="mt-8 flex gap-3">
+<button class="flex-1 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-sm font-medium border border-white/10 transition-colors">Dispute</button>
+<button class="flex-1 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-medium shadow-lg shadow-primary/20 transition-colors">Split Bill</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<button class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-primary text-white shadow-lg hover:shadow-primary/50 hover:scale-110 transition-all duration-200" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-symbols-outlined block dark:hidden">dark_mode</span>
+<span class="material-symbols-outlined hidden dark:block">light_mode</span>
+</button>
+
+</body></html>

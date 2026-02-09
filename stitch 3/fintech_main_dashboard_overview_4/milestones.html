@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Budgeify - Strategic Goals</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C3AED", // Vibrant Purple
+                        secondary: "#06B6D4", // Cyan
+                        "background-light": "#F3F4F6",
+                        "background-dark": "#050511", // Very dark navy/black
+                        "card-dark": "#121223",
+                        "accent-purple": "#8B5CF6",
+                        "accent-cyan": "#22D3EE",
+                        "neon-pink": "#EC4899",
+                    },
+                    fontFamily: {
+                        display: ["'Plus Jakarta Sans'", "sans-serif"],
+                        body: ["'Inter'", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'space-grid': 'linear-gradient(rgba(124, 58, 237, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(124, 58, 237, 0.1) 1px, transparent 1px)',
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-medium': 'float 6s ease-in-out infinite',
+                        'float-fast': 'float 4s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 1, boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)' },
+                            '50%': { opacity: .8, boxShadow: '0 0 40px rgba(34, 211, 238, 0.6)' },
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050511;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d2d44;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d3d5c;
+        }
+        .perspective-container {
+            perspective: 1000px;
+        }
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+        .card-3d:hover {
+            transform: translateZ(20px) scale(1.02);
+        }
+        .glass-panel {
+            background: rgba(18, 18, 35, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .neon-border-cyan {
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.1), inset 0 0 10px rgba(6, 182, 212, 0.05);
+        }
+        .neon-border-purple {
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.1), inset 0 0 10px rgba(124, 58, 237, 0.05);
+        }.stars {
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            animation: moveStars 100s linear infinite;
+        }
+        @keyframes moveStars {
+            from { background-position: 0 0; }
+            to { background-position: 0 1000px; }
+        }
+        .node-connector {
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(34, 211, 238, 0), rgba(34, 211, 238, 0.4), rgba(34, 211, 238, 0));
+            width: 1px;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-gray-100 font-body antialiased selection:bg-primary selection:text-white overflow-hidden">
+<div class="fixed inset-0 z-0 pointer-events-none">
+<div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+<div class="absolute inset-0 stars opacity-40"></div>
+<div class="absolute top-[-20%] left-[20%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-0 left-0 right-0 h-[50vh] bg-gradient-to-t from-background-dark to-transparent z-10"></div>
+<div class="absolute inset-0 bg-space-grid bg-[length:40px_40px] opacity-10 [transform:perspective(500px)_rotateX(60deg)] origin-bottom"></div>
+</div>
+<div class="flex h-screen relative z-10">
+<aside class="w-20 lg:w-64 bg-[#0a0a16]/80 backdrop-blur-xl border-r border-white/5 flex flex-col flex-shrink-0 z-20 transition-all duration-300">
+<div class="h-20 flex items-center justify-center lg:justify-start lg:px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white">account_balance_wallet</span>
+</div>
+<span class="hidden lg:block font-display font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-secondary to-primary">Budgeify</span>
+</div>
+</div>
+<nav class="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="hidden lg:block font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="hidden lg:block font-medium">Transactions</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl bg-primary/20 text-white border border-primary/30 shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-colors group" href="#">
+<span class="material-symbols-outlined">track_changes</span>
+<span class="hidden lg:block font-medium">Goals &amp; Milestones</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="hidden lg:block font-medium">Cards</span>
+</a>
+<a class="flex items-center gap-4 px-3 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-secondary transition-colors group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="hidden lg:block font-medium">Reports</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/5">
+<div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKTgUaSaPbEU4stsYbc6yV-ZE90FjubTUrjqXTjMXIN9TeNBNxDvv2xGOQon0EyFAGW5yF9CDfhVI9muSB14kD_o5ayL4EcI2kp_PzKWmZCHBTsAGSgg6eXsEkyPD2YtQDZFPyhe9kr9k3D_U0u3mPHuDs8zndG-FNwOA_FRp1hlOPtqnmtZ1Zq5iTbtmCbZNV_4W5xDDWqZIHsSWjptHCp9wDZR4GJWdT3nN5U5gc2HOHGu906_It8QSSDFo3JhbygP5RU-IIT3AR"/>
+<div class="hidden lg:block overflow-hidden">
+<p class="text-sm font-semibold text-white truncate">Alex Morgan</p>
+<p class="text-xs text-gray-400 truncate">Pro Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col relative overflow-hidden perspective-container">
+<header class="flex items-center justify-between px-8 py-5 z-20 bg-background-dark/50 backdrop-blur-sm sticky top-0 border-b border-white/5">
+<div class="flex flex-col">
+<h1 class="text-2xl font-display font-bold text-white tracking-wide">Strategic Milestones</h1>
+<p class="text-sm text-gray-400">Map your financial future across the cosmos.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="px-4 py-2 bg-card-dark rounded-full border border-primary/30 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs font-mono text-emerald-400">SYSTEM ONLINE</span>
+</div>
+<button class="flex items-center gap-2 bg-gradient-to-r from-primary to-accent-purple hover:brightness-110 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>New Milestone</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto overflow-x-hidden p-8 relative scroll-smooth">
+<div class="fixed bottom-8 right-8 z-50 w-80 animate-float-medium">
+<div class="glass-panel rounded-2xl p-4 border border-accent-cyan/30 shadow-[0_0_30px_rgba(6,182,212,0.15)] relative">
+<div class="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-background-dark border border-accent-cyan flex items-center justify-center z-10 shadow-lg shadow-cyan-500/20">
+<span class="material-symbols-outlined text-accent-cyan text-sm">smart_toy</span>
+</div>
+<div class="mb-3">
+<h4 class="text-accent-cyan font-bold text-sm tracking-wider uppercase mb-1">Oracle AI</h4>
+<p class="text-gray-300 text-xs leading-relaxed">Based on your current trajectory, increasing your monthly savings by <span class="text-white font-bold">$250</span> will unlock the 'New House' milestone 3 months early.</p>
+</div>
+<div class="flex gap-2">
+<input class="bg-black/30 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white w-full focus:ring-1 focus:ring-accent-cyan/50 focus:border-accent-cyan/50 placeholder-gray-600" placeholder="Ask Oracle..." type="text"/>
+<button class="p-1.5 rounded-lg bg-accent-cyan/20 text-accent-cyan hover:bg-accent-cyan/30 transition-colors">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+</div>
+<div class="relative w-full max-w-5xl mx-auto py-10 min-h-[800px]">
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-40">
+<defs>
+<linearGradient id="lineGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#22D3EE;stop-opacity:0"></stop>
+<stop offset="50%" style="stop-color:#22D3EE;stop-opacity:0.5"></stop>
+<stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0"></stop>
+</linearGradient>
+</defs>
+<path d="M200,150 C400,150 200,450 600,450 C800,450 400,800 500,800" fill="none" stroke="url(#lineGradient)" stroke-dasharray="5,5" stroke-width="2"></path>
+</svg>
+<div class="absolute left-[5%] top-[50px] w-80 animate-float-medium z-10">
+<div class="glass-panel p-5 rounded-2xl neon-border-cyan card-3d group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-900/50 to-blue-900/50 flex items-center justify-center border border-cyan-500/30 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+<span class="material-symbols-outlined text-accent-cyan text-2xl">flight_takeoff</span>
+</div>
+<div class="bg-black/40 px-2 py-1 rounded text-[10px] font-mono text-cyan-400 border border-cyan-500/20">
+                                    SHORT RANGE
+                                </div>
+</div>
+<h3 class="text-xl font-display font-bold text-white mb-1 group-hover:text-accent-cyan transition-colors">Japan Trip</h3>
+<div class="flex justify-between items-end mb-2">
+<span class="text-gray-400 text-xs">Target: Apr 2024</span>
+<span class="text-white font-bold font-mono">$3,800 / $5,000</span>
+</div>
+<div class="h-2 w-full bg-gray-800 rounded-full overflow-hidden mb-3 relative">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent w-full translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+<div class="h-full bg-gradient-to-r from-cyan-600 to-accent-cyan w-[76%] shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
+</div>
+<div class="flex items-center gap-2 text-xs text-gray-400">
+<span class="material-symbols-outlined text-sm text-yellow-400">timer</span>
+<span>2 months remaining</span>
+</div>
+</div>
+</div>
+<div class="absolute right-[10%] top-[300px] w-96 animate-float-slow z-20">
+<div class="glass-panel p-6 rounded-2xl neon-border-purple card-3d group cursor-pointer transform hover:scale-105 transition-all duration-300 bg-gradient-to-b from-card-dark to-[#1a1a3a]">
+<div class="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+<div class="relative">
+<div class="flex justify-between items-start mb-4">
+<div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-900/50 to-indigo-900/50 flex items-center justify-center border border-purple-500/30 shadow-[0_0_20px_rgba(124,58,237,0.3)]">
+<span class="material-symbols-outlined text-accent-purple text-3xl">directions_car</span>
+</div>
+<div class="bg-black/40 px-3 py-1 rounded text-[10px] font-mono text-purple-400 border border-purple-500/20">
+                                        MEDIUM RANGE
+                                    </div>
+</div>
+<h3 class="text-2xl font-display font-bold text-white mb-1 group-hover:text-accent-purple transition-colors">New Tesla Model Y</h3>
+<div class="flex justify-between items-end mb-3">
+<span class="text-gray-400 text-xs">Target: Dec 2024</span>
+<span class="text-white font-bold font-mono text-lg">$35,000 / $50,000</span>
+</div>
+<div class="h-3 w-full bg-gray-800 rounded-full overflow-hidden mb-4 box-shadow-inner">
+<div class="h-full bg-gradient-to-r from-primary to-purple-400 w-[70%] shadow-[0_0_15px_rgba(124,58,237,0.6)] relative overflow-hidden">
+<div class="absolute top-0 bottom-0 right-0 w-4 bg-white/50 blur-sm"></div>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs">
+<div class="flex items-center gap-2 text-gray-300">
+<span class="material-symbols-outlined text-sm text-green-400">trending_up</span>
+<span>On track (+15%)</span>
+</div>
+<div class="text-purple-300 font-mono">
+                                        T-minus 10 Months
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute left-[15%] top-[600px] w-80 animate-float-fast z-10">
+<div class="glass-panel p-5 rounded-2xl border border-pink-500/30 shadow-[0_0_15px_rgba(236,72,153,0.1)] card-3d group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-900/50 to-rose-900/50 flex items-center justify-center border border-pink-500/30 shadow-[0_0_15px_rgba(236,72,153,0.2)]">
+<span class="material-symbols-outlined text-neon-pink text-2xl">home</span>
+</div>
+<div class="bg-black/40 px-2 py-1 rounded text-[10px] font-mono text-pink-400 border border-pink-500/20">
+                                    LONG RANGE
+                                </div>
+</div>
+<h3 class="text-xl font-display font-bold text-white mb-1 group-hover:text-neon-pink transition-colors">House Downpayment</h3>
+<div class="flex justify-between items-end mb-2">
+<span class="text-gray-400 text-xs">Target: Dec 2026</span>
+<span class="text-white font-bold font-mono">$45,000 / $100,000</span>
+</div>
+<div class="h-2 w-full bg-gray-800 rounded-full overflow-hidden mb-3">
+<div class="h-full bg-gradient-to-r from-pink-700 to-neon-pink w-[45%] shadow-[0_0_10px_rgba(236,72,153,0.5)]"></div>
+</div>
+<div class="flex items-center gap-2 text-xs text-gray-400">
+<span class="material-symbols-outlined text-sm text-gray-500">calendar_month</span>
+<span>Est. completion: 2 years</span>
+</div>
+</div>
+</div>
+<div class="absolute right-[30%] top-[100px] opacity-40 hover:opacity-100 transition-opacity duration-500 scale-75 animate-float-slow z-0 blur-[1px] hover:blur-0">
+<div class="glass-panel p-4 rounded-2xl border border-emerald-500/20 w-64">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 rounded-lg bg-emerald-900/30 flex items-center justify-center border border-emerald-500/30">
+<span class="material-symbols-outlined text-emerald-400 text-sm">shield</span>
+</div>
+<h4 class="text-emerald-400 font-bold text-sm">Emergency Fund</h4>
+</div>
+<div class="w-full bg-gray-800 h-1.5 rounded-full mb-1">
+<div class="bg-emerald-500 h-1.5 rounded-full w-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+</div>
+<div class="text-[10px] text-emerald-300 text-right font-mono">COMPLETED</div>
+</div>
+</div>
+<div class="absolute left-[45%] top-[800px] w-64 animate-float-medium z-10 flex flex-col items-center justify-center opacity-60 hover:opacity-100 transition-all cursor-pointer group">
+<div class="w-16 h-16 rounded-full border-2 border-dashed border-gray-500 flex items-center justify-center group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-all bg-black/20 backdrop-blur-sm">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary text-3xl">add</span>
+</div>
+<p class="mt-4 text-gray-400 font-mono text-xs tracking-widest group-hover:text-primary">INITIATE NEW OBJECTIVE</p>
+</div>
+</div>
+</div>
+<footer class="absolute bottom-0 w-full text-center text-[10px] text-gray-600 py-2 pointer-events-none bg-gradient-to-t from-background-dark to-transparent">
+<p class="font-mono">ORBITAL NAVIGATION SYSTEM v3.0 // BUDGEIFY CORP</p>
+</footer>
+</main>
+</div>
+<button class="fixed bottom-6 left-24 z-50 p-3 rounded-full bg-card-dark text-gray-300 border border-white/10 shadow-lg hover:shadow-primary/20 hover:text-white transition-all duration-200" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-symbols-outlined block dark:hidden">dark_mode</span>
+<span class="material-symbols-outlined hidden dark:block">light_mode</span>
+</button>
+
+</body></html>
