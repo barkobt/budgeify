@@ -57,7 +57,7 @@ const DEFAULT_EXPENSE_CATEGORIES: Omit<NewCategory, 'id' | 'createdAt'>[] = [
   { name: 'Teknoloji', icon: 'Laptop', color: '#6366F1', type: 'expense', isDefault: true, userId: null },
   { name: 'Kişisel Bakım', icon: 'Scissors', color: '#F472B6', type: 'expense', isDefault: true, userId: null },
   { name: 'Eğitim', icon: 'BookOpen', color: '#10B981', type: 'expense', isDefault: true, userId: null },
-  { name: 'Kredi Kartı', icon: 'CreditCard', color: '#DC2626', type: 'expense', isDefault: true, userId: null },
+  { name: 'Kredi Kartı Borcu', icon: 'CreditCard', color: '#DC2626', type: 'expense', isDefault: true, userId: null },
   { name: 'Kredi Borcu', icon: 'Building2', color: '#7C3AED', type: 'expense', isDefault: true, userId: null },
   { name: 'Hediye', icon: 'Gift', color: '#F97316', type: 'expense', isDefault: true, userId: null },
   { name: 'Spor', icon: 'Dumbbell', color: '#059669', type: 'expense', isDefault: true, userId: null },
@@ -86,10 +86,22 @@ export async function seedDefaultCategories() {
   const existingDefaults = await db
     .select()
     .from(categories)
-    .where(eq(categories.isDefault, true))
-    .limit(1);
+    .where(eq(categories.isDefault, true));
 
   if (existingDefaults.length > 0) {
+    // Sync name mismatches for existing defaults (e.g. 'Kredi Kartı' → 'Kredi Kartı Borcu')
+    const allDefaults = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME_CATEGORIES];
+    for (const def of allDefaults) {
+      const existing = existingDefaults.find(
+        (e) => e.icon === def.icon && e.type === def.type && e.isDefault
+      );
+      if (existing && existing.name !== def.name) {
+        await db
+          .update(categories)
+          .set({ name: def.name })
+          .where(eq(categories.id, existing.id));
+      }
+    }
     return { message: 'Default categories already exist' };
   }
 

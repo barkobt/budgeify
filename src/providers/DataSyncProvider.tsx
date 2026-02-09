@@ -336,9 +336,14 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     };
     store.addIncome(localIncome);
 
-    // Resolve category to server UUID if needed
+    // Resolve category to server UUID if needed — don't send raw local IDs
+    const resolvedCategoryId = data.categoryId
+      ? useBudgetStore.getState().resolveServerCategoryId(data.categoryId)
+      : undefined;
+
     const serverData = {
       ...data,
+      categoryId: resolvedCategoryId,
       date: data.date ? new Date(data.date) : undefined,
       expectedDate: data.expectedDate ? new Date(data.expectedDate) : undefined,
     };
@@ -375,9 +380,10 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     const now = new Date().toISOString();
     const today = data.date || now.split('T')[0];
 
-    // Resolve local category ID to server UUID
+    // Resolve local category ID to server UUID — fallback to undefined (not raw local ID)
+    // Raw local IDs like 'cat_food' are not valid UUIDs and would fail DB insert
     const resolvedCategoryId = data.categoryId
-      ? (useBudgetStore.getState().resolveServerCategoryId(data.categoryId) ?? data.categoryId)
+      ? useBudgetStore.getState().resolveServerCategoryId(data.categoryId)
       : undefined;
 
     const localExpense = {
