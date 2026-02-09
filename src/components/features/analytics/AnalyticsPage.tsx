@@ -54,6 +54,11 @@ const PERIOD_LABELS: Record<TimePeriod, string> = {
   '90d': '90 Gün',
 };
 
+const MONTH_NAMES = [
+  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
+];
+
 // ─── SVG Chart Helpers ───────────────────────────────────────
 function getExpenseDataPoints(expenses: Expense[], period: TimePeriod): number[] {
   const now = new Date();
@@ -240,18 +245,21 @@ export function AnalyticsPage() {
   const expenses = useBudgetStore((s) => s.expenses);
   const incomes = useBudgetStore((s) => s.incomes);
   const currency = useBudgetStore((s) => s.currency);
+  const selectedMonth = useBudgetStore((s) => s.selectedMonth);
+  const setSelectedMonth = useBudgetStore((s) => s.setSelectedMonth);
   const getActiveCategories = useBudgetStore((s) => s.getActiveCategories);
-  const getBalance = useBudgetStore((s) => s.getBalance);
-  const getTotalIncome = useBudgetStore((s) => s.getTotalIncome);
-  const getTotalExpenses = useBudgetStore((s) => s.getTotalExpenses);
 
   const categories = getActiveCategories();
-  const balance = getBalance();
-  const totalIncome = getTotalIncome();
-  const totalExpenses = getTotalExpenses();
 
+  // Month-aware snapshot
+  const monthParam = useMemo(() => ({ year: selectedMonth.year, month: selectedMonth.month }), [selectedMonth.year, selectedMonth.month]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const snapshot = useMemo(() => getFinancialSnapshot(), [expenses.length, incomes.length]);
+  const snapshot = useMemo(() => getFinancialSnapshot(monthParam), [expenses.length, incomes.length, monthParam]);
+
+  const totalIncome = snapshot.totalIncome;
+  const totalExpenses = snapshot.totalExpenses;
+  const balance = snapshot.balance;
+
   const trend = useMemo(
     () => getSpendingTrend(snapshot.currentMonthExpenses, snapshot.previousMonthExpenses),
     [snapshot]
@@ -264,8 +272,9 @@ export function AnalyticsPage() {
     [snapshot, categories]
   );
 
-  // Chart data
-  const chartData = useMemo(() => getExpenseDataPoints(expenses, period), [expenses, period]);
+  // Chart data — filter expenses by selected month for chart
+  const monthExpenses = snapshot.currentMonthExpenses;
+  const chartData = useMemo(() => getExpenseDataPoints(monthExpenses, period), [monthExpenses, period]);
   const svgW = 600;
   const svgH = 200;
   const gradientId = useId();
@@ -273,16 +282,30 @@ export function AnalyticsPage() {
 
   // Monthly burn
   const now = new Date();
-  const dayOfMonth = now.getDate();
+  const isCurrentMonth = selectedMonth.year === now.getFullYear() && selectedMonth.month === now.getMonth();
+  const dayOfMonth = isCurrentMonth ? now.getDate() : new Date(selectedMonth.year, selectedMonth.month + 1, 0).getDate();
   const currentMonthTotal = snapshot.currentMonthExpenses.reduce((s, e) => s + e.amount, 0);
   const dailyVelocity = dayOfMonth > 0 ? currentMonthTotal / dayOfMonth : 0;
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-  const projectedMonthly = dailyVelocity * daysInMonth;
+  const daysInMonth = new Date(selectedMonth.year, selectedMonth.month + 1, 0).getDate();
+  const projectedMonthly = isCurrentMonth ? dailyVelocity * daysInMonth : currentMonthTotal;
   const burnRatio = totalIncome > 0 ? Math.round((currentMonthTotal / totalIncome) * 100) : 0;
 
   // Net change
   const netChange = totalIncome - totalExpenses;
   const isPositive = netChange >= 0;
+
+  // Month navigation helpers
+  const goToPrevMonth = () => {
+    const prev = selectedMonth.month === 0 ? 11 : selectedMonth.month - 1;
+    const year = selectedMonth.month === 0 ? selectedMonth.year - 1 : selectedMonth.year;
+    setSelectedMonth(year, prev);
+  };
+  const goToNextMonth = () => {
+    const next = selectedMonth.month === 11 ? 0 : selectedMonth.month + 1;
+    const year = selectedMonth.month === 11 ? selectedMonth.year + 1 : selectedMonth.year;
+    setSelectedMonth(year, next);
+  };
+  const canGoNext = selectedMonth.year < now.getFullYear() || (selectedMonth.year === now.getFullYear() && selectedMonth.month < now.getMonth());
 
   // Risk factor from health score
   const riskLevel = health.score >= 70 ? 'Düşük' : health.score >= 40 ? 'Orta' : 'Yüksek';
@@ -305,7 +328,7 @@ export function AnalyticsPage() {
   // Top insight
   const topInsight = insights.find((i) => i.type === 'tip' || i.type === 'health' || i.type === 'trend');
 
-  const hasData = expenses.length > 0;
+  const hasData = monthExpenses.length > 0;
 
   return (
     <div className="space-y-6">
@@ -329,21 +352,45 @@ export function AnalyticsPage() {
           </p>
         </div>
 
-        {/* Time Period Toggles */}
-        <div className="flex gap-1 bg-white/5 rounded-xl p-1 border border-white/10">
-          {(Object.keys(PERIOD_LABELS) as TimePeriod[]).map((p) => (
+        {/* Month Navigation + Time Period Toggles */}
+        <div className="flex items-center gap-3">
+          {/* Month Selector */}
+          <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1 border border-white/10">
             <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                period === p
-                  ? 'bg-primary/20 text-accent-purple border border-primary/30'
-                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+              onClick={goToPrevMonth}
+              className="px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            >
+              ←
+            </button>
+            <span className="px-2 py-1.5 text-xs font-semibold text-white min-w-25 text-center">
+              {MONTH_NAMES[selectedMonth.month]} {selectedMonth.year}
+            </span>
+            <button
+              onClick={goToNextMonth}
+              disabled={!canGoNext}
+              className={`px-2 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                canGoNext ? 'text-slate-400 hover:text-white hover:bg-white/5' : 'text-slate-700 cursor-not-allowed'
               }`}
             >
-              {PERIOD_LABELS[p]}
+              →
             </button>
-          ))}
+          </div>
+          {/* Chart Period Toggles */}
+          <div className="flex gap-1 bg-white/5 rounded-xl p-1 border border-white/10">
+            {(Object.keys(PERIOD_LABELS) as TimePeriod[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  period === p
+                    ? 'bg-primary/20 text-accent-purple border border-primary/30'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                {PERIOD_LABELS[p]}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

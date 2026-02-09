@@ -36,12 +36,13 @@ const CHART_COLORS = [
  * Uses cosmic dark theme styling with Lucide icons.
  */
 export const ExpenseChart = () => {
-  const { expenses, getActiveCategories } = useBudgetStore();
+  const { expenses, getActiveCategories, getMonthlyExpenses } = useBudgetStore();
+  const monthlyExpenses = getMonthlyExpenses();
   const [chartType, setChartType] = useState<ChartType>('bar');
 
-  // Get top 3 categories for trend
+  // Get top 3 categories for trend (based on monthly data)
   const categories = getActiveCategories();
-  const categoryTotals = expenses.reduce((acc, exp) => {
+  const categoryTotals = monthlyExpenses.reduce((acc, exp) => {
     acc[exp.categoryId] = (acc[exp.categoryId] || 0) + exp.amount;
     return acc;
   }, {} as Record<string, number>);
@@ -74,7 +75,7 @@ export const ExpenseChart = () => {
     chartData.push(dataPoint);
   }
 
-  if (expenses.length === 0) {
+  if (monthlyExpenses.length === 0) {
     return (
       <Card variant="glass">
         <CardHeader>

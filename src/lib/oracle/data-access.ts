@@ -45,17 +45,53 @@ function getMonthExpenses(expenses: Expense[], monthOffset: number): Expense[] {
   });
 }
 
-export function getFinancialSnapshot(): FinancialSnapshot {
+function getMonthExpensesAbsolute(expenses: Expense[], year: number, month: number): Expense[] {
+  const targetMonth = new Date(year, month, 1);
+  const nextMonth = new Date(year, month + 1, 1);
+  return expenses.filter((e) => {
+    const d = new Date(e.date);
+    return d >= targetMonth && d < nextMonth;
+  });
+}
+
+function getMonthIncomesAbsolute(incomes: Income[], year: number, month: number): Income[] {
+  const targetMonth = new Date(year, month, 1);
+  const nextMonth = new Date(year, month + 1, 1);
+  return incomes.filter((inc) => {
+    const d = new Date(inc.date);
+    return d >= targetMonth && d < nextMonth;
+  });
+}
+
+export function getFinancialSnapshot(month?: { year: number; month: number }): FinancialSnapshot {
   const state = useBudgetStore.getState();
 
-  const totalIncome = state.getTotalIncome();
-  const totalExpenses = state.getTotalExpenses();
-  const balance = state.getBalance();
-  const savingsRate = state.getSavingsRate();
   const activeGoals = state.getActiveGoals();
 
-  const currentMonthExpenses = getMonthExpenses(state.expenses, 0);
-  const previousMonthExpenses = getMonthExpenses(state.expenses, -1);
+  let currentMonthExpenses: Expense[];
+  let previousMonthExpenses: Expense[];
+  let currentMonthIncomes: Income[];
+
+  if (month) {
+    currentMonthExpenses = getMonthExpensesAbsolute(state.expenses, month.year, month.month);
+    const prevMonth = month.month === 0 ? 11 : month.month - 1;
+    const prevYear = month.month === 0 ? month.year - 1 : month.year;
+    previousMonthExpenses = getMonthExpensesAbsolute(state.expenses, prevYear, prevMonth);
+    currentMonthIncomes = getMonthIncomesAbsolute(state.incomes, month.year, month.month);
+  } else {
+    currentMonthExpenses = getMonthExpenses(state.expenses, 0);
+    previousMonthExpenses = getMonthExpenses(state.expenses, -1);
+    currentMonthIncomes = state.incomes; // all-time fallback when no month specified
+  }
+
+  const totalIncome = month
+    ? currentMonthIncomes.reduce((s, i) => s + i.amount, 0)
+    : state.getTotalIncome();
+  const totalExpenses = month
+    ? currentMonthExpenses.reduce((s, e) => s + e.amount, 0)
+    : state.getTotalExpenses();
+  const balance = totalIncome - totalExpenses;
+  const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
 
   const sortedExpenses = [...state.expenses].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -66,8 +102,8 @@ export function getFinancialSnapshot(): FinancialSnapshot {
     : 0;
 
   return {
-    incomes: state.incomes,
-    expenses: state.expenses,
+    incomes: month ? currentMonthIncomes : state.incomes,
+    expenses: month ? currentMonthExpenses : state.expenses,
     goals: state.goals,
     categories: state.categories,
     totalIncome,

@@ -29,10 +29,11 @@ const CHART_COLORS = [
  * Uses Lucide icons and cosmic dark theme styling.
  */
 export const CategoryChart = () => {
-  const { expenses, getActiveCategories } = useBudgetStore();
+  const { getActiveCategories, getMonthlyExpenses } = useBudgetStore();
   const categories = getActiveCategories();
+  const monthlyExpenses = getMonthlyExpenses();
 
-  const categoryData = groupExpensesByCategory(expenses, categories);
+  const categoryData = groupExpensesByCategory(monthlyExpenses, categories);
 
   // Prepare data for Recharts with custom colors
   const chartData = categoryData.map((item, index) => ({
@@ -43,7 +44,7 @@ export const CategoryChart = () => {
     categoryId: item.categoryId,
   }));
 
-  if (expenses.length === 0) {
+  if (monthlyExpenses.length === 0) {
     return (
       <Card variant="glass">
         <CardHeader>
