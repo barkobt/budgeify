@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ClerkProvider } from '@clerk/nextjs';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const inter = Inter({
@@ -69,6 +70,17 @@ export default function RootLayout({
           <div className="ambient-orb-violet" />
         </div>
         <ErrorBoundary>{children}</ErrorBoundary>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: 'rgba(15, 23, 42, 0.95)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#e2e8f0',
+              backdropFilter: 'blur(12px)',
+            },
+          }}
+        />
       </body>
     </html>
   );

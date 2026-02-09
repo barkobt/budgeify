@@ -34,6 +34,7 @@ import {
   addToGoal as serverAddToGoal,
 } from '@/actions';
 import type { TransactionStatus } from '@/types';
+import { toast } from 'sonner';
 
 interface DataSyncContextType {
   isLoading: boolean;
@@ -352,6 +353,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     if (!result.success) {
       store.deleteIncome(tempId);
       setLastError(result.error);
+      toast.error('Gelir eklenemedi', { description: result.error });
       return;
     }
 
@@ -361,6 +363,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       ),
     }));
 
+    toast.success('Gelir eklendi');
     // M24-C: Pull confirmed server state
     await syncData();
   }, [store, syncData]);
@@ -410,6 +413,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     if (!result.success) {
       store.deleteExpense(tempId);
       setLastError(result.error);
+      toast.error('Gider eklenemedi', { description: result.error });
       return;
     }
 
@@ -419,6 +423,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       ),
     }));
 
+    toast.success('Gider eklendi');
     // M24-C: Pull confirmed server state
     await syncData();
   }, [store, syncData]);
@@ -451,6 +456,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     if (!result.success) {
       store.deleteGoal(tempId);
       setLastError(result.error);
+      toast.error('Hedef oluşturulamadı', { description: result.error });
       return;
     }
 
@@ -460,6 +466,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       ),
     }));
 
+    toast.success('Hedef oluşturuldu');
     // M24-C: Pull confirmed server state
     await syncData();
   }, [store, syncData]);
@@ -499,6 +506,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       // Rollback
       store.updateIncome(id, current);
       setLastError(result.error);
+      toast.error('Gelir güncellenemedi', { description: result.error });
     } else {
       // M24-C: Pull confirmed server state
       await syncData();
@@ -539,6 +547,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       // Rollback
       store.updateExpense(id, current);
       setLastError(result.error);
+      toast.error('Gider güncellenemedi', { description: result.error });
     } else {
       // M24-C: Pull confirmed server state
       await syncData();
@@ -561,6 +570,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         pendingDeletesRef.current.delete(id);
         if (incomeToDelete) store.addIncome(incomeToDelete);
         setLastError(result.error);
+        toast.error('Gelir silinemedi', { description: result.error });
         return;
       }
     }
@@ -585,6 +595,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         pendingDeletesRef.current.delete(id);
         if (expenseToDelete) store.addExpense(expenseToDelete);
         setLastError(result.error);
+        toast.error('Gider silinemedi', { description: result.error });
         return;
       }
     }
@@ -609,6 +620,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         pendingDeletesRef.current.delete(id);
         if (goalToDelete) store.addGoal(goalToDelete);
         setLastError(result.error);
+        toast.error('Hedef silinemedi', { description: result.error });
         return;
       }
     }
@@ -641,6 +653,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       if (!result.success) {
         store.updateGoal(id, current);
         setLastError(result.error);
+        toast.error('Hedef güncellenemedi', { description: result.error });
       } else {
         await syncData();
       }
@@ -663,6 +676,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         // Rollback on failure
         store.updateGoal(id, { currentAmount: previousAmount });
         setLastError(result.error);
+        toast.error('Birikim eklenemedi', { description: result.error });
         return;
       }
       // M24-C: Pull confirmed server state
