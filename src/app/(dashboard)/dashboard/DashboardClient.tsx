@@ -1,24 +1,22 @@
 'use client';
 
 /**
- * DashboardClient — Sovereign v4.6 (Bento Grid + Dock Bar)
+ * DashboardClient — v6.0 Overhaul M3 (Desktop Grid + Mobile Bento)
  *
- * Extracted client component from page.tsx to allow server-side
- * async delay in page.tsx for cinematic pre-flight loading screen.
+ * Responsive dashboard:
+ * - Desktop (lg+): Stitch 3 inspired 12-col grid with DashboardHeader,
+ *   DesktopBalanceHero (SVG chart), DesktopAICard, RecentTransactions, MiniGoalGrid.
+ * - Mobile (< lg): Sovereign bento grid preserved (OracleHero, BentoGrid, DockBar).
  *
- * Spatial Bento Grid layout: Apple Control Center / Widget-inspired.
- * M13-C: PortalNavbar (command strip) + DockBar (floating pill, center FAB).
- * M9: Sticky Oracle Hero, M10: High-density bento,
- * M6: Currency globalization, M7: Oracle Brain card.
- * Hydration-safe: uses isMounted guard for store-derived values.
- * All data pulled from useBudgetStore — no hardcoded values.
- * Spec: skills/ui/bento.md
+ * Shared: Sidebar (lg+), PortalNavbar + DockBar (mobile), activeTab state,
+ * Drawers, AI Assistant. All data from useBudgetStore.
  */
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { PortalNavbar } from '@/components/layout/PortalNavbar';
+import { Sidebar } from '@/components/layout/Sidebar';
 import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 import { DockBar } from '@/components/layout/DockBar';
 import { Drawer } from '@/components/ui/Drawer';
@@ -33,6 +31,7 @@ import {
 } from '@/lib/motion';
 import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
 import type { Income, CurrencyCode } from '@/types';
+import type { MergedTransaction } from '@/components/features/transactions/TransactionTable';
 import {
   TrendingUp,
   Target,
@@ -100,7 +99,57 @@ const OracleBrainCard = dynamic(
   { ssr: false }
 );
 
-type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics';
+// M3: Desktop Dashboard Components (lg+ only)
+const DashboardHeader = dynamic(
+  () => import('@/components/features/dashboard/DashboardHeader').then((mod) => ({ default: mod.DashboardHeader })),
+  { ssr: false }
+);
+const DesktopBalanceHero = dynamic(
+  () => import('@/components/features/dashboard/DesktopBalanceHero').then((mod) => ({ default: mod.DesktopBalanceHero })),
+  { ssr: false, loading: () => <SkeletonCard /> }
+);
+const RecentTransactions = dynamic(
+  () => import('@/components/features/dashboard/RecentTransactions').then((mod) => ({ default: mod.RecentTransactions })),
+  { ssr: false, loading: () => <SkeletonList count={5} /> }
+);
+const MiniGoalGrid = dynamic(
+  () => import('@/components/features/dashboard/MiniGoalGrid').then((mod) => ({ default: mod.MiniGoalGrid })),
+  { ssr: false }
+);
+const DesktopAICard = dynamic(
+  () => import('@/components/features/dashboard/DesktopAICard').then((mod) => ({ default: mod.DesktopAICard })),
+  { ssr: false }
+);
+
+// M5: Desktop Goals Full-Page (lg+ only)
+const GoalsPage = dynamic(
+  () => import('@/components/features/goals/GoalsPage').then((mod) => ({ default: mod.GoalsPage })),
+  { ssr: false, loading: () => <SkeletonList count={6} /> }
+);
+
+// M6: Desktop Analytics Full-Page (lg+ only)
+const AnalyticsPage = dynamic(
+  () => import('@/components/features/analytics/AnalyticsPage').then((mod) => ({ default: mod.AnalyticsPage })),
+  { ssr: false, loading: () => <SkeletonList count={6} /> }
+);
+
+// M7: Desktop Settings Page (lg+ only)
+const SettingsPage = dynamic(
+  () => import('@/components/features/settings/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
+  { ssr: false, loading: () => <SkeletonList count={4} /> }
+);
+
+// M4: Desktop Transaction Components (lg+ only)
+const TransactionTable = dynamic(
+  () => import('@/components/features/transactions/TransactionTable').then((mod) => ({ default: mod.TransactionTable })),
+  { ssr: false, loading: () => <SkeletonList count={8} /> }
+);
+const TransactionDetailPanel = dynamic(
+  () => import('@/components/features/transactions/TransactionDetailPanel').then((mod) => ({ default: mod.TransactionDetailPanel })),
+  { ssr: false }
+);
+
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
 type DrawerType = 'income' | 'expense' | null;
 type TransactionView = 'expenses' | 'incomes';
 
@@ -110,6 +159,7 @@ export default function DashboardClient() {
   const [isMounted, setIsMounted] = useState(false);
   const [txView, setTxView] = useState<TransactionView>('expenses');
   const [editingIncome, setEditingIncome] = useState<Income | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<MergedTransaction | null>(null);
 
   const [showPreflight, setShowPreflight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -244,13 +294,56 @@ export default function DashboardClient() {
         />
       )}
 
+      {/* v6.0: Desktop Sidebar — hidden on mobile */}
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+
       <PageWrapper>
-        <main id="main-content" className="min-h-screen pb-24 px-4 sm:px-6" role="main">
-          <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-2xl">
+        <main id="main-content" className="min-h-screen pb-24 lg:pb-8 px-4 sm:px-6 lg:pl-72 lg:pr-8 lg:pt-6" role="main">
+          <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-5xl xl:max-w-6xl">
           {/* ========================================
-              DASHBOARD TAB — Bento Grid v4.0
+              DASHBOARD TAB — Responsive: Desktop Grid + Mobile Bento
               ======================================== */}
           {activeTab === 'dashboard' && (
+            <>
+            {/* ── DESKTOP DASHBOARD (lg+) ── Stitch 3 inspired 12-col grid */}
+            <div className="hidden lg:block">
+              <motion.div
+                initial={isMounted ? { opacity: 0, y: 12 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <DashboardHeader
+                  onAddIncome={() => setOpenDrawer('income')}
+                  onAddExpense={() => setOpenDrawer('expense')}
+                />
+
+                {/* 12-column grid */}
+                <div className="grid grid-cols-12 gap-4">
+                  {/* Total Balance — col-span-8 */}
+                  <div className="col-span-8 min-h-90">
+                    <DesktopBalanceHero />
+                  </div>
+
+                  {/* AI Assistant — col-span-4 */}
+                  <div className="col-span-4 min-h-90">
+                    <DesktopAICard />
+                  </div>
+
+                  {/* Recent Transactions — col-span-7 */}
+                  <div className="col-span-7 min-h-80">
+                    <RecentTransactions onViewAll={() => setActiveTab('transactions')} />
+                  </div>
+
+                  {/* Savings Goals — col-span-5 */}
+                  <div className="col-span-5 min-h-80">
+                    <MiniGoalGrid onViewAll={() => setActiveTab('goals')} />
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* ── MOBILE BENTO (< lg) ── Sovereign bento grid preserved */}
+            <div className="lg:hidden">
             <LayoutGroup>
             <BentoGrid isMounted={isMounted}>
               {/* Oracle Core Hero — full width, no card chrome */}
@@ -412,12 +505,48 @@ export default function DashboardClient() {
               </BentoCard>
             </BentoGrid>
             </LayoutGroup>
+            </div>
+            </>
           )}
 
           {/* ========================================
-              TRANSACTIONS TAB — Integrated Toggle Bar
+              TRANSACTIONS TAB — Desktop Table + Mobile Toggle
               ======================================== */}
           {activeTab === 'transactions' && (
+            <>
+            {/* ── DESKTOP TRANSACTION LEDGER (lg+) ── */}
+            <div className="hidden lg:block">
+              <motion.div
+                initial={isMounted ? { opacity: 0, y: 12 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="flex gap-5">
+                  {/* Main table area */}
+                  <div className={selectedTransaction ? 'flex-1 min-w-0' : 'w-full'}>
+                    <TransactionTable
+                      onSelectTransaction={setSelectedTransaction}
+                      selectedId={selectedTransaction?.id ?? null}
+                      onAddTransaction={() => setOpenDrawer('expense')}
+                    />
+                  </div>
+
+                  {/* Detail side panel — xl+ */}
+                  {selectedTransaction && (
+                    <div className="hidden xl:block w-80 shrink-0">
+                      <TransactionDetailPanel
+                        transaction={selectedTransaction}
+                        onClose={() => setSelectedTransaction(null)}
+                        currency={currency}
+                      />
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
+
+            {/* ── MOBILE TRANSACTIONS (< lg) ── */}
+            <div className="lg:hidden">
             <motion.div
               className="space-y-4"
               variants={fadeInUp}
@@ -456,46 +585,93 @@ export default function DashboardClient() {
                 <IncomeList onEditIncome={setEditingIncome} />
               )}
             </motion.div>
+            </div>
+            </>
           )}
 
           {/* ========================================
-              GOALS TAB
+              GOALS TAB — Desktop Full-Page + Mobile Form+List
               ======================================== */}
           {activeTab === 'goals' && (
-            <motion.div
-              className="space-y-4"
-              variants={staggerContainer}
-              initial={isMounted ? 'hidden' : false}
-              animate="visible"
-            >
-              <motion.div variants={staggerItem}>
-                <GoalForm />
+            <>
+            {/* ── DESKTOP GOALS (lg+) ── Stitch 3 milestone page */}
+            <div className="hidden lg:block">
+              <motion.div
+                initial={isMounted ? { opacity: 0, y: 12 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <GoalsPage />
               </motion.div>
-              <motion.div variants={staggerItem}>
-                <GoalList />
+            </div>
+
+            {/* ── MOBILE GOALS (< lg) ── Preserved GoalForm + GoalList */}
+            <div className="lg:hidden">
+              <motion.div
+                className="space-y-4"
+                variants={staggerContainer}
+                initial={isMounted ? 'hidden' : false}
+                animate="visible"
+              >
+                <motion.div variants={staggerItem}>
+                  <GoalForm />
+                </motion.div>
+                <motion.div variants={staggerItem}>
+                  <GoalList />
+                </motion.div>
               </motion.div>
-            </motion.div>
+            </div>
+            </>
           )}
 
           {/* ========================================
-              ANALYTICS TAB
+              ANALYTICS TAB — Desktop Full-Page + Mobile Cards
               ======================================== */}
           {activeTab === 'analytics' && (
+            <>
+            {/* ── DESKTOP ANALYTICS (lg+) ── Stitch 3 analysis page */}
+            <div className="hidden lg:block">
+              <motion.div
+                initial={isMounted ? { opacity: 0, y: 12 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <AnalyticsPage />
+              </motion.div>
+            </div>
+
+            {/* ── MOBILE ANALYTICS (< lg) ── Preserved SpendingVelocity + Charts */}
+            <div className="lg:hidden">
+              <motion.div
+                className="space-y-4"
+                variants={staggerContainer}
+                initial={isMounted ? 'hidden' : false}
+                animate="visible"
+              >
+                <motion.div variants={staggerItem}>
+                  <SpendingVelocity />
+                </motion.div>
+                <motion.div variants={staggerItem}>
+                  <CategoryChart />
+                </motion.div>
+                <motion.div variants={staggerItem}>
+                  <ExpenseChart />
+                </motion.div>
+              </motion.div>
+            </div>
+            </>
+          )}
+
+          {/* ========================================
+              SETTINGS TAB — Desktop Full-Page + Mobile Settings
+              ======================================== */}
+          {activeTab === 'settings' && (
             <motion.div
-              className="space-y-4"
-              variants={staggerContainer}
-              initial={isMounted ? 'hidden' : false}
-              animate="visible"
+              initial={isMounted ? { opacity: 0, y: 12 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
-              <motion.div variants={staggerItem}>
-                <SpendingVelocity />
-              </motion.div>
-              <motion.div variants={staggerItem}>
-                <CategoryChart />
-              </motion.div>
-              <motion.div variants={staggerItem}>
-                <ExpenseChart />
-              </motion.div>
+              <SettingsPage />
             </motion.div>
           )}
         {/* Version — bottom of scrollable content */}
@@ -519,7 +695,8 @@ export default function DashboardClient() {
       >
         <MainSalaryForm 
           editingIncome={editingIncome} 
-          onCancelEdit={() => setEditingIncome(null)} 
+          onCancelEdit={() => setEditingIncome(null)}
+          onSuccess={() => { setOpenDrawer(null); setEditingIncome(null); }}
         />
       </Drawer>
 
@@ -528,15 +705,17 @@ export default function DashboardClient() {
         onOpenChange={(open) => !open && setOpenDrawer(null)}
         title="Gider Ekle"
       >
-        <ExpenseForm />
+        <ExpenseForm onSuccess={() => setOpenDrawer(null)} />
       </Drawer>
 
       {/* AI Assistant */}
       <AIAssistant />
 
-      {/* v4.6: Portal Navbar + Dock Bar */}
-      <PortalNavbar activeTab={activeTab} />
-      <DockBar activeTab={activeTab} onTabChange={setActiveTab} onOpenDrawer={setOpenDrawer} hidden={isOverlayActive} />
+      {/* v4.6: Portal Navbar + Dock Bar — mobile only */}
+      <div className="lg:hidden">
+        <PortalNavbar activeTab={activeTab} />
+        <DockBar activeTab={activeTab} onTabChange={setActiveTab} onOpenDrawer={setOpenDrawer} hidden={isOverlayActive} />
+      </div>
     </>
   );
 }
