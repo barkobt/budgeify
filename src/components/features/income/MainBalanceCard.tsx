@@ -1,10 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { getCurrencySymbol } from '@/utils';
-import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
+
+const MONTH_NAMES = [
+  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
+];
 
 /**
  * MainBalanceCard — HubX-grade balance display
@@ -12,27 +17,45 @@ import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
  * Pure dark theme, glass-card aesthetic, tabular-nums currency.
  */
 export const MainBalanceCard = () => {
-  const { getTotalIncome, getTotalExpenses, getBalance, getSavingsRate, currency } = useBudgetStore();
+  const selectedMonth = useBudgetStore((s) => s.selectedMonth);
+  const setSelectedMonth = useBudgetStore((s) => s.setSelectedMonth);
+  const getMonthlyIncomes = useBudgetStore((s) => s.getMonthlyIncomes);
+  const getMonthlyExpenses = useBudgetStore((s) => s.getMonthlyExpenses);
+  const currency = useBudgetStore((s) => s.currency);
 
-  const totalIncome = getTotalIncome();
-  const totalExpenses = getTotalExpenses();
-  const balance = getBalance();
-  const savingsRate = getSavingsRate();
+  const monthlyIncomes = getMonthlyIncomes();
+  const monthlyExpensesList = getMonthlyExpenses();
+  const totalIncome = monthlyIncomes.reduce((s, i) => s + i.amount, 0);
+  const totalExpenses = monthlyExpensesList.reduce((s, e) => s + e.amount, 0);
+  const balance = totalIncome - totalExpenses;
+  const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
   const isPositive = balance >= 0;
   const symbol = getCurrencySymbol(currency);
+
+  const goToPrevMonth = useCallback(() => {
+    const m = selectedMonth.month === 0 ? 11 : selectedMonth.month - 1;
+    const y = selectedMonth.month === 0 ? selectedMonth.year - 1 : selectedMonth.year;
+    setSelectedMonth(y, m);
+  }, [selectedMonth, setSelectedMonth]);
+
+  const goToNextMonth = useCallback(() => {
+    const m = selectedMonth.month === 11 ? 0 : selectedMonth.month + 1;
+    const y = selectedMonth.month === 11 ? selectedMonth.year + 1 : selectedMonth.year;
+    setSelectedMonth(y, m);
+  }, [selectedMonth, setSelectedMonth]);
 
   return (
     <section className="rounded-2xl glass-card overflow-hidden transition-all duration-300">
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl ai-gradient shadow-lg shadow-accent-500/20">
               <Wallet size={22} className="text-white" strokeWidth={2} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-200">Mevcut Bakiye</p>
-              <p className="text-xs text-slate-500">Bu ay</p>
+              <p className="text-sm font-semibold text-slate-200">Aylık Bakiye</p>
+              <p className="text-xs text-slate-500">Gelir &amp; Gider Özeti</p>
             </div>
           </div>
 
@@ -53,6 +76,27 @@ export const MainBalanceCard = () => {
               </span>
             </div>
           )}
+        </div>
+
+        {/* Month Navigator */}
+        <div className="flex items-center justify-center gap-3 mb-5">
+          <button
+            onClick={goToPrevMonth}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/8 text-slate-400 hover:bg-white/10 hover:text-white transition-all"
+            aria-label="Önceki ay"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className="text-sm font-semibold text-white min-w-28 text-center tabular-nums">
+            {MONTH_NAMES[selectedMonth.month]} {selectedMonth.year}
+          </span>
+          <button
+            onClick={goToNextMonth}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/8 text-slate-400 hover:bg-white/10 hover:text-white transition-all"
+            aria-label="Sonraki ay"
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
 
         {/* Main Balance */}
