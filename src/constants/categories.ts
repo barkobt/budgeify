@@ -41,6 +41,21 @@ export function getActiveCategories(): Category[] {
 }
 
 /**
+ * Lokal kategori ID → sunucu kategori adı eşleştirmesi
+ * DataSyncProvider bu map ile lokal ID'leri sunucu UUID'lerine çevirir
+ */
+export const CATEGORY_NAME_MAP: Record<string, string> = Object.fromEntries(
+  DEFAULT_CATEGORIES.map((cat) => [cat.id, cat.name])
+);
+
+/**
+ * Kategori adına göre kategori bulur (sunucu UUID resolution için)
+ */
+export function getCategoryByName(name: string): Category | undefined {
+  return DEFAULT_CATEGORIES.find((cat) => cat.name === name);
+}
+
+/**
  * Gelir kategorileri
  */
 export const INCOME_CATEGORIES = [

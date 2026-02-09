@@ -1,15 +1,24 @@
 // Budgeify - TypeScript Type Definitions
 
 /**
+ * İşlem durumu
+ */
+export type TransactionStatus = 'completed' | 'pending';
+
+/**
  * Gelir tipi
  */
 export interface Income {
   id: string;
   type: 'salary' | 'additional';
   category: IncomeCategory;
+  categoryId?: string;
   amount: number;
   description?: string;
+  date: string;
   isRecurring: boolean;
+  status: TransactionStatus;
+  expectedDate?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,6 +40,8 @@ export interface Expense {
   amount: number;
   note?: string;
   date: string;
+  status: TransactionStatus;
+  expectedDate?: string;
   createdAt: string;
   updatedAt: string;
 }

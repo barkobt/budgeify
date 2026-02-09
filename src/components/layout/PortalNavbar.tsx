@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
+import { PiggyBank } from 'lucide-react';
 
 type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
 
@@ -53,8 +53,10 @@ export const PortalNavbar: React.FC<PortalNavbarProps> = ({ activeTab = 'dashboa
           className="flex items-center gap-2 transition-transform duration-200 hover:scale-105 active:scale-95"
           aria-label="Dashboard ana ekranına dön"
         >
-          <NeonWalletIcon size={24} style={{ filter: 'drop-shadow(0 0 6px rgba(0,240,255,0.5))' }} />
-          <span className="text-[15px] font-bold tracking-widest text-gradient-neon select-none">
+          <div className="logo-icon-gradient">
+            <PiggyBank size={22} className="text-[#9d00ff]" strokeWidth={2.2} />
+          </div>
+          <span className="text-[15px] font-black uppercase tracking-widest text-gradient-logo select-none">
             Budgeify
           </span>
         </button>

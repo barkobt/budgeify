@@ -24,9 +24,10 @@ import { INCOME_ICON_MAP } from '@/lib/category-icons';
 interface MainSalaryFormProps {
   editingIncome?: Income | null;
   onCancelEdit?: () => void;
+  onSuccess?: () => void;
 }
 
-export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, onCancelEdit }) => {
+export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, onCancelEdit, onSuccess }) => {
   const { addIncome, currency } = useBudgetStore();
   const dataSync = useDataSyncOptional();
   const symbol = getCurrencySymbol(currency);
@@ -77,6 +78,7 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
         amount: parseFloat(amount),
         description: description.trim() || undefined,
         isRecurring,
+        date: new Date().toISOString().split('T')[0],
       };
 
       if (editingIncome && dataSync) {
@@ -99,7 +101,9 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
             category,
             amount: parseFloat(amount),
             description: description.trim() || undefined,
+            date: new Date().toISOString().split('T')[0],
             isRecurring,
+            status: 'completed',
             createdAt: getCurrentISODate(),
             updatedAt: getCurrentISODate(),
           });
@@ -115,7 +119,10 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
       }
 
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onSuccess?.();
+      }, 1500);
     } catch (error) {
       reportError(error instanceof Error ? error : new Error(String(error)), { context: 'MainSalaryForm' });
       setServerError(error instanceof Error ? error.message : 'Gelir kaydedilirken bir hata oluştu');

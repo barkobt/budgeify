@@ -27,11 +27,13 @@ import {
   createGoal as serverCreateGoal,
   updateIncome as serverUpdateIncome,
   updateExpense as serverUpdateExpense,
+  updateGoal as serverUpdateGoal,
   deleteIncome as serverDeleteIncome,
   deleteExpense as serverDeleteExpense,
   deleteGoal as serverDeleteGoal,
   addToGoal as serverAddToGoal,
 } from '@/actions';
+import type { TransactionStatus } from '@/types';
 
 interface DataSyncContextType {
   isLoading: boolean;
@@ -40,11 +42,12 @@ interface DataSyncContextType {
   lastError: string | null;
   clearError: () => void;
   syncData: () => Promise<void>;
-  createIncome: (data: { amount: number; description?: string; categoryId?: string; isRecurring?: boolean }) => Promise<void>;
-  createExpense: (data: { amount: number; note?: string; categoryId?: string }) => Promise<void>;
+  createIncome: (data: { amount: number; description?: string; categoryId?: string; isRecurring?: boolean; date?: string; status?: TransactionStatus; expectedDate?: string }) => Promise<void>;
+  createExpense: (data: { amount: number; note?: string; categoryId?: string; date?: string; status?: TransactionStatus; expectedDate?: string }) => Promise<void>;
   createGoal: (data: { name: string; targetAmount: number; icon: string; targetDate?: Date }) => Promise<void>;
-  updateIncome: (id: string, data: { amount?: number; description?: string; categoryId?: string; isRecurring?: boolean }) => Promise<void>;
-  updateExpense: (id: string, data: { amount?: number; note?: string; categoryId?: string }) => Promise<void>;
+  updateIncome: (id: string, data: { amount?: number; description?: string; categoryId?: string; isRecurring?: boolean; status?: TransactionStatus; expectedDate?: string | null }) => Promise<void>;
+  updateExpense: (id: string, data: { amount?: number; note?: string; categoryId?: string; status?: TransactionStatus; expectedDate?: string | null }) => Promise<void>;
+  updateGoal: (id: string, data: { name?: string; targetAmount?: number; icon?: string; targetDate?: Date | null }) => Promise<void>;
   removeIncome: (id: string) => Promise<void>;
   removeExpense: (id: string) => Promise<void>;
   removeGoal: (id: string) => Promise<void>;
@@ -83,13 +86,24 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         getIncomes(),
         getExpenses(),
         getGoals(),
-        getCategories(),
-      ]) as [Awaited<ReturnType<typeof getIncomes>>, Awaited<ReturnType<typeof getExpenses>>, Awaited<ReturnType<typeof getGoals>>, unknown];
+      ]);
+
+      // Fetch server categories separately (returns raw array, not ActionResult)
+      let serverCatsRaw: Awaited<ReturnType<typeof getCategories>> = [];
+      try { serverCatsRaw = await getCategories(); } catch { /* ignore */ }
 
       const serverIncomes = incomesResult.success ? incomesResult.data : [];
       const serverExpenses = expensesResult.success ? expensesResult.data : [];
       const serverGoals = goalsResult.success ? goalsResult.data : [];
       const pendingDeletes = pendingDeletesRef.current;
+
+      // Sync server categories for UUID resolution
+      if (serverCatsRaw.length > 0) {
+        const serverCats = serverCatsRaw.map((c) => ({
+          id: c.id, name: c.name, icon: c.icon, color: c.color, type: c.type as 'income' | 'expense',
+        }));
+        useBudgetStore.getState().setServerCategories(serverCats);
+      }
 
       const localIncomes = serverIncomes
         .filter((income) => !pendingDeletes.has(income.id))
@@ -97,9 +111,13 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
           id: income.id,
           type: 'salary' as const,
           category: 'salary' as const,
+          categoryId: income.categoryId ?? undefined,
           amount: parseFloat(income.amount),
           description: income.description ?? undefined,
+          date: income.date.toISOString().split('T')[0],
           isRecurring: income.isRecurring,
+          status: (income.status ?? 'completed') as TransactionStatus,
+          expectedDate: income.expectedDate?.toISOString().split('T')[0],
           createdAt: income.createdAt.toISOString(),
           updatedAt: income.updatedAt.toISOString(),
         }));
@@ -112,6 +130,8 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
           amount: parseFloat(expense.amount),
           note: expense.note ?? undefined,
           date: expense.date.toISOString().split('T')[0],
+          status: (expense.status ?? 'completed') as TransactionStatus,
+          expectedDate: expense.expectedDate?.toISOString().split('T')[0],
           createdAt: expense.createdAt.toISOString(),
           updatedAt: expense.updatedAt.toISOString(),
         }));
@@ -161,13 +181,24 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         getIncomes(),
         getExpenses(),
         getGoals(),
-        getCategories(),
-      ]) as [Awaited<ReturnType<typeof getIncomes>>, Awaited<ReturnType<typeof getExpenses>>, Awaited<ReturnType<typeof getGoals>>, unknown];
+      ]);
+
+      // Fetch server categories separately (returns raw array, not ActionResult)
+      let serverCatsRaw: Awaited<ReturnType<typeof getCategories>> = [];
+      try { serverCatsRaw = await getCategories(); } catch { /* ignore */ }
 
       // Extract data from ActionResult — fallback to empty arrays on failure
       const serverIncomes = incomesResult.success ? incomesResult.data : [];
       const serverExpenses = expensesResult.success ? expensesResult.data : [];
       const serverGoals = goalsResult.success ? goalsResult.data : [];
+
+      // Sync server categories for UUID resolution
+      if (serverCatsRaw.length > 0) {
+        const serverCats = serverCatsRaw.map((c) => ({
+          id: c.id, name: c.name, icon: c.icon, color: c.color, type: c.type as 'income' | 'expense',
+        }));
+        useBudgetStore.getState().setServerCategories(serverCats);
+      }
 
       const pendingDeletes = pendingDeletesRef.current;
 
@@ -177,9 +208,13 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
           id: income.id,
           type: 'salary' as const,
           category: 'salary' as const,
+          categoryId: income.categoryId ?? undefined,
           amount: parseFloat(income.amount),
           description: income.description ?? undefined,
+          date: income.date.toISOString().split('T')[0],
           isRecurring: income.isRecurring,
+          status: (income.status ?? 'completed') as TransactionStatus,
+          expectedDate: income.expectedDate?.toISOString().split('T')[0],
           createdAt: income.createdAt.toISOString(),
           updatedAt: income.updatedAt.toISOString(),
         }));
@@ -192,6 +227,8 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
           amount: parseFloat(expense.amount),
           note: expense.note ?? undefined,
           date: expense.date.toISOString().split('T')[0],
+          status: (expense.status ?? 'completed') as TransactionStatus,
+          expectedDate: expense.expectedDate?.toISOString().split('T')[0],
           createdAt: expense.createdAt.toISOString(),
           updatedAt: expense.updatedAt.toISOString(),
         }));
@@ -276,6 +313,9 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     description?: string;
     categoryId?: string;
     isRecurring?: boolean;
+    date?: string;
+    status?: TransactionStatus;
+    expectedDate?: string;
   }) => {
     const tempId = `temp_${Date.now()}`;
     const now = new Date().toISOString();
@@ -284,15 +324,26 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       id: tempId,
       type: 'salary' as const,
       category: 'salary' as const,
+      categoryId: data.categoryId,
       amount: data.amount,
       description: data.description,
+      date: data.date || now.split('T')[0],
       isRecurring: data.isRecurring ?? false,
+      status: (data.status ?? 'completed') as TransactionStatus,
+      expectedDate: data.expectedDate,
       createdAt: now,
       updatedAt: now,
     };
     store.addIncome(localIncome);
 
-    const result = await serverCreateIncome(data);
+    // Resolve category to server UUID if needed
+    const serverData = {
+      ...data,
+      date: data.date ? new Date(data.date) : undefined,
+      expectedDate: data.expectedDate ? new Date(data.expectedDate) : undefined,
+    };
+
+    const result = await serverCreateIncome(serverData);
     if (!result.success) {
       store.deleteIncome(tempId);
       setLastError(result.error);
@@ -316,23 +367,40 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     amount: number;
     note?: string;
     categoryId?: string;
+    date?: string;
+    status?: TransactionStatus;
+    expectedDate?: string;
   }) => {
     const tempId = `temp_${Date.now()}`;
     const now = new Date().toISOString();
-    const today = now.split('T')[0];
+    const today = data.date || now.split('T')[0];
+
+    // Resolve local category ID to server UUID
+    const resolvedCategoryId = data.categoryId
+      ? (useBudgetStore.getState().resolveServerCategoryId(data.categoryId) ?? data.categoryId)
+      : undefined;
 
     const localExpense = {
       id: tempId,
-      categoryId: data.categoryId ?? 'cat_other',
+      categoryId: resolvedCategoryId ?? 'cat_other',
       amount: data.amount,
       note: data.note,
       date: today,
+      status: (data.status ?? 'completed') as TransactionStatus,
+      expectedDate: data.expectedDate,
       createdAt: now,
       updatedAt: now,
     };
     store.addExpense(localExpense);
 
-    const result = await serverCreateExpense(data);
+    const serverData = {
+      ...data,
+      categoryId: resolvedCategoryId,
+      date: data.date ? new Date(data.date) : undefined,
+      expectedDate: data.expectedDate ? new Date(data.expectedDate) : undefined,
+    };
+
+    const result = await serverCreateExpense(serverData);
     if (!result.success) {
       store.deleteExpense(tempId);
       setLastError(result.error);
@@ -398,18 +466,29 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     description?: string;
     categoryId?: string;
     isRecurring?: boolean;
+    status?: TransactionStatus;
+    expectedDate?: string | null;
   }) => {
     // Snapshot for rollback
     const current = useBudgetStore.getState().incomes.find((i) => i.id === id);
     if (!current) return;
 
-    // Optimistic update
-    store.updateIncome(id, data);
+    // Optimistic update — convert null to undefined for store
+    const storeData = {
+      ...data,
+      expectedDate: data.expectedDate === null ? undefined : data.expectedDate,
+    };
+    store.updateIncome(id, storeData);
 
     // Skip server call for temp IDs
     if (id.startsWith('temp_')) return;
 
-    const result = await serverUpdateIncome(id, data);
+    // Server expects Date objects
+    const serverData = {
+      ...data,
+      expectedDate: data.expectedDate === null ? null : data.expectedDate ? new Date(data.expectedDate) : undefined,
+    };
+    const result = await serverUpdateIncome(id, serverData);
     if (!result.success) {
       // Rollback
       store.updateIncome(id, current);
@@ -427,18 +506,29 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     amount?: number;
     note?: string;
     categoryId?: string;
+    status?: TransactionStatus;
+    expectedDate?: string | null;
   }) => {
     // Snapshot for rollback
     const current = useBudgetStore.getState().expenses.find((e) => e.id === id);
     if (!current) return;
 
-    // Optimistic update
-    store.updateExpense(id, data);
+    // Optimistic update — convert null to undefined for store
+    const storeData = {
+      ...data,
+      expectedDate: data.expectedDate === null ? undefined : data.expectedDate,
+    };
+    store.updateExpense(id, storeData);
 
     // Skip server call for temp IDs
     if (id.startsWith('temp_')) return;
 
-    const result = await serverUpdateExpense(id, data);
+    // Server expects Date objects
+    const serverData = {
+      ...data,
+      expectedDate: data.expectedDate === null ? null : data.expectedDate ? new Date(data.expectedDate) : undefined,
+    };
+    const result = await serverUpdateExpense(id, serverData);
     if (!result.success) {
       // Rollback
       store.updateExpense(id, current);
@@ -523,6 +613,34 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
 
   const removeGoal = deleteGoal;
 
+  /**
+   * Update Goal — Optimistic + ActionResult
+   */
+  const updateGoalFn = useCallback(async (id: string, data: {
+    name?: string;
+    targetAmount?: number;
+    icon?: string;
+    targetDate?: Date | null;
+  }) => {
+    const current = useBudgetStore.getState().goals.find((g) => g.id === id);
+    if (!current) return;
+
+    store.updateGoal(id, {
+      ...data,
+      targetDate: data.targetDate === null ? undefined : data.targetDate?.toISOString().split('T')[0],
+    });
+
+    if (!id.startsWith('temp_')) {
+      const result = await serverUpdateGoal(id, data);
+      if (!result.success) {
+        store.updateGoal(id, current);
+        setLastError(result.error);
+      } else {
+        await syncData();
+      }
+    }
+  }, [store, syncData]);
+
   const addToGoal = useCallback(async (id: string, amount: number) => {
     const currentGoals = useBudgetStore.getState().goals;
     const goalToUpdate = currentGoals.find((g) => g.id === id);
@@ -558,6 +676,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     createGoal,
     updateIncome,
     updateExpense,
+    updateGoal: updateGoalFn,
     removeIncome,
     removeExpense,
     removeGoal,

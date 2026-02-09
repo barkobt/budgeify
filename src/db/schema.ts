@@ -51,6 +51,15 @@ export const categoryTypeEnum = pgEnum('category_type', [
   'expense',
 ]);
 
+/**
+ * Transaction Status Enum
+ * İşlem durumu: tamamlandı veya bekliyor
+ */
+export const transactionStatusEnum = pgEnum('transaction_status', [
+  'completed',
+  'pending',
+]);
+
 // ========================================
 // TABLES - Veritabanı tabloları
 // ========================================
@@ -119,6 +128,8 @@ export const incomes = pgTable('incomes', {
   description: text('description'),
   date: timestamp('date').defaultNow().notNull(),
   isRecurring: boolean('is_recurring').default(false).notNull(),
+  status: transactionStatusEnum('status').default('completed').notNull(),
+  expectedDate: timestamp('expected_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -142,6 +153,8 @@ export const expenses = pgTable('expenses', {
   amount: decimal('amount', { precision: 12, scale: 2 }).notNull(),
   note: text('note'),
   date: timestamp('date').defaultNow().notNull(),
+  status: transactionStatusEnum('status').default('completed').notNull(),
+  expectedDate: timestamp('expected_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

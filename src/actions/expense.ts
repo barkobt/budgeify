@@ -32,6 +32,8 @@ const CreateExpenseSchema = z.object({
   note: z.string().max(200).optional(),
   categoryId: z.string().min(1).optional(),
   date: z.coerce.date().optional(),
+  status: z.enum(['completed', 'pending']).optional(),
+  expectedDate: z.coerce.date().optional(),
 });
 
 const UpdateExpenseSchema = z.object({
@@ -39,6 +41,8 @@ const UpdateExpenseSchema = z.object({
   note: z.string().max(200).optional(),
   categoryId: z.string().min(1).optional(),
   date: z.coerce.date().optional(),
+  status: z.enum(['completed', 'pending']).optional(),
+  expectedDate: z.coerce.date().nullable().optional(),
 });
 
 const ExpenseIdSchema = z.string().uuid('Geçersiz gider ID');
@@ -148,6 +152,8 @@ export async function createExpense(input: CreateExpenseInput): Promise<ActionRe
       note: parsed.data.note ?? null,
       categoryId: parsed.data.categoryId ?? null,
       date: parsed.data.date ?? new Date(),
+      status: parsed.data.status ?? 'completed',
+      expectedDate: parsed.data.expectedDate ?? null,
     };
 
     const [created] = await db.insert(expenses).values(newExpense).returning();
@@ -192,6 +198,8 @@ export async function updateExpense(id: string, input: UpdateExpenseInput): Prom
     if (parsed.data.note !== undefined) updateData.note = parsed.data.note;
     if (parsed.data.categoryId !== undefined) updateData.categoryId = parsed.data.categoryId;
     if (parsed.data.date !== undefined) updateData.date = parsed.data.date;
+    if (parsed.data.status !== undefined) updateData.status = parsed.data.status;
+    if (parsed.data.expectedDate !== undefined) updateData.expectedDate = parsed.data.expectedDate;
 
     const [updated] = await db
       .update(expenses)

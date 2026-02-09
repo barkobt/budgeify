@@ -20,7 +20,11 @@ import { getCategoryIcon } from '@/lib/category-icons';
  * - Auth varsa: DataSyncProvider kullanır (server persistence)
  * - Auth yoksa: Sadece Zustand kullanır (localStorage demo mode)
  */
-export const ExpenseForm = () => {
+interface ExpenseFormProps {
+  onSuccess?: () => void;
+}
+
+export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
   const { addExpense } = useBudgetStore();
   const dataSync = useDataSyncOptional();
 
@@ -63,6 +67,7 @@ export const ExpenseForm = () => {
         amount: parseFloat(amount),
         note: note.trim() || undefined,
         categoryId,
+        date,
       };
 
       // Use server persistence if available, otherwise fall back to local storage
@@ -76,6 +81,7 @@ export const ExpenseForm = () => {
           amount: parseFloat(amount),
           note: note.trim() || undefined,
           date,
+          status: 'completed',
           createdAt: getCurrentISODate(),
           updatedAt: getCurrentISODate(),
         });
@@ -87,7 +93,10 @@ export const ExpenseForm = () => {
       setNote('');
       setDate(getTodayDate());
 
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onSuccess?.();
+      }, 1500);
     } catch (error) {
       reportError(error instanceof Error ? error : new Error(String(error)), { context: 'ExpenseForm' });
       // Show error state here if needed

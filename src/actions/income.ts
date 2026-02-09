@@ -33,6 +33,8 @@ const CreateIncomeSchema = z.object({
   categoryId: z.string().min(1).optional(),
   date: z.coerce.date().optional(),
   isRecurring: z.boolean().optional(),
+  status: z.enum(['completed', 'pending']).optional(),
+  expectedDate: z.coerce.date().optional(),
 });
 
 const UpdateIncomeSchema = z.object({
@@ -41,6 +43,8 @@ const UpdateIncomeSchema = z.object({
   categoryId: z.string().min(1).optional(),
   date: z.coerce.date().optional(),
   isRecurring: z.boolean().optional(),
+  status: z.enum(['completed', 'pending']).optional(),
+  expectedDate: z.coerce.date().nullable().optional(),
 });
 
 const IncomeIdSchema = z.string().uuid('Geçersiz gelir ID');
@@ -150,6 +154,8 @@ export async function createIncome(input: CreateIncomeInput): Promise<ActionResu
       categoryId: parsed.data.categoryId ?? null,
       date: parsed.data.date ?? new Date(),
       isRecurring: parsed.data.isRecurring ?? false,
+      status: parsed.data.status ?? 'completed',
+      expectedDate: parsed.data.expectedDate ?? null,
     };
 
     const [created] = await db.insert(incomes).values(newIncome).returning();
@@ -195,6 +201,8 @@ export async function updateIncome(id: string, input: UpdateIncomeInput): Promis
     if (parsed.data.categoryId !== undefined) updateData.categoryId = parsed.data.categoryId;
     if (parsed.data.date !== undefined) updateData.date = parsed.data.date;
     if (parsed.data.isRecurring !== undefined) updateData.isRecurring = parsed.data.isRecurring;
+    if (parsed.data.status !== undefined) updateData.status = parsed.data.status;
+    if (parsed.data.expectedDate !== undefined) updateData.expectedDate = parsed.data.expectedDate;
 
     const [updated] = await db
       .update(incomes)

@@ -32,7 +32,9 @@ export const StoreTestPanel = () => {
       category: 'salary',
       amount: 25000,
       description: 'Test Maaş',
+      date: getTodayDate(),
       isRecurring: true,
+      status: 'completed',
       createdAt: getCurrentISODate(),
       updatedAt: getCurrentISODate(),
     });
@@ -45,6 +47,7 @@ export const StoreTestPanel = () => {
       amount: 150,
       note: 'Test Yemek Harcaması',
       date: getTodayDate(),
+      status: 'completed',
       createdAt: getCurrentISODate(),
       updatedAt: getCurrentISODate(),
     });

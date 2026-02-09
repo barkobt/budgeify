@@ -21,8 +21,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   X,
+  PiggyBank,
 } from 'lucide-react';
-import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DockIcon = React.ComponentType<any>;
@@ -39,7 +39,7 @@ interface DockBarProps {
 }
 
 const navItems: { name: string; icon: DockIcon; tab: TabType }[] = [
-  { name: 'Dashboard', icon: NeonWalletIcon, tab: 'dashboard' },
+  { name: 'Dashboard', icon: PiggyBank, tab: 'dashboard' },
   { name: 'İşlemler', icon: TrendingUp, tab: 'transactions' },
 ];
 
@@ -205,7 +205,7 @@ interface DockItemProps {
 }
 
 const DockItem: React.FC<DockItemProps> = ({ icon: Icon, label, isActive, onClick }) => {
-  const isNeonWallet = Icon === NeonWalletIcon;
+  const isPiggyBank = Icon === PiggyBank;
 
   return (
     <motion.button
@@ -223,22 +223,18 @@ const DockItem: React.FC<DockItemProps> = ({ icon: Icon, label, isActive, onClic
       >
         <Icon
           size={22}
-          strokeWidth={1.5}
+          strokeWidth={isPiggyBank ? 2.2 : 1.5}
           className={
-            isNeonWallet
-              ? ''
+            isPiggyBank
+              ? isActive ? 'text-[#9d00ff]' : 'text-zinc-500'
               : isActive
                 ? 'text-cyan-400'
                 : 'text-zinc-500'
           }
           style={
-            isNeonWallet
-              ? isActive
-                ? { filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))', transition: 'filter 0.2s ease' }
-                : { filter: 'grayscale(1) brightness(0.5)', transition: 'filter 0.2s ease' }
-              : isActive
-                ? { filter: 'drop-shadow(0 0 4px rgba(0,240,255,0.5))' }
-                : {}
+            isActive
+              ? { filter: isPiggyBank ? 'drop-shadow(0 0 6px rgba(157,0,255,0.5))' : 'drop-shadow(0 0 4px rgba(0,240,255,0.5))' }
+              : {}
           }
         />
       </motion.div>

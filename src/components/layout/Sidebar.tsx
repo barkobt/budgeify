@@ -22,8 +22,8 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  PiggyBank,
 } from 'lucide-react';
-import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 
 type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
 
@@ -69,20 +69,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
         className="sidebar-logo-btn flex items-center gap-3 px-4 py-6 transition-transform duration-200 hover:scale-[1.02] active:scale-95"
         aria-label="Dashboard ana ekranına dön"
       >
-        <NeonWalletIcon
-          size={32}
-          style={{ filter: 'drop-shadow(0 0 8px rgba(0,240,255,0.4))', flexShrink: 0 }}
-        />
+        <div className="logo-icon-gradient" style={{ flexShrink: 0 }}>
+          <PiggyBank size={28} className="text-[#9d00ff]" strokeWidth={2.2} />
+        </div>
         <AnimatePresence>
           {expanded && (
             <motion.span
-              className="text-lg font-bold font-display tracking-wide text-gradient-brand whitespace-nowrap select-none"
+              className="text-base font-black uppercase tracking-widest text-gradient-logo whitespace-nowrap select-none"
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: 'auto' }}
               exit={{ opacity: 0, width: 0 }}
               transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              Budgeify
+              BUDGEIFY
             </motion.span>
           )}
         </AnimatePresence>

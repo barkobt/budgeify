@@ -13,6 +13,15 @@ import { DEFAULT_CATEGORIES } from '@/constants/categories';
 /**
  * Main Budget Store State Interface
  */
+/** Server category shape (UUID id + name) */
+export interface ServerCategory {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  type: 'income' | 'expense';
+}
+
 interface BudgetStoreState {
   // ==================== INCOME STATE ====================
   incomes: Income[];
@@ -42,12 +51,25 @@ interface BudgetStoreState {
 
   // ==================== CATEGORY STATE ====================
   categories: Category[];
+  serverCategories: ServerCategory[];
+  setServerCategories: (cats: ServerCategory[]) => void;
   getCategoryById: (id: string) => Category | undefined;
   getActiveCategories: () => Category[];
+  resolveServerCategoryId: (localIdOrName: string) => string | undefined;
+
+  // ==================== MONTH NAVIGATION ====================
+  selectedMonth: { year: number; month: number };
+  setSelectedMonth: (year: number, month: number) => void;
+  getMonthlyIncomes: () => Income[];
+  getMonthlyExpenses: () => Expense[];
+  getMonthlyBalance: () => number;
 
   // ==================== CURRENCY STATE ====================
   currency: CurrencyCode;
   setCurrency: (currency: CurrencyCode) => void;
+
+  // ==================== SEARCH ====================
+  searchAll: (query: string) => Array<{ type: 'income' | 'expense' | 'goal'; id: string; label: string; amount: number; date?: string; categoryName?: string }>;
 
   // ==================== UTILITY ACTIONS ====================
   getBalance: () => number;
@@ -58,12 +80,15 @@ interface BudgetStoreState {
 /**
  * Initial state
  */
+const now = new Date();
 const initialState = {
-  incomes: [],
-  expenses: [],
-  goals: [],
+  incomes: [] as Income[],
+  expenses: [] as Expense[],
+  goals: [] as Goal[],
   categories: DEFAULT_CATEGORIES,
+  serverCategories: [] as ServerCategory[],
   currency: 'TRY' as CurrencyCode,
+  selectedMonth: { year: now.getFullYear(), month: now.getMonth() },
 };
 
 /**
@@ -177,9 +202,16 @@ export const useBudgetStore = create<BudgetStoreState>()(
       },
 
       // ==================== CATEGORY ACTIONS ====================
+      setServerCategories: (cats) =>
+        set(() => ({ serverCategories: cats })),
+
       getCategoryById: (id) => {
-        const { categories } = get();
-        return categories.find((category) => category.id === id);
+        const { categories, serverCategories } = get();
+        const local = categories.find((category) => category.id === id);
+        if (local) return local;
+        const server = serverCategories.find((c) => c.id === id);
+        if (server) return { id: server.id, name: server.name, icon: server.icon, color: server.color, isDefault: true, isActive: true };
+        return undefined;
       },
 
       getActiveCategories: () => {
@@ -187,9 +219,78 @@ export const useBudgetStore = create<BudgetStoreState>()(
         return categories.filter((category) => category.isActive);
       },
 
+      resolveServerCategoryId: (localIdOrName) => {
+        const { serverCategories } = get();
+        const byId = serverCategories.find((c) => c.id === localIdOrName);
+        if (byId) return byId.id;
+        const localCat = DEFAULT_CATEGORIES.find((c) => c.id === localIdOrName);
+        const nameToFind = localCat ? localCat.name : localIdOrName;
+        const byName = serverCategories.find((c) => c.name === nameToFind);
+        return byName?.id;
+      },
+
+      // ==================== MONTH NAVIGATION ====================
+      setSelectedMonth: (year, month) =>
+        set(() => ({ selectedMonth: { year, month } })),
+
+      getMonthlyIncomes: () => {
+        const { incomes, selectedMonth } = get();
+        return incomes.filter((inc) => {
+          const d = new Date(inc.date);
+          return d.getFullYear() === selectedMonth.year && d.getMonth() === selectedMonth.month;
+        });
+      },
+
+      getMonthlyExpenses: () => {
+        const { expenses, selectedMonth } = get();
+        return expenses.filter((exp) => {
+          const d = new Date(exp.date);
+          return d.getFullYear() === selectedMonth.year && d.getMonth() === selectedMonth.month;
+        });
+      },
+
+      getMonthlyBalance: () => {
+        const { getMonthlyIncomes, getMonthlyExpenses } = get();
+        const monthIncome = getMonthlyIncomes().reduce((s, i) => s + i.amount, 0);
+        const monthExpense = getMonthlyExpenses().reduce((s, e) => s + e.amount, 0);
+        return monthIncome - monthExpense;
+      },
+
       // ==================== CURRENCY ACTIONS ====================
       setCurrency: (currency) =>
         set(() => ({ currency })),
+
+      // ==================== SEARCH ====================
+      searchAll: (query) => {
+        const q = query.toLowerCase().trim();
+        if (!q) return [];
+        const { incomes, expenses, goals, getCategoryById: getCat } = get();
+        const results: Array<{ type: 'income' | 'expense' | 'goal'; id: string; label: string; amount: number; date?: string; categoryName?: string }> = [];
+
+        incomes.forEach((inc) => {
+          const desc = inc.description || '';
+          if (desc.toLowerCase().includes(q) || inc.category.toLowerCase().includes(q)) {
+            results.push({ type: 'income', id: inc.id, label: desc || 'Gelir', amount: inc.amount, date: inc.date, categoryName: inc.category });
+          }
+        });
+
+        expenses.forEach((exp) => {
+          const cat = getCat(exp.categoryId);
+          const note = exp.note || '';
+          const catName = cat?.name || '';
+          if (note.toLowerCase().includes(q) || catName.toLowerCase().includes(q)) {
+            results.push({ type: 'expense', id: exp.id, label: note || catName || 'Gider', amount: exp.amount, date: exp.date, categoryName: catName });
+          }
+        });
+
+        goals.forEach((g) => {
+          if (g.name.toLowerCase().includes(q)) {
+            results.push({ type: 'goal', id: g.id, label: g.name, amount: g.targetAmount });
+          }
+        });
+
+        return results;
+      },
 
       // ==================== UTILITY ACTIONS ====================
       getBalance: () => {
@@ -212,7 +313,7 @@ export const useBudgetStore = create<BudgetStoreState>()(
     }),
     {
       name: 'budgeify-store',
-      version: 2,
+      version: 3,
       skipHydration: true,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as Record<string, unknown>;
@@ -228,6 +329,27 @@ export const useBudgetStore = create<BudgetStoreState>()(
               return cat;
             });
           }
+        }
+        if (version < 3) {
+          // v3: Add date + status to existing incomes/expenses
+          const incs = state.incomes as Array<Record<string, unknown>> | undefined;
+          if (incs) {
+            state.incomes = incs.map((inc) => ({
+              ...inc,
+              date: inc.date || inc.createdAt || new Date().toISOString(),
+              status: inc.status || 'completed',
+            }));
+          }
+          const exps = state.expenses as Array<Record<string, unknown>> | undefined;
+          if (exps) {
+            state.expenses = exps.map((exp) => ({
+              ...exp,
+              status: exp.status || 'completed',
+            }));
+          }
+          state.serverCategories = [];
+          const n = new Date();
+          state.selectedMonth = { year: n.getFullYear(), month: n.getMonth() };
         }
         return state as unknown as BudgetStoreState;
       },
