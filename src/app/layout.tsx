@@ -75,8 +75,8 @@ export default function RootLayout({
     <html lang="tr" className={`${inter.variable} ${plusJakarta.variable}`}>
       <head>
         {/* P8: Preconnect hints — reduce connection latency for critical third-party origins */}
-        <link rel="preconnect" href="https://clerk.budgeify.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://clerk.budgeify.com" />
+        <link rel="preconnect" href="https://clerk.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://clerk.com" />
         <link rel="preconnect" href="https://img.clerk.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://img.clerk.com" />
       </head>

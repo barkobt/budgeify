@@ -5,11 +5,11 @@
  *
  * Responsive dashboard:
  * - Desktop (lg+): Stitch 3 inspired 12-col grid with DashboardHeader,
- *   DesktopBalanceHero (SVG chart), DesktopAICard, RecentTransactions, MiniGoalGrid.
- * - Mobile (< lg): Sovereign bento grid preserved (OracleHero, BentoGrid, DockBar).
+ *   DesktopBalanceHero (SVG chart), RecentTransactions, MiniGoalGrid.
+ * - Mobile (< lg): Sovereign bento grid preserved (BentoGrid, DockBar).
  *
  * Shared: Sidebar (lg+), PortalNavbar + DockBar (mobile), activeTab state,
- * Drawers, AI Assistant. All data from useBudgetStore.
+ * Drawers. All data from useBudgetStore.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -28,7 +28,6 @@ import {
   staggerItem,
   fadeInUp,
 } from '@/lib/motion';
-import { features } from '@/lib/env';
 import type { Income, CurrencyCode } from '@/types';
 import type { MergedTransaction } from '@/components/features/transactions/TransactionTable';
 import { exportToCSV, exportToPDF } from '@/lib/export';
@@ -82,11 +81,6 @@ const GoalForm = dynamic(
   () => import('@/components/features/goals/GoalForm').then((mod) => ({ default: mod.GoalForm })),
   { ssr: false }
 );
-const AIAssistant = features.oracle ? dynamic(
-  () => import('@/components/features/ai/AIAssistant').then((mod) => ({ default: mod.AIAssistant })),
-  { ssr: false }
-) : () => null;
-
 // M3: Desktop Dashboard Components (lg+ only)
 const DashboardHeader = dynamic(
   () => import('@/components/features/dashboard/DashboardHeader').then((mod) => ({ default: mod.DashboardHeader })),
@@ -104,15 +98,6 @@ const MiniGoalGrid = dynamic(
   () => import('@/components/features/dashboard/MiniGoalGrid').then((mod) => ({ default: mod.MiniGoalGrid })),
   { ssr: false }
 );
-const AIBoxShell = dynamic(
-  () => import('@/components/features/dashboard/AIBoxShell').then((mod) => ({ default: mod.AIBoxShell })),
-  { ssr: false }
-);
-const OracleChat = features.oracle ? dynamic(
-  () => import('@/components/features/dashboard/OracleChat').then((mod) => ({ default: mod.OracleChat })),
-  { ssr: false }
-) : () => null;
-
 // M5: Desktop Goals Full-Page (lg+ only)
 const GoalsPage = dynamic(
   () => import('@/components/features/goals/GoalsPage').then((mod) => ({ default: mod.GoalsPage })),
@@ -179,8 +164,6 @@ export default function DashboardClient() {
   const [showPreflight, setShowPreflight] = useState(true);
   const [isOverlayActive, setIsOverlayActive] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [isDesktopLg, setIsDesktopLg] = useState(false);
-  const [showDebugBadge, setShowDebugBadge] = useState(false);
 
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
@@ -214,19 +197,6 @@ export default function DashboardClient() {
     const handler = () => setShowCommandPalette(true);
     window.addEventListener('open:command-palette', handler);
     return () => window.removeEventListener('open:command-palette', handler);
-  }, []);
-
-  // Debug badge visibility and desktop media state
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    setShowDebugBadge(searchParams.get('debug') === '1');
-
-    const mediaQuery = window.matchMedia('(min-width: 1024px)');
-    const updateIsDesktop = () => setIsDesktopLg(mediaQuery.matches);
-    updateIsDesktop();
-    mediaQuery.addEventListener('change', updateIsDesktop);
-
-    return () => mediaQuery.removeEventListener('change', updateIsDesktop);
   }, []);
 
   // Track overlay state for DockBar visibility (AI Assistant + Drawers)
@@ -319,7 +289,7 @@ export default function DashboardClient() {
             <span className="preflight-text preflight-text-1">Sistemler uyanıyor...</span>
             <span className="preflight-text preflight-text-2">Finansal çekirdek hazırlanıyor...</span>
             <span className="preflight-text preflight-text-3">Veriler senkronize ediliyor...</span>
-            <span className="preflight-text preflight-text-4">Oracle aktif</span>
+            <span className="preflight-text preflight-text-4">Sistem hazır</span>
           </div>
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-32 h-0.5 rounded-full bg-white/6 overflow-hidden">
             <div className="loading-progress-bar" />
@@ -357,7 +327,7 @@ export default function DashboardClient() {
               <span className="preflight-text preflight-text-1">Sistemler uyanıyor...</span>
               <span className="preflight-text preflight-text-2">Finansal çekirdek hazırlanıyor...</span>
               <span className="preflight-text preflight-text-3">Veriler senkronize ediliyor...</span>
-              <span className="preflight-text preflight-text-4">Oracle aktif</span>
+              <span className="preflight-text preflight-text-4">Sistem hazır</span>
             </div>
             {/* Progress bar — neon gradient */}
             <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-32 h-0.5 rounded-full bg-white/6 overflow-hidden">
@@ -372,7 +342,7 @@ export default function DashboardClient() {
 
       <PageWrapper>
         <main id="main-content" className="min-h-screen pb-24 lg:pb-8 px-4 sm:px-6 lg:pl-72 lg:pr-8 lg:pt-6">
-          <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-5xl xl:max-w-6xl">
+          <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-6xl xl:max-w-7xl">
           {/* ========================================
               DASHBOARD TAB — Responsive: Desktop Grid + Mobile Bento
               ======================================== */}
@@ -390,49 +360,22 @@ export default function DashboardClient() {
                   onAddExpense={() => setOpenDrawer('expense')}
                 />
 
-                {showDebugBadge && (
-                  <div className="pointer-events-none fixed top-3 right-3 z-50 rounded-lg border border-white/15 bg-black/60 px-2 py-1 text-[10px] text-slate-200 backdrop-blur-sm">
-                    ORACLE: {features.oracle ? 'on' : 'off'} | AIBOX: {features.aiBox ? 'on' : 'off'} | isLg: {isDesktopLg ? 'true' : 'false'} | Mounted: {isMounted ? 'yes' : 'no'}
-                  </div>
-                )}
-
                 {/* 12-column grid */}
                 <div className="grid grid-cols-12 gap-4">
-                  {/* Total Balance */}
+                  {/* Total Balance — dominant row */}
                   <div className="col-span-12 min-h-90">
                     <DesktopBalanceHero />
                   </div>
 
-                  {/* Recent Transactions — col-span-7 */}
-                  <div className={features.aiBox ? 'col-span-5 min-h-80 min-w-0' : 'col-span-7 min-h-80 min-w-0'}>
+                  {/* Recent Transactions — wider than goals */}
+                  <div className="col-span-8 min-h-80">
                     <RecentTransactions onViewAll={() => setActiveTab('transactions')} />
                   </div>
 
-                  {/* Savings Goals — col-span-5 */}
-                  <div className={features.aiBox ? 'col-span-4 min-h-80 min-w-0' : 'col-span-5 min-h-80 min-w-0'}>
+                  {/* Savings Goals */}
+                  <div className="col-span-4 min-h-80">
                     <MiniGoalGrid onViewAll={() => setActiveTab('goals')} />
                   </div>
-
-                  {/* Recommendations — same row as Son İşlemler / Tasarruf Hedefleri */}
-                  {features.aiBox && (
-                    <div className="col-span-3 min-h-80 min-w-0">
-                      <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
-                        <div className="mb-3 min-w-0">
-                          <h2 className="text-sm font-semibold text-white">Öneriler</h2>
-                          <p className="text-[11px] text-slate-500">
-                            {features.oracle
-                              ? 'Oracle tarafından oluşturulan özet ve aksiyonlar'
-                              : 'Oracle kapalı: hafif öneri görünümü'}
-                          </p>
-                        </div>
-                        <div className="min-w-0 h-full">
-                          <AIBoxShell>
-                            {features.oracle ? <OracleChat /> : null}
-                          </AIBoxShell>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </motion.div>
             </div>
@@ -884,13 +827,6 @@ export default function DashboardClient() {
       >
         <BudgetAlertForm onSuccess={() => setShowAlertDrawer(false)} />
       </Drawer>
-
-      {/* AI Assistant — desktop only */}
-      {features.oracle && (
-        <div className="hidden lg:block">
-          <AIAssistant />
-        </div>
-      )}
 
       {/* M10: Command Palette (⌘K Global Search) */}
       <CommandPalette

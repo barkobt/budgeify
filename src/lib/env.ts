@@ -16,6 +16,8 @@ export const env = {
   // Clerk redirect URLs
   clerkSignInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? '/sign-in',
   clerkSignUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL ?? '/sign-up',
+  clerkAfterSignInUrl: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL ?? '/dashboard',
+  clerkAfterSignUpUrl: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL ?? '/dashboard',
   clerkSignInFallbackRedirectUrl:
     process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL ??
     process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL ??
@@ -25,7 +27,7 @@ export const env = {
     process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL ??
     '/dashboard',
 
-  // Feature flags
+  // Runtime checks
   get isClerkEnabled(): boolean {
     return !!(this.clerkPublishableKey && this.clerkSecretKey);
   },
@@ -36,8 +38,3 @@ export const env = {
     return process.env.NODE_ENV === 'production';
   },
 } as const;
-
-export const features = Object.freeze({
-  oracle: process.env.NEXT_PUBLIC_FEATURE_ORACLE === '1',
-  aiBox: process.env.NEXT_PUBLIC_FEATURE_AI_BOX === '1',
-});
