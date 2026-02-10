@@ -2,9 +2,12 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { WebVitalsReporter } from '@/components/ui/WebVitalsReporter';
+import { warnIfClerkTestKeyInProduction } from '@/lib/clerk-runtime-warning';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'sonner';
 import './globals.css';
+
+warnIfClerkTestKeyInProduction();
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
