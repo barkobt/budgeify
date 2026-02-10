@@ -33,4 +33,5 @@ export const env = {
 
 export const features = Object.freeze({
   oracle: process.env.NEXT_PUBLIC_FEATURE_ORACLE === '1',
+  aiBox: process.env.NEXT_PUBLIC_FEATURE_AI_BOX === '1',
 });
