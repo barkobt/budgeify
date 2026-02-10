@@ -104,8 +104,12 @@ const MiniGoalGrid = dynamic(
   () => import('@/components/features/dashboard/MiniGoalGrid').then((mod) => ({ default: mod.MiniGoalGrid })),
   { ssr: false }
 );
-const DesktopAICard = features.oracle ? dynamic(
-  () => import('@/components/features/dashboard/DesktopAICard').then((mod) => ({ default: mod.DesktopAICard })),
+const AIBoxShell = dynamic(
+  () => import('@/components/features/dashboard/AIBoxShell').then((mod) => ({ default: mod.AIBoxShell })),
+  { ssr: false }
+);
+const OracleChat = features.oracle ? dynamic(
+  () => import('@/components/features/dashboard/OracleChat').then((mod) => ({ default: mod.OracleChat })),
   { ssr: false }
 ) : () => null;
 
@@ -175,6 +179,8 @@ export default function DashboardClient() {
   const [showPreflight, setShowPreflight] = useState(true);
   const [isOverlayActive, setIsOverlayActive] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [isDesktopLg, setIsDesktopLg] = useState(false);
+  const [showDebugBadge, setShowDebugBadge] = useState(false);
 
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
@@ -208,6 +214,19 @@ export default function DashboardClient() {
     const handler = () => setShowCommandPalette(true);
     window.addEventListener('open:command-palette', handler);
     return () => window.removeEventListener('open:command-palette', handler);
+  }, []);
+
+  // Debug badge visibility and desktop media state
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setShowDebugBadge(searchParams.get('debug') === '1');
+
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const updateIsDesktop = () => setIsDesktopLg(mediaQuery.matches);
+    updateIsDesktop();
+    mediaQuery.addEventListener('change', updateIsDesktop);
+
+    return () => mediaQuery.removeEventListener('change', updateIsDesktop);
   }, []);
 
   // Track overlay state for DockBar visibility (AI Assistant + Drawers)
@@ -371,37 +390,49 @@ export default function DashboardClient() {
                   onAddExpense={() => setOpenDrawer('expense')}
                 />
 
+                {showDebugBadge && (
+                  <div className="pointer-events-none fixed top-3 right-3 z-50 rounded-lg border border-white/15 bg-black/60 px-2 py-1 text-[10px] text-slate-200 backdrop-blur-sm">
+                    ORACLE: {features.oracle ? 'on' : 'off'} | AIBOX: {features.aiBox ? 'on' : 'off'} | isLg: {isDesktopLg ? 'true' : 'false'} | Mounted: {isMounted ? 'yes' : 'no'}
+                  </div>
+                )}
+
                 {/* 12-column grid */}
                 <div className="grid grid-cols-12 gap-4">
-                  {/* Total Balance — col-span-8 */}
-                  <div className="col-span-8 min-h-90">
+                  {/* Total Balance */}
+                  <div className="col-span-12 min-h-90">
                     <DesktopBalanceHero />
                   </div>
 
-                  {/* AI Recommendations — col-span-4 */}
-                  {features.oracle && (
-                  <div className="col-span-4 min-h-90 min-w-0">
-                    <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
-                      <div className="mb-3">
-                        <h2 className="text-sm font-semibold text-white">AI Oneriler</h2>
-                        <p className="text-[11px] text-slate-500">Oracle tarafindan olusturulan ozet ve aksiyonlar</p>
-                      </div>
-                      <div className="min-w-0">
-                        <DesktopAICard />
-                      </div>
-                    </div>
-                  </div>
-                  )}
-
                   {/* Recent Transactions — col-span-7 */}
-                  <div className="col-span-7 min-h-80">
+                  <div className={features.aiBox ? 'col-span-5 min-h-80 min-w-0' : 'col-span-7 min-h-80 min-w-0'}>
                     <RecentTransactions onViewAll={() => setActiveTab('transactions')} />
                   </div>
 
                   {/* Savings Goals — col-span-5 */}
-                  <div className="col-span-5 min-h-80">
+                  <div className={features.aiBox ? 'col-span-4 min-h-80 min-w-0' : 'col-span-5 min-h-80 min-w-0'}>
                     <MiniGoalGrid onViewAll={() => setActiveTab('goals')} />
                   </div>
+
+                  {/* Recommendations — same row as Son İşlemler / Tasarruf Hedefleri */}
+                  {features.aiBox && (
+                    <div className="col-span-3 min-h-80 min-w-0">
+                      <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+                        <div className="mb-3 min-w-0">
+                          <h2 className="text-sm font-semibold text-white">Öneriler</h2>
+                          <p className="text-[11px] text-slate-500">
+                            {features.oracle
+                              ? 'Oracle tarafından oluşturulan özet ve aksiyonlar'
+                              : 'Oracle kapalı: hafif öneri görünümü'}
+                          </p>
+                        </div>
+                        <div className="min-w-0 h-full">
+                          <AIBoxShell>
+                            {features.oracle ? <OracleChat /> : null}
+                          </AIBoxShell>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </div>
