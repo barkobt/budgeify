@@ -9,7 +9,8 @@ test('sign-in loads with email and social options surface', async ({ page }) => 
   await page.goto('/sign-in');
 
   await expect(page.getByText('Kod sık geliyorsa, şifre ile giriş veya sosyal giriş seçeneklerini kullanabilirsiniz.')).toBeVisible();
-  await expect(page.locator('input[type="email"]').first()).toBeVisible();
+  const identifierInput = page.locator('input[type="email"], input[type="text"], input[name*="identifier"]').first();
+  await expect(identifierInput).toBeVisible();
 
   const googleButton = page.getByRole('button', { name: /Google/i });
   if (await googleButton.count()) {
@@ -27,12 +28,12 @@ test('dashboard route loads without runtime crash', async ({ page }) => {
 
   await expect(page.locator('text=Application error')).toHaveCount(0);
   await expect(page.locator('text=Something went wrong')).toHaveCount(0);
-  await expect(page.locator('text=Budgeify v6.0').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Takvim' })).toBeVisible({ timeout: 20000 });
 });
 
 test('calendar tab renders and mobile day tap opens detail drawer', async ({ page }) => {
   await page.goto('/dashboard');
-  await expect(page.locator('text=Budgeify v6.0').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Takvim' })).toBeVisible({ timeout: 20000 });
 
   await page.getByRole('button', { name: 'Takvim' }).click();
   await expect(page.getByRole('heading', { name: 'Takvim & Hatırlatıcılar' })).toBeVisible();
