@@ -28,6 +28,12 @@ import {
   Github,
   Twitter,
   Linkedin,
+  Activity,
+  Sparkles,
+  Check,
+  Users,
+  Code2,
+  Heart,
 } from 'lucide-react';
 
 /* ========================================
@@ -413,6 +419,73 @@ export default function LandingPage() {
       </section>
 
       {/* ========================================
+          HOW IT WORKS — Timeline
+          ======================================== */}
+      <FadeInSection className="py-20 sm:py-28 px-4">
+        <div className="max-w-4xl mx-auto">
+          <FadeInDiv className="text-center mb-16">
+            <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">How It Works</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
+              Four Steps to{' '}
+              <span className="text-gradient-logo">Financial Autonomy</span>
+            </h2>
+            <p className="text-base text-slate-400 max-w-xl mx-auto">
+              Yapay zekâ destekli finansal özgürlüğünüze dört adımda ulaşın.
+            </p>
+          </FadeInDiv>
+
+          <div className="relative ml-4 sm:ml-8">
+            {/* Vertical line */}
+            <div className="absolute left-4 top-0 bottom-0 w-px bg-gradient-to-b from-[#9d00ff]/40 via-[#0da6f2]/20 to-transparent" />
+
+            {[
+              {
+                step: '01',
+                icon: Wifi,
+                title: 'Sync Your Ecosystem',
+                desc: 'Tüm finansal verilerinizi tek bir noktada entegre edin. Gelir, gider ve hedefleriniz anında senkronize olur.',
+              },
+              {
+                step: '02',
+                icon: Brain,
+                title: 'Neural Training',
+                desc: 'AI modeli harcama alışkanlıklarınızı öğrenir. Kategori bazlı analiz ve trend tahminleri oluşturur.',
+              },
+              {
+                step: '03',
+                icon: Activity,
+                title: 'Predictive Simulation',
+                desc: 'Gelecek harcamalarınız simüle edilir. Bütçe aşım riski ve tasarruf fırsatları önceden belirlenir.',
+              },
+              {
+                step: '04',
+                icon: Sparkles,
+                title: 'Autonomous Execution',
+                desc: 'Bütçe optimizasyonu otomatik çalışır. Hedeflerinize ulaşmanız için akıllı öneriler sunar.',
+              },
+            ].map((item, i) => (
+              <FadeInDiv key={item.step} delay={i * 0.12} className="relative pl-12 pb-12 last:pb-0">
+                {/* Step circle */}
+                <div className="absolute left-0 top-0 w-9 h-9 rounded-full border border-white/10 bg-[#0a0a0f] flex items-center justify-center z-10">
+                  <span className="text-[10px] font-black text-[#9d00ff]">{item.step}</span>
+                </div>
+
+                <div className="rounded-2xl p-5 sm:p-6 border border-white/5 hover:border-[#9d00ff]/20 transition-colors" style={{ background: 'var(--color-surface-dark)' }}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#9d00ff]/10 flex items-center justify-center">
+                      <item.icon size={20} className="text-[#0da6f2]" />
+                    </div>
+                    <h3 className="text-base sm:text-lg font-bold text-white">{item.title}</h3>
+                  </div>
+                  <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
+                </div>
+              </FadeInDiv>
+            ))}
+          </div>
+        </div>
+      </FadeInSection>
+
+      {/* ========================================
           FEATURES SECTION
           ======================================== */}
       <FadeInSection id="features" className="py-20 sm:py-28 px-4">
@@ -463,6 +536,152 @@ export default function LandingPage() {
           VISUAL DATA STRIP
           ======================================== */}
       <DataStrip />
+
+      {/* ========================================
+          PRICING SECTION
+          ======================================== */}
+      <FadeInSection id="pricing" className="py-20 sm:py-28 px-4">
+        <div className="max-w-5xl mx-auto">
+          <FadeInDiv className="text-center mb-16">
+            <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Pricing</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
+              Simple,{' '}
+              <span className="text-gradient-logo">Transparent</span>{' '}
+              Pricing
+            </h2>
+            <p className="text-base text-slate-400 max-w-xl mx-auto">
+              Finansal özgürlüğünüz için yatırım yapın. İhtiyacınıza uygun planı seçin.
+            </p>
+          </FadeInDiv>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* Aylık Plan */}
+            <FadeInDiv delay={0.1}>
+              <div className="rounded-2xl p-6 sm:p-8 border border-white/5 h-full flex flex-col" style={{ background: 'var(--color-surface-dark)' }}>
+                <h3 className="text-lg font-bold text-white mb-1">Aylık Plan</h3>
+                <p className="text-sm text-slate-500 mb-6">Esneklik isteyenler için</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-black text-white font-display">99 ₺</span>
+                  <span className="text-sm text-slate-500 ml-1">/ay</span>
+                </div>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {['AI Finansal Analiz', 'Sınırsız İşlem', 'Gerçek Zamanlı Sync', 'Hedef Takibi', 'Kategori Yönetimi', 'Temel Raporlama'].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check size={14} className="text-emerald-400 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/sign-up"
+                  className="block text-center px-6 py-3 text-sm font-bold text-white rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all uppercase tracking-wider"
+                >
+                  Başla
+                </Link>
+              </div>
+            </FadeInDiv>
+
+            {/* Yıllık Plan — Highlighted */}
+            <FadeInDiv delay={0.2}>
+              <div className="relative rounded-2xl p-6 sm:p-8 border border-[#9d00ff]/30 h-full flex flex-col" style={{ background: 'var(--color-surface-dark)' }}>
+                {/* Popular badge */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="px-4 py-1 text-[10px] font-black text-white uppercase tracking-widest btn-portal-gradient rounded-full">
+                    En Popüler
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-bold text-white mb-1 mt-2">Yıllık Plan</h3>
+                <p className="text-sm text-slate-500 mb-6">Maksimum tasarruf için</p>
+                <div className="mb-2">
+                  <span className="text-4xl font-black text-white font-display">70 ₺</span>
+                  <span className="text-sm text-slate-500 ml-1">/ay</span>
+                </div>
+                <p className="text-xs text-slate-500 mb-6">840 ₺/yıl · <span className="text-emerald-400 font-bold">%30 İndirim</span></p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {['AI Finansal Analiz', 'Sınırsız İşlem', 'Gerçek Zamanlı Sync', 'Hedef Takibi', 'Kategori Yönetimi', 'Gelişmiş Raporlama', 'Öncelikli Destek', 'Erken Erişim Özellikleri'].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check size={14} className="text-emerald-400 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/sign-up"
+                  className="block text-center px-6 py-3 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple"
+                >
+                  Yıllık Başla
+                </Link>
+              </div>
+            </FadeInDiv>
+          </div>
+        </div>
+      </FadeInSection>
+
+      {/* ========================================
+          ABOUT SECTION
+          ======================================== */}
+      <FadeInSection id="about" className="py-20 sm:py-28 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left — Text */}
+            <FadeInDiv direction="left">
+              <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">About Budgeify</span>
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-6 font-display">
+                Finansal Özgürlük{' '}
+                <span className="text-gradient-logo">Herkesin Hakkı</span>
+              </h2>
+              <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-6">
+                Budgeify, yapay zekâ destekli kişisel finans yönetim platformudur. Amacımız, karmaşık finansal kararları basitleştirmek ve herkesin parasını daha akıllıca yönetmesini sağlamaktır.
+              </p>
+              <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-8">
+                Modern arayüzümüz ve güçlü analiz motorumuz ile harcama alışkanlıklarınızı anlar, tasarruf fırsatlarını belirler ve finansal hedeflerinize ulaşmanız için size rehberlik eder.
+              </p>
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { icon: Users, label: '50K+', sub: 'Kullanıcı' },
+                  { icon: Heart, label: '99.8%', sub: 'Memnuniyet' },
+                  { icon: Code2, label: '24/7', sub: 'AI Aktif' },
+                ].map((stat) => (
+                  <div key={stat.label} className="text-center">
+                    <stat.icon size={20} className="text-[#0da6f2] mx-auto mb-2" />
+                    <p className="text-lg font-black text-white font-display">{stat.label}</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest">{stat.sub}</p>
+                  </div>
+                ))}
+              </div>
+            </FadeInDiv>
+
+            {/* Right — Visual element */}
+            <FadeInDiv direction="right">
+              <div className="relative rounded-2xl overflow-hidden border border-white/5 p-8 sm:p-10" style={{ background: 'var(--color-surface-dark)' }}>
+                <div
+                  className="absolute -top-20 -right-20 w-40 h-40 rounded-full pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(157,0,255,0.2) 0%, transparent 70%)', filter: 'blur(40px)' }}
+                />
+                <div className="relative space-y-5">
+                  {[
+                    { title: 'Next.js 14', desc: 'Server-first React framework' },
+                    { title: 'Neural AI Engine', desc: 'Harcama tahmin ve optimizasyon' },
+                    { title: 'Real-time Sync', desc: 'Cross-device anlık senkronizasyon' },
+                    { title: 'Bank-Grade Security', desc: 'Clerk auth + encrypted data layer' },
+                  ].map((item, i) => (
+                    <div key={item.title} className="flex items-start gap-3">
+                      <div className="mt-1 w-6 h-6 rounded-md bg-[#9d00ff]/10 flex items-center justify-center shrink-0">
+                        <span className="text-[9px] font-black text-[#0da6f2]">{String(i + 1).padStart(2, '0')}</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-white">{item.title}</p>
+                        <p className="text-xs text-slate-500">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </FadeInDiv>
+          </div>
+        </div>
+      </FadeInSection>
 
       {/* ========================================
           CTA SECTION
