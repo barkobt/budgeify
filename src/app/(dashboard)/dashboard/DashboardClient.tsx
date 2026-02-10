@@ -847,6 +847,10 @@ export default function DashboardClient() {
               <CalendarPage
                 onOpenReminderForm={() => setShowReminderDrawer(true)}
                 onOpenAlertForm={() => setShowAlertDrawer(true)}
+                onSelectTransaction={(tx) => {
+                  setSelectedTransaction(tx);
+                  setActiveTab('transactions');
+                }}
               />
             </motion.div>
           )}

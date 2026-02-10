@@ -17,6 +17,7 @@ import {
   TrendingUp,
   Target,
   CalendarDays,
+  BarChart3,
   Plus,
   ArrowUpRight,
   ArrowDownRight,
@@ -45,6 +46,7 @@ const navItems: { name: string; icon: DockIcon; tab: TabType }[] = [
 
 const navItemsRight: { name: string; icon: DockIcon; tab: TabType }[] = [
   { name: 'Hedefler', icon: Target, tab: 'goals' },
+  { name: 'Analiz', icon: BarChart3, tab: 'analytics' },
   { name: 'Takvim', icon: CalendarDays, tab: 'calendar' },
 ];
 

@@ -34,6 +34,8 @@ import type { Reminder, BudgetAlert } from '@/db/schema';
 
 // Lazy-loaded sub-components
 import { DayDetailPanel } from './DayDetailPanel';
+import type { DayTransaction } from './DayDetailPanel';
+import type { MergedTransaction } from '@/components/features/transactions/TransactionTable';
 
 // ========================================
 // DATE HELPERS (no date-fns needed for this)
@@ -79,9 +81,10 @@ const REMINDER_TYPE_ICON: Record<string, React.ElementType> = {
 interface CalendarPageProps {
   onOpenReminderForm?: () => void;
   onOpenAlertForm?: () => void;
+  onSelectTransaction?: (tx: MergedTransaction) => void;
 }
 
-export function CalendarPage({ onOpenReminderForm, onOpenAlertForm }: CalendarPageProps) {
+export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTransaction }: CalendarPageProps) {
   const now = new Date();
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(now.getMonth());
@@ -93,6 +96,31 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm }: CalendarPa
   const expenses = useBudgetStore((s) => s.expenses);
   const incomes = useBudgetStore((s) => s.incomes);
   const currency = useBudgetStore((s) => s.currency);
+  const getCategoryById = useBudgetStore((s) => s.getCategoryById);
+
+  const handleTransactionClick = useCallback((dayTx: DayTransaction) => {
+    if (!onSelectTransaction) return;
+    if (dayTx.type === 'expense') {
+      const exp = expenses.find((e) => e.id === dayTx.id);
+      if (!exp) return;
+      const cat = getCategoryById(exp.categoryId);
+      onSelectTransaction({
+        id: exp.id, type: 'expense', label: cat?.name || 'Gider', description: exp.note || '',
+        categoryId: exp.categoryId, categoryName: cat?.name || 'Diğer', categoryColor: cat?.color || '#6B7280',
+        amount: exp.amount, date: exp.date || exp.createdAt, createdAt: exp.createdAt,
+        status: exp.status ?? 'completed', expectedDate: exp.expectedDate,
+      });
+    } else {
+      const inc = incomes.find((i) => i.id === dayTx.id);
+      if (!inc) return;
+      onSelectTransaction({
+        id: inc.id, type: 'income', label: inc.description || 'Gelir', description: inc.description || '',
+        categoryId: inc.category, categoryName: inc.description || 'Gelir', categoryColor: '#10B981',
+        amount: inc.amount, date: inc.date || inc.createdAt, createdAt: inc.createdAt,
+        status: inc.status ?? 'completed', expectedDate: inc.expectedDate,
+      });
+    }
+  }, [expenses, incomes, getCategoryById, onSelectTransaction]);
 
   // Fetch reminders and budget alerts
   useEffect(() => {
@@ -484,6 +512,7 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm }: CalendarPa
               date={selectedDate}
               reminders={selectedDateReminders}
               onClose={() => setSelectedDate(null)}
+              onTransactionClick={handleTransactionClick}
             />
           </div>
         )}
