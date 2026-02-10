@@ -60,6 +60,28 @@ export const transactionStatusEnum = pgEnum('transaction_status', [
   'pending',
 ]);
 
+/**
+ * Reminder Type Enum
+ * Hatırlatıcı türü: fatura, hedef, bütçe limiti veya özel
+ */
+export const reminderTypeEnum = pgEnum('reminder_type', [
+  'bill_payment',
+  'goal_deadline',
+  'budget_limit',
+  'custom',
+]);
+
+/**
+ * Reminder Frequency Enum
+ * Hatırlatıcı tekrar sıklığı
+ */
+export const reminderFrequencyEnum = pgEnum('reminder_frequency', [
+  'once',
+  'daily',
+  'weekly',
+  'monthly',
+]);
+
 // ========================================
 // TABLES - Veritabanı tabloları
 // ========================================
@@ -183,6 +205,57 @@ export const goals = pgTable('goals', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+/**
+ * Reminders Table
+ *
+ * 🎓 MENTOR NOTU:
+ * Hatırlatıcılar fatura ödemeleri, hedef tarihleri, bütçe limitleri
+ * veya özel hatırlatmalar için kullanılır.
+ * frequency ile tekrarlayan hatırlatıcılar oluşturulabilir.
+ * lastTriggered son tetiklenme zamanını takip eder.
+ */
+export const reminders = pgTable('reminders', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description'),
+  type: reminderTypeEnum('type').notNull(),
+  amount: decimal('amount', { precision: 12, scale: 2 }),
+  dueDate: timestamp('due_date').notNull(),
+  frequency: reminderFrequencyEnum('frequency').default('once').notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  lastTriggered: timestamp('last_triggered'),
+  categoryId: uuid('category_id').references(() => categories.id, {
+    onDelete: 'set null',
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+/**
+ * Budget Alerts Table
+ *
+ * 🎓 MENTOR NOTU:
+ * Bütçe uyarıları belirli harcama eşiklerini izler.
+ * alertType: 'below_balance' (bakiye düşünce) veya 'above_spending' (harcama aşınca)
+ * period: uyarının değerlendirilme periyodu (günlük, haftalık, aylık)
+ */
+export const budgetAlerts = pgTable('budget_alerts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  thresholdAmount: decimal('threshold_amount', { precision: 12, scale: 2 }).notNull(),
+  alertType: text('alert_type').notNull(),
+  period: text('period').notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  lastTriggered: timestamp('last_triggered'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // ========================================
 // RELATIONS - Tablo ilişkileri
 // ========================================
@@ -203,6 +276,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   expenses: many(expenses),
   goals: many(goals),
   categories: many(categories),
+  reminders: many(reminders),
+  budgetAlerts: many(budgetAlerts),
 }));
 
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
@@ -212,6 +287,7 @@ export const categoriesRelations = relations(categories, ({ one, many }) => ({
   }),
   incomes: many(incomes),
   expenses: many(expenses),
+  reminders: many(reminders),
 }));
 
 export const incomesRelations = relations(incomes, ({ one }) => ({
@@ -239,6 +315,24 @@ export const expensesRelations = relations(expenses, ({ one }) => ({
 export const goalsRelations = relations(goals, ({ one }) => ({
   user: one(users, {
     fields: [goals.userId],
+    references: [users.id],
+  }),
+}));
+
+export const remindersRelations = relations(reminders, ({ one }) => ({
+  user: one(users, {
+    fields: [reminders.userId],
+    references: [users.id],
+  }),
+  category: one(categories, {
+    fields: [reminders.categoryId],
+    references: [categories.id],
+  }),
+}));
+
+export const budgetAlertsRelations = relations(budgetAlerts, ({ one }) => ({
+  user: one(users, {
+    fields: [budgetAlerts.userId],
     references: [users.id],
   }),
 }));
@@ -271,3 +365,9 @@ export type NewExpense = typeof expenses.$inferInsert;
 
 export type Goal = typeof goals.$inferSelect;
 export type NewGoal = typeof goals.$inferInsert;
+
+export type Reminder = typeof reminders.$inferSelect;
+export type NewReminder = typeof reminders.$inferInsert;
+
+export type BudgetAlert = typeof budgetAlerts.$inferSelect;
+export type NewBudgetAlert = typeof budgetAlerts.$inferInsert;

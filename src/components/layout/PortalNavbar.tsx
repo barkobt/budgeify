@@ -13,7 +13,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PiggyBank } from 'lucide-react';
 
-type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'calendar' | 'settings';
 
 interface PortalNavbarProps {
   activeTab?: TabType;
@@ -24,6 +24,7 @@ const TAB_TITLES: Record<TabType, string> = {
   transactions: 'İşlemler',
   goals: 'Hedefler',
   analytics: 'Analiz',
+  calendar: 'Takvim',
   settings: 'Ayarlar',
 };
 

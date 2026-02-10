@@ -91,6 +91,10 @@ const nextConfig = {
             key: 'Pragma',
             value: 'no-cache',
           },
+          {
+            key: 'Surrogate-Control',
+            value: 'no-store',
+          },
         ],
       },
       // P8: Immutable cache for hashed static assets

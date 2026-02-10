@@ -313,7 +313,7 @@ export const useBudgetStore = create<BudgetStoreState>()(
     }),
     {
       name: 'budgeify-store',
-      version: 3,
+      version: 4,
       skipHydration: true,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as Record<string, unknown>;
@@ -350,6 +350,19 @@ export const useBudgetStore = create<BudgetStoreState>()(
           state.serverCategories = [];
           const n = new Date();
           state.selectedMonth = { year: n.getFullYear(), month: n.getMonth() };
+        }
+        if (version < 4) {
+          // v4: Integrity check — ensure arrays are arrays, reset corrupted state
+          if (!Array.isArray(state.incomes)) state.incomes = [];
+          if (!Array.isArray(state.expenses)) state.expenses = [];
+          if (!Array.isArray(state.goals)) state.goals = [];
+          if (!Array.isArray(state.categories)) state.categories = DEFAULT_CATEGORIES;
+          if (!Array.isArray(state.serverCategories)) state.serverCategories = [];
+          if (!state.selectedMonth || typeof state.selectedMonth !== 'object') {
+            const n = new Date();
+            state.selectedMonth = { year: n.getFullYear(), month: n.getMonth() };
+          }
+          if (!state.currency) state.currency = 'TRY';
         }
         return state as unknown as BudgetStoreState;
       },

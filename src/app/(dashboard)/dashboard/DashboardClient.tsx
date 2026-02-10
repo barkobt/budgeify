@@ -139,6 +139,20 @@ const CommandPalette = dynamic(
   { ssr: false }
 );
 
+// M7: Calendar & Reminder UI
+const CalendarPage = dynamic(
+  () => import('@/components/features/calendar/CalendarPage').then((mod) => ({ default: mod.CalendarPage })),
+  { ssr: false, loading: () => <SkeletonList count={6} /> }
+);
+const ReminderForm = dynamic(
+  () => import('@/components/features/calendar/ReminderForm').then((mod) => ({ default: mod.ReminderForm })),
+  { ssr: false }
+);
+const BudgetAlertForm = dynamic(
+  () => import('@/components/features/calendar/BudgetAlertForm').then((mod) => ({ default: mod.BudgetAlertForm })),
+  { ssr: false }
+);
+
 // M7: Desktop Settings Page (lg+ only)
 const SettingsPage = dynamic(
   () => import('@/components/features/settings/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
@@ -155,16 +169,19 @@ const TransactionDetailPanel = dynamic(
   { ssr: false }
 );
 
-type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'calendar' | 'settings';
 type DrawerType = 'income' | 'expense' | null;
 type TransactionView = 'expenses' | 'incomes';
 
 export default function DashboardClient() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [openDrawer, setOpenDrawer] = useState<DrawerType>(null);
+  const [showReminderDrawer, setShowReminderDrawer] = useState(false);
+  const [showAlertDrawer, setShowAlertDrawer] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [txView, setTxView] = useState<TransactionView>('expenses');
   const [editingIncome, setEditingIncome] = useState<Income | null>(null);
+  const [editingExpense, setEditingExpense] = useState<{ id: string; categoryId: string; amount: number; note?: string; date: string; status: 'completed' | 'pending'; expectedDate?: string } | null>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<MergedTransaction | null>(null);
 
   const [showPreflight, setShowPreflight] = useState(true);
@@ -243,6 +260,9 @@ export default function DashboardClient() {
 
   // Live store data
   const expenses = useBudgetStore((s) => s.expenses);
+  const incomes = useBudgetStore((s) => s.incomes);
+  const deleteExpense = useBudgetStore((s) => s.deleteExpense);
+  const deleteIncome = useBudgetStore((s) => s.deleteIncome);
   const getSavingsRate = useBudgetStore((s) => s.getSavingsRate);
   const getActiveGoals = useBudgetStore((s) => s.getActiveGoals);
 
@@ -606,8 +626,35 @@ export default function DashboardClient() {
                       <TransactionDetailPanel
                         transaction={selectedTransaction}
                         onClose={() => setSelectedTransaction(null)}
-                        onEdit={() => {
-                          // TODO: Wire to edit form in future milestone
+                        onEdit={(tx) => {
+                          if (tx.type === 'expense') {
+                            setEditingExpense({
+                              id: tx.id,
+                              categoryId: tx.categoryId,
+                              amount: tx.amount,
+                              note: tx.description || undefined,
+                              date: tx.date,
+                              status: tx.status,
+                              expectedDate: tx.expectedDate,
+                            });
+                            setOpenDrawer('expense');
+                          } else {
+                            const inc = incomes.find((i) => i.id === tx.id);
+                            if (inc) {
+                              setEditingIncome(inc);
+                            }
+                          }
+                          setSelectedTransaction(null);
+                        }}
+                        onDelete={(id, type) => {
+                          if (confirm('Bu işlemi silmek istediğinize emin misiniz?')) {
+                            if (type === 'expense') {
+                              deleteExpense(id);
+                            } else {
+                              deleteIncome(id);
+                            }
+                            setSelectedTransaction(null);
+                          }
                         }}
                         currency={currency}
                       />
@@ -749,6 +796,22 @@ export default function DashboardClient() {
           )}
 
           {/* ========================================
+              CALENDAR TAB — Finansal Takvim & Hatırlatıcılar
+              ======================================== */}
+          {activeTab === 'calendar' && (
+            <motion.div
+              initial={isMounted ? { opacity: 0, y: 12 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <CalendarPage
+                onOpenReminderForm={() => setShowReminderDrawer(true)}
+                onOpenAlertForm={() => setShowAlertDrawer(true)}
+              />
+            </motion.div>
+          )}
+
+          {/* ========================================
               SETTINGS TAB — Desktop Full-Page + Mobile Settings
               ======================================== */}
           {activeTab === 'settings' && (
@@ -788,10 +851,38 @@ export default function DashboardClient() {
 
       <Drawer
         open={openDrawer === 'expense'}
-        onOpenChange={(open) => !open && setOpenDrawer(null)}
-        title="Gider Ekle"
+        onOpenChange={(open) => {
+          if (!open) {
+            setOpenDrawer(null);
+            setEditingExpense(null);
+          }
+        }}
+        title={editingExpense ? 'Gider Düzenle' : 'Gider Ekle'}
       >
-        <ExpenseForm onSuccess={() => setOpenDrawer(null)} />
+        <ExpenseForm
+          key={editingExpense?.id || 'new'}
+          editingExpense={editingExpense}
+          onSuccess={() => { setOpenDrawer(null); setEditingExpense(null); }}
+          onCancelEdit={() => { setOpenDrawer(null); setEditingExpense(null); }}
+        />
+      </Drawer>
+
+      {/* Reminder Drawer */}
+      <Drawer
+        open={showReminderDrawer}
+        onOpenChange={(open) => { if (!open) setShowReminderDrawer(false); }}
+        title="Hatırlatıcı Ekle"
+      >
+        <ReminderForm onSuccess={() => setShowReminderDrawer(false)} />
+      </Drawer>
+
+      {/* Budget Alert Drawer */}
+      <Drawer
+        open={showAlertDrawer}
+        onOpenChange={(open) => { if (!open) setShowAlertDrawer(false); }}
+        title="Bütçe Uyarısı Ekle"
+      >
+        <BudgetAlertForm onSuccess={() => setShowAlertDrawer(false)} />
       </Drawer>
 
       {/* AI Assistant */}

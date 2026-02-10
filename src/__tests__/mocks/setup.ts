@@ -103,6 +103,9 @@ vi.mock('drizzle-orm', () => ({
   and: vi.fn((...args: unknown[]) => ({ op: 'and', args })),
   or: vi.fn((...args: unknown[]) => ({ op: 'or', args })),
   desc: vi.fn((col: unknown) => ({ op: 'desc', col })),
+  lte: vi.fn((_col: unknown, val: unknown) => ({ op: 'lte', val })),
+  gte: vi.fn((_col: unknown, val: unknown) => ({ op: 'gte', val })),
+  sql: vi.fn(),
   relations: vi.fn(),
 }));
 
@@ -115,6 +118,8 @@ vi.mock('@/db/schema', () => ({
   incomes: { id: 'incomes.id', userId: 'incomes.userId', date: 'incomes.date', $inferSelect: {} },
   expenses: { id: 'expenses.id', userId: 'expenses.userId', date: 'expenses.date', $inferSelect: {} },
   goals: { id: 'goals.id', userId: 'goals.userId', status: 'goals.status', createdAt: 'goals.createdAt', $inferSelect: {} },
+  reminders: { id: 'reminders.id', userId: 'reminders.userId', dueDate: 'reminders.dueDate', isActive: 'reminders.isActive', lastTriggered: 'reminders.lastTriggered', frequency: 'reminders.frequency', $inferSelect: {} },
+  budgetAlerts: { id: 'budgetAlerts.id', userId: 'budgetAlerts.userId', isActive: 'budgetAlerts.isActive', $inferSelect: {} },
   categories: { id: 'categories.id', userId: 'categories.userId', isDefault: 'categories.isDefault', $inferSelect: {} },
   goalStatusEnum: {},
   categoryTypeEnum: {},

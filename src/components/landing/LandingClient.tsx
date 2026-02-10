@@ -21,6 +21,15 @@ import {
 } from '@/components/ui/MotionElements';
 import { motion } from 'framer-motion';
 import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import {
   ArrowRight,
   Play,
   TrendingUp,
@@ -34,7 +43,6 @@ import {
   Linkedin,
   Activity,
   Sparkles,
-  Check,
   Users,
   Code2,
   Heart,
@@ -219,13 +227,25 @@ function CreditCardVisual() {
 }
 
 /* ========================================
-   VISUAL DATA STRIP — Bar Chart
+   VISUAL DATA STRIP — Recharts Area Chart
    ======================================== */
 
-function DataStrip() {
-  const barHeights = [35, 55, 45, 70, 60, 85, 75, 95, 80, 65, 90, 100];
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MOCK_CHART_DATA = [
+  { month: 'Oca', gelir: 28500, gider: 19200, tasarruf: 9300 },
+  { month: 'Şub', gelir: 31000, gider: 22100, tasarruf: 8900 },
+  { month: 'Mar', gelir: 29800, gider: 18500, tasarruf: 11300 },
+  { month: 'Nis', gelir: 33200, gider: 24800, tasarruf: 8400 },
+  { month: 'May', gelir: 35100, gider: 21300, tasarruf: 13800 },
+  { month: 'Haz', gelir: 32700, gider: 20100, tasarruf: 12600 },
+  { month: 'Tem', gelir: 38400, gider: 23900, tasarruf: 14500 },
+  { month: 'Ağu', gelir: 36200, gider: 25600, tasarruf: 10600 },
+  { month: 'Eyl', gelir: 34800, gider: 22400, tasarruf: 12400 },
+  { month: 'Eki', gelir: 37500, gider: 24200, tasarruf: 13300 },
+  { month: 'Kas', gelir: 39100, gider: 26800, tasarruf: 12300 },
+  { month: 'Ara', gelir: 42000, gider: 28500, tasarruf: 13500 },
+];
 
+function DataStrip() {
   return (
     <FadeInSection className="py-0">
       <div className="relative" style={{ background: '#020202' }}>
@@ -234,36 +254,97 @@ function DataStrip() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Bar chart */}
+            {/* Recharts Area Chart */}
             <div className="relative">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Portfolio Performance</span>
               </div>
 
-              <div className="flex items-end gap-2 sm:gap-3 h-48">
-                {barHeights.map((height, i) => (
-                  <motion.div
-                    key={months[i]}
-                    className="flex-1 flex flex-col items-center gap-1"
-                    initial={{ opacity: 0, scaleY: 0 }}
-                    whileInView={{ opacity: 1, scaleY: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ transformOrigin: 'bottom' }}
-                  >
-                    <div
-                      className="w-full rounded-t-sm transition-all duration-300 hover:opacity-100 opacity-70 cursor-pointer"
-                      style={{
-                        height: `${height}%`,
-                        background: height === 100
-                          ? 'linear-gradient(180deg, #0da6f2, #7C3AED)'
-                          : 'linear-gradient(180deg, rgba(13,166,242,0.6), rgba(124,58,237,0.4))',
-                        boxShadow: height === 100 ? '0 0 12px rgba(13,166,242,0.3)' : 'none',
-                      }}
+              <div className="w-full h-64 sm:h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={MOCK_CHART_DATA} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="gradGelir" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#9d00ff" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#9d00ff" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="gradGider" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="gradTasarruf" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                    <XAxis
+                      dataKey="month"
+                      tick={{ fontSize: 10, fill: '#64748b' }}
+                      axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
+                      tickLine={false}
                     />
-                    <span className="text-[8px] text-slate-600 font-medium">{months[i]}</span>
-                  </motion.div>
+                    <YAxis
+                      tick={{ fontSize: 9, fill: '#475569' }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}K`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: 'rgba(10, 10, 15, 0.95)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        color: '#e2e8f0',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                      }}
+                      formatter={(value: number, name: string) => {
+                        const labels: Record<string, string> = { gelir: 'Gelir', gider: 'Gider', tasarruf: 'Tasarruf' };
+                        return [`₺${value.toLocaleString('tr-TR')}`, labels[name] || name];
+                      }}
+                      labelStyle={{ color: '#94a3b8', fontWeight: 600 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="gelir"
+                      stroke="#9d00ff"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#gradGelir)"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="gider"
+                      stroke="#f43f5e"
+                      strokeWidth={1.5}
+                      fillOpacity={1}
+                      fill="url(#gradGider)"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="tasarruf"
+                      stroke="#10B981"
+                      strokeWidth={1.5}
+                      fillOpacity={1}
+                      fill="url(#gradTasarruf)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Legend */}
+              <div className="flex items-center gap-5 mt-4">
+                {[
+                  { label: 'Gelir', color: '#9d00ff' },
+                  { label: 'Gider', color: '#f43f5e' },
+                  { label: 'Tasarruf', color: '#10B981' },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-[10px] text-slate-500 font-medium">{item.label}</span>
+                  </div>
                 ))}
               </div>
             </div>
@@ -547,82 +628,39 @@ export default function LandingClient() {
       <DataStrip />
 
       {/* ========================================
-          PRICING SECTION
+          PRICING CTA — Links to /pricing
           ======================================== */}
       <FadeInSection id="pricing" className="py-20 sm:py-28 px-4">
-        <div className="max-w-5xl mx-auto">
-          <FadeInDiv className="text-center mb-16">
-            <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Pricing</span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
-              Simple,{' '}
-              <span className="text-gradient-logo">Transparent</span>{' '}
-              Pricing
-            </h2>
-            <p className="text-base text-slate-400 max-w-xl mx-auto">
-              Finansal özgürlüğünüz için yatırım yapın. İhtiyacınıza uygun planı seçin.
-            </p>
-          </FadeInDiv>
-
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {/* Aylık Plan */}
-            <FadeInDiv delay={0.1}>
-              <div className="rounded-2xl p-6 sm:p-8 border border-white/5 h-full flex flex-col" style={{ background: 'var(--color-surface-dark)' }}>
-                <h3 className="text-lg font-bold text-white mb-1">Aylık Plan</h3>
-                <p className="text-sm text-slate-500 mb-6">Esneklik isteyenler için</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-black text-white font-display">99 ₺</span>
-                  <span className="text-sm text-slate-500 ml-1">/ay</span>
-                </div>
-                <ul className="space-y-3 mb-8 flex-1">
-                  {['AI Finansal Analiz', 'Sınırsız İşlem', 'Gerçek Zamanlı Sync', 'Hedef Takibi', 'Kategori Yönetimi', 'Temel Raporlama'].map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                      <Check size={14} className="text-emerald-400 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-3xl overflow-hidden p-8 sm:p-12 text-center glass-panel border border-white/8">
+            <motion.div
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[250px] rounded-full pointer-events-none"
+              style={{ background: 'radial-gradient(circle, rgba(157, 0, 255, 0.2) 0%, transparent 70%)', filter: 'blur(60px)' }}
+              aria-hidden="true"
+            />
+            <div className="relative">
+              <FadeInDiv>
+                <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Pricing</span>
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
+                  Simple,{' '}
+                  <span className="text-gradient-logo">Transparent</span>{' '}
+                  Pricing
+                </h2>
+                <p className="text-base text-slate-400 max-w-xl mx-auto mb-4">
+                  Aylık <strong className="text-white">99 ₺</strong>&apos;den başlayan fiyatlarla AI destekli finansal yönetim.
+                  Yıllık planda <span className="text-emerald-400 font-bold">%30 indirim</span>.
+                </p>
+              </FadeInDiv>
+              <FadeInDiv delay={0.15}>
                 <Link
-                  href="/sign-up"
-                  className="block text-center px-6 py-3 text-sm font-bold text-white rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all uppercase tracking-wider"
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple"
                 >
-                  Başla
+                  Planları İncele
+                  <ArrowRight size={16} />
                 </Link>
-              </div>
-            </FadeInDiv>
-
-            {/* Yıllık Plan — Highlighted */}
-            <FadeInDiv delay={0.2}>
-              <div className="relative rounded-2xl p-6 sm:p-8 border border-[#9d00ff]/30 h-full flex flex-col" style={{ background: 'var(--color-surface-dark)' }}>
-                {/* Popular badge */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-4 py-1 text-[10px] font-black text-white uppercase tracking-widest btn-portal-gradient rounded-full">
-                    En Popüler
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-white mb-1 mt-2">Yıllık Plan</h3>
-                <p className="text-sm text-slate-500 mb-6">Maksimum tasarruf için</p>
-                <div className="mb-2">
-                  <span className="text-4xl font-black text-white font-display">70 ₺</span>
-                  <span className="text-sm text-slate-500 ml-1">/ay</span>
-                </div>
-                <p className="text-xs text-slate-500 mb-6">840 ₺/yıl · <span className="text-emerald-400 font-bold">%30 İndirim</span></p>
-                <ul className="space-y-3 mb-8 flex-1">
-                  {['AI Finansal Analiz', 'Sınırsız İşlem', 'Gerçek Zamanlı Sync', 'Hedef Takibi', 'Kategori Yönetimi', 'Gelişmiş Raporlama', 'Öncelikli Destek', 'Erken Erişim Özellikleri'].map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                      <Check size={14} className="text-emerald-400 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/sign-up"
-                  className="block text-center px-6 py-3 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple"
-                >
-                  Yıllık Başla
-                </Link>
-              </div>
-            </FadeInDiv>
+              </FadeInDiv>
+            </div>
           </div>
         </div>
       </FadeInSection>

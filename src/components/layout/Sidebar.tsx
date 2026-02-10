@@ -19,13 +19,14 @@ import {
   ArrowLeftRight,
   Target,
   BarChart3,
+  CalendarDays,
   Settings,
   ChevronLeft,
   ChevronRight,
   PiggyBank,
 } from 'lucide-react';
 
-type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'calendar' | 'settings';
 
 interface SidebarProps {
   activeTab: TabType;
@@ -37,6 +38,7 @@ const NAV_ITEMS: { label: string; icon: React.ElementType; tab: TabType }[] = [
   { label: 'İşlemler', icon: ArrowLeftRight, tab: 'transactions' },
   { label: 'Hedefler', icon: Target, tab: 'goals' },
   { label: 'Analiz', icon: BarChart3, tab: 'analytics' },
+  { label: 'Takvim', icon: CalendarDays, tab: 'calendar' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {

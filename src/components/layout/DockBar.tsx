@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   TrendingUp,
   Target,
-  BarChart3,
+  CalendarDays,
   Plus,
   ArrowUpRight,
   ArrowDownRight,
@@ -28,7 +28,7 @@ import {
 type DockIcon = React.ComponentType<any>;
 import { DOCK_SPRING, springs } from '@/lib/motion';
 
-type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'settings';
+type TabType = 'dashboard' | 'transactions' | 'goals' | 'analytics' | 'calendar' | 'settings';
 type DrawerType = 'income' | 'expense' | null;
 
 interface DockBarProps {
@@ -45,7 +45,7 @@ const navItems: { name: string; icon: DockIcon; tab: TabType }[] = [
 
 const navItemsRight: { name: string; icon: DockIcon; tab: TabType }[] = [
   { name: 'Hedefler', icon: Target, tab: 'goals' },
-  { name: 'Analiz', icon: BarChart3, tab: 'analytics' },
+  { name: 'Takvim', icon: CalendarDays, tab: 'calendar' },
 ];
 
 export const DockBar: React.FC<DockBarProps> = ({

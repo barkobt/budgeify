@@ -23,18 +23,22 @@ import { getCategoryIcon } from '@/lib/category-icons';
  */
 interface ExpenseFormProps {
   onSuccess?: () => void;
+  editingExpense?: { id: string; categoryId: string; amount: number; note?: string; date: string; status: TransactionStatus; expectedDate?: string } | null;
+  onCancelEdit?: () => void;
 }
 
-export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
-  const { addExpense } = useBudgetStore();
+export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, editingExpense, onCancelEdit }) => {
+  const { addExpense, updateExpense: updateExpenseLocal } = useBudgetStore();
   const dataSync = useDataSyncOptional();
 
-  const [amount, setAmount] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(getTodayDate());
-  const [status, setStatus] = useState<TransactionStatus>('completed');
-  const [expectedDate, setExpectedDate] = useState('');
+  const isEditMode = !!editingExpense;
+
+  const [amount, setAmount] = useState(editingExpense ? String(editingExpense.amount) : '');
+  const [categoryId, setCategoryId] = useState(editingExpense?.categoryId || '');
+  const [note, setNote] = useState(editingExpense?.note || '');
+  const [date, setDate] = useState(editingExpense?.date || getTodayDate());
+  const [status, setStatus] = useState<TransactionStatus>(editingExpense?.status || 'completed');
+  const [expectedDate, setExpectedDate] = useState(editingExpense?.expectedDate || '');
   const [errors, setErrors] = useState<{
     amount?: string;
     categoryId?: string;
@@ -75,8 +79,18 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
         expectedDate: expectedDate || undefined,
       };
 
-      // Use server persistence if available, otherwise fall back to local storage
-      if (dataSync) {
+      if (isEditMode && editingExpense) {
+        // Edit mode: Update existing expense
+        updateExpenseLocal(editingExpense.id, {
+          categoryId,
+          amount: parseFloat(amount),
+          note: note.trim() || undefined,
+          date,
+          status,
+          expectedDate: expectedDate || undefined,
+        });
+      } else if (dataSync) {
+        // Use server persistence if available
         await dataSync.createExpense(expenseData);
       } else {
         // Demo mode: Local storage only
@@ -119,7 +133,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 mb-4">
           <Check size={32} className="text-emerald-400" strokeWidth={3} />
         </div>
-        <p className="text-lg font-semibold text-white">Gider Eklendi</p>
+        <p className="text-lg font-semibold text-white">{isEditMode ? 'Gider Güncellendi' : 'Gider Eklendi'}</p>
         <p className="text-sm text-slate-500 mt-1">Başarıyla kaydedildi</p>
       </div>
     );
@@ -265,15 +279,26 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess }) => {
       />
 
       {/* Submit */}
-      <Button
-        type="submit"
-        variant="primary"
-        isFullWidth
-        isLoading={isSubmitting}
-        size="lg"
-      >
-        Gider Ekle
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button
+          type="submit"
+          variant="primary"
+          isFullWidth
+          isLoading={isSubmitting}
+          size="lg"
+        >
+          {isEditMode ? 'Güncelle' : 'Gider Ekle'}
+        </Button>
+        {isEditMode && onCancelEdit && (
+          <button
+            type="button"
+            onClick={onCancelEdit}
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-white transition-all"
+          >
+            İptal
+          </button>
+        )}
+      </div>
     </form>
   );
 };
