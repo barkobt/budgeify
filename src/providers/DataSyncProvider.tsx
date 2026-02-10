@@ -109,13 +109,18 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         getGoals(),
       ]);
 
+      // Never clobber local state with empty arrays when server calls fail.
+      if (!incomesResult.success || !expensesResult.success || !goalsResult.success) {
+        return;
+      }
+
       // Fetch server categories (ActionResult)
       const categoriesResult = await getCategories();
       const serverCatsRaw = categoriesResult.success ? categoriesResult.data : [];
 
-      const serverIncomes = incomesResult.success ? incomesResult.data : [];
-      const serverExpenses = expensesResult.success ? expensesResult.data : [];
-      const serverGoals = goalsResult.success ? goalsResult.data : [];
+      const serverIncomes = incomesResult.data;
+      const serverExpenses = expensesResult.data;
+      const serverGoals = goalsResult.data;
       const pendingDeletes = pendingDeletesRef.current;
 
       // Sync server categories for UUID resolution
@@ -212,10 +217,23 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         getCategories(),
       ]);
 
-      // Extract data from ActionResult — fallback to empty arrays on failure
-      const serverIncomes = incomesResult.success ? incomesResult.data : [];
-      const serverExpenses = expensesResult.success ? expensesResult.data : [];
-      const serverGoals = goalsResult.success ? goalsResult.data : [];
+      // Never clobber local state with empty arrays when server calls fail.
+      if (!incomesResult.success || !expensesResult.success || !goalsResult.success) {
+        const syncError = [
+          incomesResult.success ? null : incomesResult.error,
+          expensesResult.success ? null : expensesResult.error,
+          goalsResult.success ? null : goalsResult.error,
+        ].filter(Boolean).join(' | ') || 'Veri senkronizasyonu başarısız';
+        setError(syncError);
+        setLastError(syncError);
+        setIsLoading(false);
+        operationLockRef.current = false;
+        return;
+      }
+
+      const serverIncomes = incomesResult.data;
+      const serverExpenses = expensesResult.data;
+      const serverGoals = goalsResult.data;
       const serverCatsRaw = categoriesResult.success ? categoriesResult.data : [];
 
       // Sync server categories for UUID resolution
