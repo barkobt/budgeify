@@ -179,6 +179,8 @@ export default function DashboardClient() {
   const [showPreflight, setShowPreflight] = useState(true);
   const [isOverlayActive, setIsOverlayActive] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [isDesktopLg, setIsDesktopLg] = useState(false);
+  const [showDebugBadge, setShowDebugBadge] = useState(false);
 
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
@@ -212,6 +214,19 @@ export default function DashboardClient() {
     const handler = () => setShowCommandPalette(true);
     window.addEventListener('open:command-palette', handler);
     return () => window.removeEventListener('open:command-palette', handler);
+  }, []);
+
+  // Debug badge visibility and desktop media state
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setShowDebugBadge(process.env.NODE_ENV !== 'production' || searchParams.get('debug') === '1');
+
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const updateIsDesktop = () => setIsDesktopLg(mediaQuery.matches);
+    updateIsDesktop();
+    mediaQuery.addEventListener('change', updateIsDesktop);
+
+    return () => mediaQuery.removeEventListener('change', updateIsDesktop);
   }, []);
 
   // Track overlay state for DockBar visibility (AI Assistant + Drawers)
@@ -374,6 +389,12 @@ export default function DashboardClient() {
                   onAddIncome={() => setOpenDrawer('income')}
                   onAddExpense={() => setOpenDrawer('expense')}
                 />
+
+                {showDebugBadge && (
+                  <div className="pointer-events-none fixed top-3 right-3 z-50 rounded-lg border border-white/15 bg-black/60 px-2 py-1 text-[10px] text-slate-200 backdrop-blur-sm">
+                    ORACLE: {features.oracle ? 'on' : 'off'} | AIBOX: {features.aiBox ? 'on' : 'off'} | isLg: {isDesktopLg ? 'true' : 'false'} | Mounted: {isMounted ? 'yes' : 'no'}
+                  </div>
+                )}
 
                 {/* 12-column grid */}
                 <div className="grid grid-cols-12 gap-4">
