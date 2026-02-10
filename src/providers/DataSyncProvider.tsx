@@ -109,9 +109,9 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         getGoals(),
       ]);
 
-      // Fetch server categories separately (returns raw array, not ActionResult)
-      let serverCatsRaw: Awaited<ReturnType<typeof getCategories>> = [];
-      try { serverCatsRaw = await getCategories(); } catch { /* ignore */ }
+      // Fetch server categories (ActionResult)
+      const categoriesResult = await getCategories();
+      const serverCatsRaw = categoriesResult.success ? categoriesResult.data : [];
 
       const serverIncomes = incomesResult.success ? incomesResult.data : [];
       const serverExpenses = expensesResult.success ? expensesResult.data : [];
@@ -195,23 +195,28 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      await getOrCreateUser();
+      const userResult = await getOrCreateUser();
+      if (!userResult.success) {
+        setError(userResult.error);
+        setLastError(userResult.error);
+        setIsLoading(false);
+        operationLockRef.current = false;
+        return;
+      }
       await seedDefaultCategories();
 
-      const [incomesResult, expensesResult, goalsResult] = await Promise.all([
+      const [incomesResult, expensesResult, goalsResult, categoriesResult] = await Promise.all([
         getIncomes(),
         getExpenses(),
         getGoals(),
+        getCategories(),
       ]);
-
-      // Fetch server categories separately (returns raw array, not ActionResult)
-      let serverCatsRaw: Awaited<ReturnType<typeof getCategories>> = [];
-      try { serverCatsRaw = await getCategories(); } catch { /* ignore */ }
 
       // Extract data from ActionResult — fallback to empty arrays on failure
       const serverIncomes = incomesResult.success ? incomesResult.data : [];
       const serverExpenses = expensesResult.success ? expensesResult.data : [];
       const serverGoals = goalsResult.success ? goalsResult.data : [];
+      const serverCatsRaw = categoriesResult.success ? categoriesResult.data : [];
 
       // Sync server categories for UUID resolution
       if (serverCatsRaw.length > 0) {

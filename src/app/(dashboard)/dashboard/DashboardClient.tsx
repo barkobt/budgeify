@@ -358,7 +358,7 @@ export default function DashboardClient() {
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       <PageWrapper>
-        <main id="main-content" className="min-h-screen pb-24 lg:pb-8 px-4 sm:px-6 lg:pl-72 lg:pr-8 lg:pt-6" role="main">
+        <main id="main-content" className="min-h-screen pb-24 lg:pb-8 px-4 sm:px-6 lg:pl-72 lg:pr-8 lg:pt-6">
           <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-5xl xl:max-w-6xl">
           {/* ========================================
               DASHBOARD TAB — Responsive: Desktop Grid + Mobile Bento
@@ -626,36 +626,50 @@ export default function DashboardClient() {
               animate="visible"
             >
               {/* Toggle: Giderler / Gelirler */}
-              <div className="flex rounded-xl bg-white/5 border border-white/10 p-1">
+              <div className="flex rounded-xl bg-white/5 border border-white/10 p-1" role="tablist" aria-label="İşlem türü">
                 <button
                   onClick={() => setTxView('expenses')}
+                  role="tab"
+                  aria-selected={txView === 'expenses'}
+                  aria-controls="tx-panel-expenses"
+                  id="tx-tab-expenses"
                   className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-300 ${
                     txView === 'expenses'
                       ? 'bg-rose-500/15 text-rose-400 shadow-sm'
                       : 'text-slate-500 hover:text-slate-300'
                   }`}
                 >
-                  <ArrowDownRight size={16} />
+                  <ArrowDownRight size={16} aria-hidden="true" />
                   Giderler
                 </button>
                 <button
                   onClick={() => setTxView('incomes')}
+                  role="tab"
+                  aria-selected={txView === 'incomes'}
+                  aria-controls="tx-panel-incomes"
+                  id="tx-tab-incomes"
                   className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-300 ${
                     txView === 'incomes'
                       ? 'bg-emerald-500/15 text-emerald-400 shadow-sm'
                       : 'text-slate-500 hover:text-slate-300'
                   }`}
                 >
-                  <ArrowUpRight size={16} />
+                  <ArrowUpRight size={16} aria-hidden="true" />
                   Gelirler
                 </button>
               </div>
 
-              {txView === 'expenses' ? (
-                <ExpenseList />
-              ) : (
-                <IncomeList onEditIncome={setEditingIncome} />
-              )}
+              <div
+                role="tabpanel"
+                id={txView === 'expenses' ? 'tx-panel-expenses' : 'tx-panel-incomes'}
+                aria-labelledby={txView === 'expenses' ? 'tx-tab-expenses' : 'tx-tab-incomes'}
+              >
+                {txView === 'expenses' ? (
+                  <ExpenseList />
+                ) : (
+                  <IncomeList onEditIncome={setEditingIncome} />
+                )}
+              </div>
             </motion.div>
             </div>
             </>

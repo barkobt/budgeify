@@ -52,7 +52,7 @@ export const Drawer: React.FC<DrawerProps> = ({
           style={{ background: 'linear-gradient(180deg, rgba(13, 13, 31, 0.98) 0%, rgba(10, 10, 26, 0.98) 100%)' }}
         >
           {/* Handle */}
-          <div className="mx-auto mt-4 h-1.5 w-12 shrink-0 rounded-full bg-white/20" />
+          <div className="mx-auto mt-4 h-1.5 w-12 shrink-0 rounded-full bg-white/20" aria-hidden="true" />
 
           {/* Title with Close Button */}
           {title && (
@@ -69,6 +69,10 @@ export const Drawer: React.FC<DrawerProps> = ({
               </button>
             </div>
           )}
+          {/* P9: Screen reader description for drawer content */}
+          <VaulDrawer.Description className="sr-only">
+            {title ? `${title} formu` : 'İçerik paneli'}
+          </VaulDrawer.Description>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto px-6 py-4 pb-8">

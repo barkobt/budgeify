@@ -1828,6 +1828,109 @@
 }
 
 /* ========================================
+   P8: PERFORMANCE — Content Visibility & Containment
+   ======================================== */
+
+/* Off-screen sections: skip rendering until near viewport */
+.perf-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Layout containment for heavy isolated widgets */
+.perf-contain {
+  contain: layout style paint;
+}
+
+/* GPU layer promotion for animated fixed elements */
+.perf-gpu {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Ambient layer: isolate from main paint tree */
+.ambient-layer {
+  contain: strict;
+  content-visibility: auto;
+}
+
+/* ========================================
+   P9: ACCESSIBILITY UTILITIES
+   ======================================== */
+
+/* Screen-reader only — visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip-to-content link — visible on focus for keyboard users */
+.skip-to-content {
+  position: fixed;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 12px 24px;
+  border-radius: 0 0 12px 12px;
+  background: var(--color-primary, #7C3AED);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+  top: 0;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Global focus-visible outline — high contrast for keyboard navigation */
+@layer base {
+  :focus-visible {
+    outline: 2px solid rgba(124, 58, 237, 0.8);
+    outline-offset: 2px;
+  }
+
+  /* Remove default outline when not using keyboard */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Input fields get a subtler glow focus */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.5), 0 0 12px rgba(124, 58, 237, 0.15);
+  }
+
+  /* Buttons get the ring + glow combo */
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid rgba(124, 58, 237, 0.8);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+  }
+
+  /* Links */
+  a:focus-visible {
+    outline: 2px solid rgba(124, 58, 237, 0.8);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ========================================
    v4.0: REDUCED MOTION
    ======================================== */
 
@@ -1839,5 +1942,15 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* P8: Disable GPU layer hints when motion reduced */
+  .perf-gpu {
+    will-change: auto;
+  }
+
+  /* P9: Keep focus outlines even with reduced motion */
+  :focus-visible {
+    transition-duration: 0ms !important;
   }
 }

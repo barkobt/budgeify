@@ -46,7 +46,7 @@ const AddToGoalSchema = z.object({
   amount: z.number().positive('Birikim tutarı pozitif olmalı'),
 });
 
-const GoalIdSchema = z.string().min(1, 'Geçersiz hedef ID');
+const GoalIdSchema = z.string().uuid('Geçersiz hedef ID');
 
 export type CreateGoalInput = z.infer<typeof CreateGoalSchema>;
 export type UpdateGoalInput = z.infer<typeof UpdateGoalSchema>;

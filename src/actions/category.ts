@@ -1,32 +1,48 @@
 'use server';
 
 /**
- * Category Server Actions
+ * Category Server Actions (v7.0 — Sovereign Pattern)
  *
- * 🎓 MENTOR NOTU - Default Categories:
- * ------------------------------------
- * Kategoriler iki türlü olabilir:
- * 1. Sistem kategorileri (isDefault=true, userId=null)
- * 2. Kullanıcı kategorileri (isDefault=false, userId=user.id)
- *
- * Sistem kategorileri tüm kullanıcılar için ortaktır.
+ * Pattern: Auth → Validate → Execute → Revalidate
+ * Returns: ActionResult<T> discriminated union
+ * Errors: Turkish user-facing, English server logs
  */
 
 import { db } from '@/db';
-import { categories, NewCategory, users } from '@/db/schema';
+import { categories, type NewCategory, users } from '@/db/schema';
 import { eq, and, or } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
-/**
- * Helper: Get user ID from Clerk session
- */
-async function getUserId(): Promise<string> {
+// ========================================
+// TYPES
+// ========================================
+
+type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
+// ========================================
+// ZOD SCHEMAS
+// ========================================
+
+const CreateCategorySchema = z.object({
+  name: z.string().min(1, 'Kategori adı gerekli').max(50),
+  icon: z.string().min(1),
+  color: z.string().min(1),
+  type: z.enum(['income', 'expense']),
+});
+
+const CategoryIdSchema = z.string().uuid('Geçersiz kategori ID');
+
+// ========================================
+// AUTH HELPER
+// ========================================
+
+async function resolveUserId(): Promise<ActionResult<string>> {
   const { userId: clerkId } = await auth();
-
-  if (!clerkId) {
-    throw new Error('Unauthorized');
-  }
+  if (!clerkId) return { success: false, error: 'Oturum açmanız gerekiyor' };
 
   const user = await db
     .select({ id: users.id })
@@ -34,11 +50,8 @@ async function getUserId(): Promise<string> {
     .where(eq(users.clerkId, clerkId))
     .limit(1);
 
-  if (!user[0]) {
-    throw new Error('User not found in database');
-  }
-
-  return user[0].id;
+  if (!user[0]) return { success: false, error: 'Kullanıcı bulunamadı' };
+  return { success: true, data: user[0].id };
 }
 
 /**
@@ -81,76 +94,83 @@ const DEFAULT_INCOME_CATEGORIES: Omit<NewCategory, 'id' | 'createdAt'>[] = [
  * Seed Default Categories
  * Varsayılan kategorileri oluştur (sadece yoksa)
  */
-export async function seedDefaultCategories() {
-  // Check if default categories exist
-  const existingDefaults = await db
-    .select()
-    .from(categories)
-    .where(eq(categories.isDefault, true));
+export async function seedDefaultCategories(): Promise<ActionResult<{ message: string }>> {
+  try {
+    // Check if default categories exist
+    const existingDefaults = await db
+      .select()
+      .from(categories)
+      .where(eq(categories.isDefault, true));
 
-  if (existingDefaults.length > 0) {
-    // Sync name mismatches for existing defaults (e.g. 'Kredi Kartı' → 'Kredi Kartı Borcu')
-    const allDefaults = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME_CATEGORIES];
-    for (const def of allDefaults) {
-      const existing = existingDefaults.find(
-        (e) => e.icon === def.icon && e.type === def.type && e.isDefault
-      );
-      if (existing && existing.name !== def.name) {
-        await db
-          .update(categories)
-          .set({ name: def.name })
-          .where(eq(categories.id, existing.id));
+    if (existingDefaults.length > 0) {
+      // Sync name mismatches for existing defaults (e.g. 'Kredi Kartı' → 'Kredi Kartı Borcu')
+      const allDefaults = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME_CATEGORIES];
+      for (const def of allDefaults) {
+        const existing = existingDefaults.find(
+          (e) => e.icon === def.icon && e.type === def.type && e.isDefault
+        );
+        if (existing && existing.name !== def.name) {
+          await db
+            .update(categories)
+            .set({ name: def.name })
+            .where(eq(categories.id, existing.id));
+        }
       }
+      return { success: true, data: { message: 'Default categories already exist' } };
     }
-    return { message: 'Default categories already exist' };
+
+    // Insert all default categories
+    const allDefaults = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME_CATEGORIES];
+    await db.insert(categories).values(allDefaults);
+
+    return { success: true, data: { message: 'Default categories created successfully' } };
+  } catch (error) {
+    console.error('[seedDefaultCategories]', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Varsayılan kategoriler oluşturulamadı' };
   }
-
-  // Insert all default categories
-  const allDefaults = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME_CATEGORIES];
-
-  await db.insert(categories).values(allDefaults);
-
-  return { message: 'Default categories created successfully' };
 }
 
 /**
  * Get All Categories
  * Sistem + kullanıcı kategorileri
  */
-export async function getCategories(type?: 'income' | 'expense') {
-  const userId = await getUserId();
+export async function getCategories(type?: 'income' | 'expense'): Promise<ActionResult<(typeof categories.$inferSelect)[]>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
-  const query = db
-    .select()
-    .from(categories)
-    .where(
-      or(
-        eq(categories.isDefault, true),
-        eq(categories.userId, userId)
-      )
-    );
+  // EXECUTE
+  try {
+    const result = await db
+      .select()
+      .from(categories)
+      .where(
+        or(
+          eq(categories.isDefault, true),
+          eq(categories.userId, userResult.data)
+        )
+      );
 
-  const result = await query;
-
-  // Filter by type if specified
-  if (type) {
-    return result.filter((c) => c.type === type);
+    // Filter by type if specified
+    const filtered = type ? result.filter((c) => c.type === type) : result;
+    return { success: true, data: filtered };
+  } catch (error) {
+    console.error('[getCategories]', { userId: userResult.data, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Kategoriler yüklenemedi' };
   }
-
-  return result;
 }
 
 /**
  * Get Expense Categories
  */
-export async function getExpenseCategories() {
+export async function getExpenseCategories(): Promise<ActionResult<(typeof categories.$inferSelect)[]>> {
   return getCategories('expense');
 }
 
 /**
  * Get Income Categories
  */
-export async function getIncomeCategories() {
+export async function getIncomeCategories(): Promise<ActionResult<(typeof categories.$inferSelect)[]>> {
   return getCategories('income');
 }
 
@@ -162,56 +182,80 @@ export async function createCategory(data: {
   icon: string;
   color: string;
   type: 'income' | 'expense';
-}) {
-  const userId = await getUserId();
+}): Promise<ActionResult<typeof categories.$inferSelect>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
-  const newCategory: NewCategory = {
-    name: data.name,
-    icon: data.icon,
-    color: data.color,
-    type: data.type,
-    isDefault: false,
-    userId,
-  };
+  // VALIDATE
+  const parsed = CreateCategorySchema.safeParse(data);
+  if (!parsed.success) return { success: false, error: 'Geçersiz veri' };
 
-  const [created] = await db.insert(categories).values(newCategory).returning();
+  // EXECUTE
+  try {
+    const newCategory: NewCategory = {
+      name: parsed.data.name,
+      icon: parsed.data.icon,
+      color: parsed.data.color,
+      type: parsed.data.type,
+      isDefault: false,
+      userId: userResult.data,
+    };
 
-  revalidatePath('/dashboard');
-  revalidatePath('/expenses');
-  revalidatePath('/income');
+    const [created] = await db.insert(categories).values(newCategory).returning();
 
-  return created;
+    // REVALIDATE
+    revalidatePath('/dashboard');
+    revalidatePath('/expenses');
+    revalidatePath('/income');
+
+    return { success: true, data: created };
+  } catch (error) {
+    console.error('[createCategory]', { userId: userResult.data, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Kategori oluşturulamadı' };
+  }
 }
 
 /**
  * Delete Custom Category
  * Sadece kullanıcının kendi kategorilerini silebilir
  */
-export async function deleteCategory(id: string) {
-  const userId = await getUserId();
+export async function deleteCategory(id: string): Promise<ActionResult<{ id: string }>> {
+  // AUTH
+  const userResult = await resolveUserId();
+  if (!userResult.success) return userResult;
 
-  // Verify ownership (only non-default categories can be deleted)
-  const existing = await db
-    .select()
-    .from(categories)
-    .where(
-      and(
-        eq(categories.id, id),
-        eq(categories.userId, userId),
-        eq(categories.isDefault, false)
+  // VALIDATE
+  const idParsed = CategoryIdSchema.safeParse(id);
+  if (!idParsed.success) return { success: false, error: 'Geçersiz kategori ID' };
+
+  // EXECUTE
+  try {
+    // Verify ownership (only non-default categories can be deleted)
+    const existing = await db
+      .select()
+      .from(categories)
+      .where(
+        and(
+          eq(categories.id, idParsed.data),
+          eq(categories.userId, userResult.data),
+          eq(categories.isDefault, false)
+        )
       )
-    )
-    .limit(1);
+      .limit(1);
 
-  if (!existing[0]) {
-    throw new Error('Category not found or cannot be deleted');
+    if (!existing[0]) return { success: false, error: 'Kategori bulunamadı veya silinemez' };
+
+    await db.delete(categories).where(eq(categories.id, idParsed.data));
+
+    // REVALIDATE
+    revalidatePath('/dashboard');
+    revalidatePath('/expenses');
+    revalidatePath('/income');
+
+    return { success: true, data: { id: idParsed.data } };
+  } catch (error) {
+    console.error('[deleteCategory]', { userId: userResult.data, id, error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Kategori silinirken bir hata oluştu' };
   }
-
-  await db.delete(categories).where(eq(categories.id, id));
-
-  revalidatePath('/dashboard');
-  revalidatePath('/expenses');
-  revalidatePath('/income');
-
-  return { success: true };
 }

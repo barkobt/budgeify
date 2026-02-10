@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { WebVitalsReporter } from '@/components/ui/WebVitalsReporter';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'sonner';
 import './globals.css';
@@ -67,13 +68,25 @@ export default function RootLayout({
 }) {
   const inner = (
     <html lang="tr" className={`${inter.variable} ${plusJakarta.variable}`}>
+      <head>
+        {/* P8: Preconnect hints — reduce connection latency for critical third-party origins */}
+        <link rel="preconnect" href="https://clerk.budgeify.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://clerk.budgeify.com" />
+        <link rel="preconnect" href="https://img.clerk.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://img.clerk.com" />
+      </head>
       <body className="min-h-screen antialiased font-sans">
+        {/* P9: Skip-to-content link for keyboard navigation */}
+        <a href="#main-content" className="skip-to-content">
+          Ana içeriğe geç
+        </a>
         {/* v4.0: Ambient Gradient Orbs — Depth Layer System */}
         <div className="ambient-layer" aria-hidden="true">
           <div className="ambient-orb-indigo" />
           <div className="ambient-orb-violet" />
         </div>
         <ErrorBoundary>{children}</ErrorBoundary>
+        <WebVitalsReporter />
         <Toaster
           position="top-right"
           toastOptions={{

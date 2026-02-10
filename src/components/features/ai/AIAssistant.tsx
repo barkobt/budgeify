@@ -245,6 +245,10 @@ export const AIAssistant: React.FC = () => {
         initial={{ y: '100%' }}
         animate={{ y: isOpen ? 0 : '100%' }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Oracle AI Asistan"
+        aria-hidden={!isOpen}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
@@ -255,7 +259,7 @@ export const AIAssistant: React.FC = () => {
             <div>
               <h3 className="text-base font-semibold text-white">Oracle AI</h3>
               <div className="flex items-center gap-1.5">
-                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
                 <p className="text-xs text-slate-400">Gerçek veri analizi</p>
               </div>
             </div>
@@ -372,21 +376,24 @@ export const AIAssistant: React.FC = () => {
           ))}
 
           {/* Typing Indicator */}
-          {isTyping && (
-            <motion.div
-              className="flex justify-start"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <div className="ai-message-gradient rounded-2xl rounded-bl-md px-4 py-3">
-                <div className="flex items-center gap-1.5">
-                  <div className="typing-dot" />
-                  <div className="typing-dot" />
-                  <div className="typing-dot" />
+          <div aria-live="polite" aria-atomic="true">
+            {isTyping && (
+              <motion.div
+                className="flex justify-start"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <div className="ai-message-gradient rounded-2xl rounded-bl-md px-4 py-3">
+                  <div className="flex items-center gap-1.5" aria-hidden="true">
+                    <div className="typing-dot" />
+                    <div className="typing-dot" />
+                    <div className="typing-dot" />
+                  </div>
+                  <span className="sr-only">Oracle düşünüyor...</span>
                 </div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )}
+          </div>
 
           <div ref={messagesEndRef} />
         </div>
