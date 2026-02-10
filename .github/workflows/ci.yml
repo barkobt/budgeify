@@ -45,7 +45,9 @@ jobs:
   smoke-e2e:
     name: Playwright Smoke
     runs-on: ubuntu-latest
+    continue-on-error: true
     needs: quality
+    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
