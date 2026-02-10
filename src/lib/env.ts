@@ -16,8 +16,14 @@ export const env = {
   // Clerk redirect URLs
   clerkSignInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? '/sign-in',
   clerkSignUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL ?? '/sign-up',
-  clerkAfterSignInUrl: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL ?? '/dashboard',
-  clerkAfterSignUpUrl: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL ?? '/dashboard',
+  clerkSignInFallbackRedirectUrl:
+    process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL ??
+    process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL ??
+    '/dashboard',
+  clerkSignUpFallbackRedirectUrl:
+    process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL ??
+    process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL ??
+    '/dashboard',
 
   // Feature flags
   get isClerkEnabled(): boolean {

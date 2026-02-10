@@ -41,6 +41,7 @@ jobs:
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_FEATURE_ORACLE: ${{ secrets.NEXT_PUBLIC_FEATURE_ORACLE }}
+          NEXT_PUBLIC_FEATURE_AI_BOX: ${{ secrets.NEXT_PUBLIC_FEATURE_AI_BOX }}
 
   smoke-e2e:
     name: Playwright Smoke
@@ -74,6 +75,7 @@ jobs:
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_FEATURE_ORACLE: ${{ secrets.NEXT_PUBLIC_FEATURE_ORACLE }}
+          NEXT_PUBLIC_FEATURE_AI_BOX: ${{ secrets.NEXT_PUBLIC_FEATURE_AI_BOX }}
 
   lighthouse:
     name: Lighthouse Audit
@@ -101,6 +103,7 @@ jobs:
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_FEATURE_ORACLE: ${{ secrets.NEXT_PUBLIC_FEATURE_ORACLE }}
+          NEXT_PUBLIC_FEATURE_AI_BOX: ${{ secrets.NEXT_PUBLIC_FEATURE_AI_BOX }}
 
       - name: Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12
