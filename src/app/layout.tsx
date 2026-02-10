@@ -36,7 +36,8 @@ export const metadata: Metadata = {
   category: 'finance',
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon-32.png',
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
     apple: '/apple-icon-180.png',
   },
   robots: { index: true, follow: true },
