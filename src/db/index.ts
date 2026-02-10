@@ -104,9 +104,13 @@ export const db = new Proxy({} as ReturnType<typeof createDb>, {
         if (typeof window === 'undefined' && process.env.NEXT_PHASE === 'phase-production-build') {
           return undefined;
         }
-        // Runtime cold-start: warn
-        console.warn('[Budgeify] DATABASE_URL not yet available — edge cold-start');
-        return undefined;
+        // Runtime cold-start: throw actionable error instead of returning undefined
+        // (which would cause cryptic "Cannot read properties of undefined" 500s)
+        throw new Error(
+          '[Budgeify] DATABASE_URL is not available at runtime. ' +
+          'This typically happens during edge function cold-start. ' +
+          'Ensure DATABASE_URL is set in Vercel Environment Variables for all environments.'
+        );
       }
       _db = createDb();
     }

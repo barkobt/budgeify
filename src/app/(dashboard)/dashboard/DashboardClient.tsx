@@ -327,6 +327,37 @@ export default function DashboardClient() {
     setCurrency(CURRENCIES[(idx + 1) % CURRENCIES.length]);
   };
 
+  // Hydration guard: defer full render until after mount to prevent
+  // SSR/client mismatch from Zustand store + localStorage rehydration.
+  if (!isMounted) {
+    return (
+      <div className="relative">
+        <div className="preflight-screen">
+          <div
+            className="absolute rounded-full blur-xl animate-pulse"
+            style={{
+              width: 240,
+              height: 240,
+              background: 'radial-gradient(circle, rgba(124,58,237,0.20) 0%, transparent 70%)',
+            }}
+          />
+          <div className="loading-logo relative z-10">
+            <PiggyBank size={80} className="text-primary" style={{ filter: 'drop-shadow(0 0 20px rgba(124,58,237,0.5))' }} />
+          </div>
+          <div className="preflight-status" aria-live="polite">
+            <span className="preflight-text preflight-text-1">Sistemler uyanıyor...</span>
+            <span className="preflight-text preflight-text-2">Finansal çekirdek hazırlanıyor...</span>
+            <span className="preflight-text preflight-text-3">Veriler senkronize ediliyor...</span>
+            <span className="preflight-text preflight-text-4">Oracle aktif</span>
+          </div>
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-32 h-0.5 rounded-full bg-white/6 overflow-hidden">
+            <div className="loading-progress-bar" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       {/* Client-side cinematic entrance — replaces server-side delay */}
