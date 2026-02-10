@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Budgeify Neon Pig</title>
+  <desc id="desc">Dark rounded-square icon with neon purple pig outline.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#171735" />
+      <stop offset="62%" stop-color="#0b1024" />
+      <stop offset="100%" stop-color="#05050d" />
+    </radialGradient>
+    <linearGradient id="neon" x1="20%" y1="10%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#f0abfc" />
+      <stop offset="45%" stop-color="#d946ef" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <style>
+      .outline { fill: none; stroke: url(#neon); stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <rect x="40" y="40" width="944" height="944" rx="220" fill="url(#bg)" />
+
+  <g filter="url(#glow)">
+    <path class="outline" stroke-width="42" d="M365 426 L292 288 L450 352" />
+    <path class="outline" stroke-width="42" d="M659 426 L732 288 L574 352" />
+    <ellipse class="outline" stroke-width="44" cx="512" cy="566" rx="286" ry="252" />
+    <ellipse class="outline" stroke-width="38" cx="512" cy="636" rx="154" ry="118" />
+    <circle cx="458" cy="636" r="30" fill="url(#neon)" />
+    <circle cx="566" cy="636" r="30" fill="url(#neon)" />
+    <circle cx="430" cy="536" r="26" fill="url(#neon)" />
+    <circle cx="594" cy="536" r="26" fill="url(#neon)" />
+    <path class="outline" stroke-width="30" d="M358 742 Q512 824 666 742" />
+  </g>
+</svg>
