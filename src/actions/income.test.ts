@@ -203,4 +203,13 @@ describe('Income Actions — Error Handling', () => {
     expect(result.success).toBe(false);
     if (!result.success) expect(result.error).toBe('Gelir eklenirken bir hata oluştu');
   });
+
+  it('createIncome returns failure result when user resolution throws', async () => {
+    mockAuthenticatedUser();
+    mockDb.limit.mockRejectedValueOnce(new Error('User lookup failed'));
+
+    const result = await createIncome({ amount: 100 });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(result.error).toBe('Kullanıcı doğrulanamadı');
+  });
 });
