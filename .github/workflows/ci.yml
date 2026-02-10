@@ -59,6 +59,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Playwright test runner
+        run: npm i -D @playwright/test@1.55.0
+
       - name: Install Playwright browser
         run: npx -y playwright@1.55.0 install --with-deps chromium
 
