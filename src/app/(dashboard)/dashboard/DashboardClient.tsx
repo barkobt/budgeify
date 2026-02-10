@@ -353,7 +353,7 @@ export default function DashboardClient() {
 
       <PageWrapper>
         <main id="main-content" className="min-h-screen pb-24 lg:pb-8 px-4 sm:px-6 lg:pl-72 lg:pr-8 lg:pt-6">
-          <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-5xl xl:max-w-6xl">
+          <div className="mx-auto max-w-lg md:max-w-xl lg:max-w-6xl xl:max-w-7xl">
           {/* ========================================
               DASHBOARD TAB — Responsive: Desktop Grid + Mobile Bento
               ======================================== */}
@@ -373,14 +373,14 @@ export default function DashboardClient() {
 
                 {/* 12-column grid */}
                 <div className="grid grid-cols-12 gap-4">
-                  {/* Total Balance — col-span-8 */}
-                  <div className="col-span-8 min-h-90">
+                  {/* Total Balance — expands when Oracle panel is hidden */}
+                  <div className={`${features.oracle ? 'col-span-9' : 'col-span-12'} min-h-90 min-w-0`}>
                     <DesktopBalanceHero />
                   </div>
 
-                  {/* AI Recommendations — col-span-4 */}
+                  {/* AI Recommendations — right rail when Oracle is enabled */}
                   {features.oracle && (
-                  <div className="col-span-4 min-h-90 min-w-0">
+                  <div className="col-span-3 min-h-90 min-w-0">
                     <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
                       <div className="mb-3">
                         <h2 className="text-sm font-semibold text-white">AI Oneriler</h2>
