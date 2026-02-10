@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 
 const PLAN_FEATURES_MONTHLY = [
-  'AI Finansal Analiz',
+  'Yapay Zeka Finansal Analiz',
   'Sınırsız İşlem',
   'Gerçek Zamanlı Senkronizasyon',
   'Hedef Takibi',
@@ -32,7 +32,7 @@ const PLAN_FEATURES_MONTHLY = [
 ];
 
 const PLAN_FEATURES_YEARLY = [
-  'AI Finansal Analiz',
+  'Yapay Zeka Finansal Analiz',
   'Sınırsız İşlem',
   'Gerçek Zamanlı Senkronizasyon',
   'Hedef Takibi',
@@ -62,7 +62,7 @@ const FAQ_ITEMS = [
 ];
 
 const COMPARISON_FEATURES = [
-  { name: 'AI Finansal Analiz', icon: Brain, monthly: true, yearly: true },
+  { name: 'Yapay Zeka Finansal Analiz', icon: Brain, monthly: true, yearly: true },
   { name: 'Sınırsız İşlem', icon: Zap, monthly: true, yearly: true },
   { name: 'Gerçek Zamanlı Senkronizasyon', icon: Clock, monthly: true, yearly: true },
   { name: 'Hedef Takibi', icon: Target, monthly: true, yearly: true },

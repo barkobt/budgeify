@@ -9,7 +9,7 @@ import type { Metadata } from 'next';
 import LandingClient from '@/components/landing/LandingClient';
 
 export const metadata: Metadata = {
-  title: 'Budgeify - AI-Powered Kişisel Finans Yönetimi',
+  title: 'Budgeify - Bütçenizi Yapay Zeka ile Yönetin',
   description:
     'Yapay zekâ destekli kişisel finans yönetim platformu. Harcama takibi, bütçe optimizasyonu ve akıllı tasarruf önerileri ile finansal özgürlüğünüze ulaşın.',
   keywords: [
@@ -18,11 +18,11 @@ export const metadata: Metadata = {
     'harcama takibi',
     'tasarruf',
     'yapay zeka finans',
-    'AI budgeting',
-    'financial planning',
+    'yapay zeka bütçe yönetimi',
+    'finansal planlama',
   ],
   openGraph: {
-    title: 'Budgeify - AI-Powered Kişisel Finans Yönetimi',
+    title: 'Budgeify - Bütçenizi Yapay Zeka ile Yönetin',
     description:
       'Yapay zekâ destekli kişisel finans yönetim platformu. Harcama takibi, bütçe optimizasyonu ve akıllı tasarruf önerileri.',
     type: 'website',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Budgeify - AI-Powered Kişisel Finans',
+    title: 'Budgeify - Yapay Zeka Destekli Kişisel Finans',
     description: 'Yapay zekâ destekli kişisel finans yönetim platformu.',
   },
   alternates: {
