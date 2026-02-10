@@ -458,8 +458,8 @@ export default function LandingClient() {
               {/* Main headline */}
               <HeroText delay={0.2}>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.1] mb-6 font-display">
-                  Sermayenizi{' '}
-                  <span className="text-gradient-logo">Yapay Zekâ</span>{' '}
+                  Bütçenizi{' '}
+                  <span className="text-gradient-logo">Yapay Zeka</span>{' '}
                   ile Yönetin
                 </h1>
               </HeroText>
@@ -483,7 +483,7 @@ export default function LandingClient() {
                   </Link>
                   <button className="flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 text-sm font-medium text-slate-300 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all whitespace-nowrap">
                     <Play size={14} />
-                    Demo İzle
+                    Tanıtımı İzle
                   </button>
                 </div>
               </HeroText>
@@ -521,7 +521,7 @@ export default function LandingClient() {
               <span className="text-gradient-logo">Finansal Özgürlük</span>
             </h2>
             <p className="text-base text-slate-400 max-w-xl mx-auto">
-              Yapay zekâ destekli finansal özgürlüğünüze dört adımda ulaşın.
+              Yapay zeka destekli finansal özgürlüğünüze dört adımda ulaşın.
             </p>
           </FadeInDiv>
 
@@ -539,7 +539,7 @@ export default function LandingClient() {
               {
                 step: '02',
                 icon: Brain,
-                title: 'Yapay Zekâ Eğitimi',
+                title: 'Yapay Zeka Eğitimi',
                 desc: 'AI modeli harcama alışkanlıklarınızı öğrenir. Kategori bazlı analiz ve trend tahminleri oluşturur.',
               },
               {
@@ -587,7 +587,7 @@ export default function LandingClient() {
               <span className="text-gradient-logo">Finansal Netlik</span>
             </h2>
             <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto">
-              Varlıklarınız için otomatik zekânın gücünü açığa çıkarın. Sistemimiz öğrenir, uyum sağlar ve servetinizi gerçek zamanlı büyütür.
+              Varlıklarınız için otomatik zekanın gücünü açığa çıkarın. Sistemimiz öğrenir, uyum sağlar ve servetinizi gerçek zamanlı büyütür.
             </p>
           </FadeInDiv>
 
@@ -596,7 +596,7 @@ export default function LandingClient() {
               {
                 icon: TrendingUp,
                 title: 'Öngörülü Harcama',
-                desc: 'Yapay zekâmız, geçmiş veriler ve piyasa trendlerini kullanarak harcamalarınızı gerçekleşmeden önce tahmin eder ve bütçenizi proaktif olarak ayarlamanız için sizi uyarır.',
+                desc: 'Yapay zeka motorumuz, geçmiş veriler ve piyasa trendlerini kullanarak harcamalarınızı gerçekleşmeden önce tahmin eder ve bütçenizi proaktif olarak ayarlamanız için sizi uyarır.',
               },
               {
                 icon: Brain,
@@ -680,7 +680,7 @@ export default function LandingClient() {
                 <span className="text-gradient-logo">Herkesin Hakkı</span>
               </h2>
               <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-6">
-                Budgeify, yapay zekâ destekli kişisel finans yönetim platformudur. Amacımız, karmaşık finansal kararları basitleştirmek ve herkesin parasını daha akıllıca yönetmesini sağlamaktır.
+                Budgeify, yapay zeka destekli kişisel finans yönetim platformudur. Amacımız, karmaşık finansal kararları basitleştirmek ve herkesin parasını daha akıllıca yönetmesini sağlamaktır.
               </p>
               <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-8">
                 Modern arayüzümüz ve güçlü analiz motorumuz ile harcama alışkanlıklarınızı anlar, tasarruf fırsatlarını belirler ve finansal hedeflerinize ulaşmanız için size rehberlik eder.
@@ -710,8 +710,8 @@ export default function LandingClient() {
                 <div className="relative space-y-5">
                   {[
                     { title: 'Next.js 14', desc: 'Sunucu öncelikli React framework' },
-                    { title: 'Yapay Zekâ Motoru', desc: 'Harcama tahmin ve optimizasyon' },
-                    { title: 'Gerçek Zamanlı Sync', desc: 'Tüm cihazlarda anlık senkronizasyon' },
+                    { title: 'Yapay Zeka Motoru', desc: 'Harcama tahmin ve optimizasyon' },
+                    { title: 'Gerçek Zamanlı Senkronizasyon', desc: 'Tüm cihazlarda anlık senkronizasyon' },
                     { title: 'Banka Düzeyinde Güvenlik', desc: 'Clerk auth + şifreli veri katmanı' },
                   ].map((item, i) => (
                     <div key={item.title} className="flex items-start gap-3">
@@ -754,7 +754,7 @@ export default function LandingClient() {
               </FadeInDiv>
               <FadeInDiv direction="up" delay={0.1}>
                 <p className="text-base text-slate-400 mb-8 max-w-xl mx-auto">
-                  Yeni nesil finansal zekâ için bekleme listesine katılın. Erken kullanıcılar premium avantajlardan yararlanır.
+                  Yeni nesil finansal zeka için bekleme listesine katılın. Erken kullanıcılar premium avantajlardan yararlanır.
                 </p>
               </FadeInDiv>
               <FadeInDiv direction="up" delay={0.2}>
