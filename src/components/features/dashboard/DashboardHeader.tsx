@@ -12,6 +12,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Bell, Plus, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { useNotifications } from '@/components/features/notifications/useNotifications';
+import { NotificationPanel } from '@/components/features/notifications/NotificationPanel';
 
 interface DashboardHeaderProps {
   onAddIncome: () => void;
@@ -20,17 +22,23 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onAddIncome, onAddExpense }) => {
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+  const { notifications, unreadCount } = useNotifications();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setShowAddMenu(false);
       }
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
     };
-    if (showAddMenu) document.addEventListener('mousedown', handleClickOutside);
+    if (showAddMenu || showNotifications) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showAddMenu]);
+  }, [showAddMenu, showNotifications]);
 
   return (
     <div className="flex items-center justify-between gap-4 mb-6">
@@ -61,13 +69,28 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onAddIncome, o
           </kbd>
         </div>
 
-        {/* Notification Bell */}
-        <button
-          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/8 text-slate-400 hover:text-white hover:bg-white/8 transition-all"
-          aria-label="Bildirimler"
-        >
-          <Bell size={16} strokeWidth={1.8} />
-        </button>
+        {/* Notification Bell + Dropdown */}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setShowNotifications((prev) => !prev)}
+            className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/8 text-slate-400 hover:text-white hover:bg-white/8 transition-all"
+            aria-label="Bildirimler"
+          >
+            <Bell size={16} strokeWidth={1.8} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-[#0a0a0f]">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {showNotifications && (
+            <NotificationPanel
+              notifications={notifications}
+              onClose={() => setShowNotifications(false)}
+            />
+          )}
+        </div>
 
         {/* Add New CTA — Dropdown */}
         <div className="relative" ref={menuRef}>

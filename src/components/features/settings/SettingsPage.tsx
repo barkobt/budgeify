@@ -25,6 +25,7 @@ import {
   Lock,
   Palette,
   CreditCard,
+  Camera,
 } from 'lucide-react';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import { SignOutDialog } from './SignOutDialog';
@@ -79,10 +80,13 @@ export function SettingsPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowProfile(true)}
-            className="shrink-0 group"
+            className="shrink-0 group relative"
             aria-label="Profil yönetimini aç"
           >
             <ClerkAvatar useUser={useUserHook} />
+            <div className="absolute -bottom-0.5 -right-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-primary ring-2 ring-[#0a0a0f] group-hover:bg-primary-hover transition-colors">
+              <Camera size={11} className="text-white" />
+            </div>
           </button>
           <div className="min-w-0">
             <ClerkUserInfo useUser={useUserHook} />
@@ -183,7 +187,7 @@ export function SettingsPage() {
       {/* App Info */}
       <div className="glass-panel rounded-xl p-4 text-center">
         <p className="text-xs text-zinc-500">
-          Budgeify v7.0 — App Store Ready
+          Budgeify v7.1 — App Store Ready
         </p>
         <p className="text-[10px] text-zinc-600 mt-1">
           Next.js • Clerk Auth • Neon DB • Framer Motion
