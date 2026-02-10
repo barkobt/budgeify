@@ -99,16 +99,20 @@ export default function SignUpPage() {
         </div>
         <Logo size="md" showText={true} className="justify-center mb-2" href="/" />
         <p className="text-[10px] font-medium tracking-[0.3em] uppercase text-purple-400">
-          Enterprise Portal
+          Güvenli Kayıt
         </p>
       </div>
+
+      <p className="text-center mb-3 text-[11px] text-slate-500">
+        Sosyal giriş seçenekleri etkinse Google ve GitHub ile kayıt olabilirsiniz.
+      </p>
 
       {/* Clerk Sign Up */}
       <ClerkSignUpLoader />
 
       {/* Auth helper text */}
       <p className="text-center mt-4 text-[11px] text-slate-600 leading-relaxed max-w-xs mx-auto">
-        Email ile girişte kod sık geliyorsa, şifre ile giriş veya Google/GitHub ile giriş tercih edebilirsiniz.
+        Kod sık geliyorsa, şifre ile giriş veya sosyal giriş seçeneklerini kullanabilirsiniz.
       </p>
 
       {/* Footer link */}
