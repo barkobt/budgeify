@@ -69,25 +69,25 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         return this.props.fallback;
       }
 
-      // Default fallback UI
+      // Default fallback UI — dark theme matching Depth Black design
       return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="flex min-h-screen items-center justify-center px-4" style={{ background: '#050505' }}>
           <div className="w-full max-w-md">
-            <Card>
+            <Card variant="glass">
               <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
                   <span className="text-3xl">⚠️</span>
                 </div>
                 <CardTitle className="text-center">Bir Hata Oluştu</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4 text-center text-slate-600">
+                <p className="mb-4 text-center text-slate-400">
                   Üzgünüz, beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyerek tekrar
                   deneyin.
                 </p>
                 {process.env.NODE_ENV === 'development' && this.state.error && (
-                  <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-                    <p className="text-xs font-mono text-red-800">
+                  <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+                    <p className="text-xs font-mono text-red-400">
                       {this.state.error.message}
                     </p>
                   </div>

@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
 
+  // P10: Deterministic build ID — prevents version mismatch across devices
+  generateBuildId: async () => {
+    return `build-${Date.now()}`;
+  },
+
   // P8: Tree-shake heavy libraries — only import used exports
   experimental: {
     optimizePackageImports: [
@@ -27,7 +32,7 @@ const nextConfig = {
   // P8: Strict output for smaller bundles
   poweredByHeader: false,
 
-  // Security headers + P8 cache-control for static assets
+  // Security headers + P8 cache-control + P10 CSP + anti-stale
   async headers() {
     return [
       {
@@ -42,6 +47,10 @@ const nextConfig = {
             value: 'DENY',
           },
           {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
@@ -51,7 +60,36 @@ const nextConfig = {
           },
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.budgeify.com https://*.clerk.accounts.dev",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: blob: https://img.clerk.com https://*.clerk.com https://*.gravatar.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "connect-src 'self' https://clerk.budgeify.com https://*.clerk.accounts.dev https://*.neon.tech wss://*.neon.tech",
+              "frame-src 'self' https://clerk.budgeify.com https://*.clerk.accounts.dev",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; '),
+          },
+        ],
+      },
+      // P10: Prevent stale HTML across devices — no browser cache for pages
+      {
+        source: '/:path((?!_next/static|_next/image|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff2?|css|js)).*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
           },
         ],
       },

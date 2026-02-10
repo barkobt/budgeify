@@ -1,6 +1,6 @@
 {
   "name": "budgeify",
-  "version": "1.0.0",
+  "version": "7.0.0",
   "description": "Modern, minimalist personal finance management app",
   "private": true,
   "scripts": {
