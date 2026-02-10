@@ -96,13 +96,13 @@ function GuestNavButtons() {
     <>
       <Link
         href="/sign-in"
-        className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+        className="text-sm font-medium text-slate-400 hover:text-white transition-colors whitespace-nowrap"
       >
         Log In
       </Link>
       <Link
         href="/sign-up"
-        className="px-5 py-2.5 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple"
+        className="px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple whitespace-nowrap"
       >
         Start Free
       </Link>
@@ -393,7 +393,7 @@ export default function LandingClient() {
   useEffect(() => setIsMounted(true), []);
 
   return (
-    <div className="min-h-screen overflow-hidden relative" style={{ background: '#050505' }}>
+    <div className="min-h-screen overflow-x-hidden overflow-y-auto relative" style={{ background: '#050505' }}>
       <MouseFollowGradient />
 
       {/* Nebula background orbs */}
@@ -421,7 +421,7 @@ export default function LandingClient() {
               ))}
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <LandingAuthNav />
             </div>
           </div>
@@ -472,15 +472,15 @@ export default function LandingClient() {
 
               {/* CTA Buttons */}
               <HeroText delay={0.4}>
-                <div className="flex flex-col sm:flex-row items-start gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3">
                   <Link
                     href="/sign-up"
-                    className="group flex items-center gap-2 px-7 py-3.5 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple"
+                    className="group flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple whitespace-nowrap"
                   >
                     Start Free
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </Link>
-                  <button className="flex items-center gap-2 px-7 py-3.5 text-sm font-medium text-slate-300 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all">
+                  <button className="flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 text-sm font-medium text-slate-300 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all whitespace-nowrap">
                     <Play size={14} />
                     Watch Demo
                   </button>
@@ -757,7 +757,7 @@ export default function LandingClient() {
                 </p>
               </FadeInDiv>
               <FadeInDiv direction="up" delay={0.2}>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md mx-auto">
                   <div className="relative flex-1 w-full">
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -773,7 +773,7 @@ export default function LandingClient() {
                   </div>
                   <Link
                     href="/sign-up"
-                    className="px-6 py-3 text-sm font-bold text-white btn-portal-gradient rounded-lg uppercase tracking-wider whitespace-nowrap"
+                    className="w-full sm:w-auto px-6 py-3 text-sm font-bold text-white btn-portal-gradient rounded-lg uppercase tracking-wider whitespace-nowrap text-center"
                   >
                     Join Beta
                   </Link>
@@ -802,9 +802,15 @@ export default function LandingClient() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <Logo size="sm" showText={true} href="/" />
 
-            <p className="text-xs text-slate-600">
-              © 2026 Budgeify Inc. All rights reserved.
-            </p>
+            <div className="flex items-center gap-4">
+              <Link href="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                Gizlilik Politikası
+              </Link>
+              <span className="text-slate-700" aria-hidden="true">|</span>
+              <Link href="/terms" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                Kullanım Koşulları
+              </Link>
+            </div>
 
             <div className="flex items-center gap-4">
               {[
@@ -817,6 +823,12 @@ export default function LandingClient() {
                 </a>
               ))}
             </div>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-xs text-slate-600">
+              © 2026 Budgeify. Tüm hakları saklıdır.
+            </p>
           </div>
         </div>
       </footer>

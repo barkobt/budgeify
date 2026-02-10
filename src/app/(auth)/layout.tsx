@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Shield, Wifi } from 'lucide-react';
+import Footer from '@/components/layout/Footer';
 
 export default function AuthLayout({
   children,
@@ -8,9 +9,10 @@ export default function AuthLayout({
 }) {
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden"
+      className="min-h-screen flex flex-col relative overflow-hidden"
       style={{ background: '#050505' }}
     >
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
       {/* Nebula glow orbs */}
       <div
         className="absolute top-1/4 left-1/3 w-125 h-125 rounded-full pointer-events-none"
@@ -57,6 +59,8 @@ export default function AuthLayout({
           ← Ana sayfaya dön
         </Link>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 }
