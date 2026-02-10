@@ -104,8 +104,12 @@ const MiniGoalGrid = dynamic(
   () => import('@/components/features/dashboard/MiniGoalGrid').then((mod) => ({ default: mod.MiniGoalGrid })),
   { ssr: false }
 );
-const DesktopAICard = features.oracle ? dynamic(
-  () => import('@/components/features/dashboard/DesktopAICard').then((mod) => ({ default: mod.DesktopAICard })),
+const AIBoxShell = dynamic(
+  () => import('@/components/features/dashboard/AIBoxShell').then((mod) => ({ default: mod.AIBoxShell })),
+  { ssr: false }
+);
+const OracleChat = features.oracle ? dynamic(
+  () => import('@/components/features/dashboard/OracleChat').then((mod) => ({ default: mod.OracleChat })),
   { ssr: false }
 ) : () => null;
 
@@ -379,15 +383,24 @@ export default function DashboardClient() {
                   </div>
 
                   {/* AI Recommendations — col-span-4 */}
-                  {features.oracle && (
+                  {features.aiBox && (
                   <div className="col-span-4 min-h-90 min-w-0">
                     <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
-                      <div className="mb-3">
-                        <h2 className="text-sm font-semibold text-white">AI Oneriler</h2>
-                        <p className="text-[11px] text-slate-500">Oracle tarafindan olusturulan ozet ve aksiyonlar</p>
+                      <div className="mb-3 min-w-0">
+                        <h2 className="text-sm font-semibold text-white">Öneriler</h2>
+                        <p className="text-[11px] text-slate-500">
+                          {features.oracle
+                            ? 'Oracle tarafından oluşturulan özet ve aksiyonlar'
+                            : 'Oracle kapalı: hafif öneri görünümü'}
+                        </p>
+                        {process.env.NODE_ENV !== 'production' && (
+                          <p className="mt-1 text-[10px] text-slate-600">
+                            AI_BOX={features.aiBox ? '1' : '0'} · ORACLE={features.oracle ? '1' : '0'}
+                          </p>
+                        )}
                       </div>
-                      <div className="min-w-0">
-                        <DesktopAICard />
+                      <div className="min-w-0 h-full">
+                        {features.oracle ? <OracleChat /> : <AIBoxShell />}
                       </div>
                     </div>
                   </div>
