@@ -12,7 +12,7 @@
  * - Budget alert cards
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -32,8 +32,12 @@ import { getReminders } from '@/actions/reminder';
 import { getBudgetAlerts, checkBudgetAlerts } from '@/actions/budget-alert';
 import type { Reminder, BudgetAlert } from '@/db/schema';
 
+import { Drawer } from '@/components/ui/Drawer';
+
 // Lazy-loaded sub-components
 import { DayDetailPanel } from './DayDetailPanel';
+import type { DayTransaction } from './DayDetailPanel';
+import type { MergedTransaction } from '@/components/features/transactions/TransactionTable';
 
 // ========================================
 // DATE HELPERS (no date-fns needed for this)
@@ -79,13 +83,26 @@ const REMINDER_TYPE_ICON: Record<string, React.ElementType> = {
 interface CalendarPageProps {
   onOpenReminderForm?: () => void;
   onOpenAlertForm?: () => void;
+  onSelectTransaction?: (tx: MergedTransaction) => void;
 }
 
-export function CalendarPage({ onOpenReminderForm, onOpenAlertForm }: CalendarPageProps) {
+// Mobile detection (< lg = < 1024px)
+const LG_QUERY = '(max-width: 1023px)';
+function subscribeMQ(cb: () => void) {
+  const mql = window.matchMedia(LG_QUERY);
+  mql.addEventListener('change', cb);
+  return () => mql.removeEventListener('change', cb);
+}
+function getSnapshotMQ() { return window.matchMedia(LG_QUERY).matches; }
+function getServerSnapshotMQ() { return false; }
+
+export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTransaction }: CalendarPageProps) {
+  const isMobile = useSyncExternalStore(subscribeMQ, getSnapshotMQ, getServerSnapshotMQ);
   const now = new Date();
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(now.getMonth());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showDayDrawer, setShowDayDrawer] = useState(false);
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [budgetAlertsList, setBudgetAlertsList] = useState<BudgetAlert[]>([]);
   const [alertChecks, setAlertChecks] = useState<{ alertId: string; name: string; thresholdAmount: number; currentSpending: number; isTriggered: boolean; percentUsed: number }[]>([]);
@@ -93,6 +110,31 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm }: CalendarPa
   const expenses = useBudgetStore((s) => s.expenses);
   const incomes = useBudgetStore((s) => s.incomes);
   const currency = useBudgetStore((s) => s.currency);
+  const getCategoryById = useBudgetStore((s) => s.getCategoryById);
+
+  const handleTransactionClick = useCallback((dayTx: DayTransaction) => {
+    if (!onSelectTransaction) return;
+    if (dayTx.type === 'expense') {
+      const exp = expenses.find((e) => e.id === dayTx.id);
+      if (!exp) return;
+      const cat = getCategoryById(exp.categoryId);
+      onSelectTransaction({
+        id: exp.id, type: 'expense', label: cat?.name || 'Gider', description: exp.note || '',
+        categoryId: exp.categoryId, categoryName: cat?.name || 'Diğer', categoryColor: cat?.color || '#6B7280',
+        amount: exp.amount, date: exp.date || exp.createdAt, createdAt: exp.createdAt,
+        status: exp.status ?? 'completed', expectedDate: exp.expectedDate,
+      });
+    } else {
+      const inc = incomes.find((i) => i.id === dayTx.id);
+      if (!inc) return;
+      onSelectTransaction({
+        id: inc.id, type: 'income', label: inc.description || 'Gelir', description: inc.description || '',
+        categoryId: inc.category, categoryName: inc.description || 'Gelir', categoryColor: '#10B981',
+        amount: inc.amount, date: inc.date || inc.createdAt, createdAt: inc.createdAt,
+        status: inc.status ?? 'completed', expectedDate: inc.expectedDate,
+      });
+    }
+  }, [expenses, incomes, getCategoryById, onSelectTransaction]);
 
   // Fetch reminders and budget alerts
   useEffect(() => {
@@ -347,7 +389,10 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm }: CalendarPa
                 return (
                   <button
                     key={day}
-                    onClick={() => setSelectedDate(date)}
+                    onClick={() => {
+                      setSelectedDate(date);
+                      if (isMobile) setShowDayDrawer(true);
+                    }}
                     className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-sm transition-all duration-200 relative ${
                       isSelected
                         ? 'bg-primary/20 border border-primary/40 text-white'
@@ -477,17 +522,40 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm }: CalendarPa
           )}
         </div>
 
-        {/* Day Detail Panel — xl+ */}
+        {/* Day Detail Panel — xl+ desktop */}
         {selectedDate && (
           <div className="hidden xl:block w-80 shrink-0">
             <DayDetailPanel
               date={selectedDate}
               reminders={selectedDateReminders}
               onClose={() => setSelectedDate(null)}
+              onTransactionClick={handleTransactionClick}
             />
           </div>
         )}
       </div>
+
+      {/* Day Detail Drawer — mobile (< lg) */}
+      <Drawer
+        open={showDayDrawer && isMobile && !!selectedDate}
+        onOpenChange={(open) => {
+          setShowDayDrawer(open);
+          if (!open) setSelectedDate(null);
+        }}
+        title={selectedDate?.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })}
+      >
+        {selectedDate && (
+          <DayDetailPanel
+            date={selectedDate}
+            reminders={selectedDateReminders}
+            onClose={() => { setShowDayDrawer(false); setSelectedDate(null); }}
+            onTransactionClick={(tx) => {
+              setShowDayDrawer(false);
+              handleTransactionClick(tx);
+            }}
+          />
+        )}
+      </Drawer>
     </div>
   );
 }

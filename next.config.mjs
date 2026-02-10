@@ -4,7 +4,12 @@ const nextConfig = {
 
   // P10: Deterministic build ID — prevents version mismatch across devices
   generateBuildId: async () => {
-    return `build-${Date.now()}`;
+    const sha =
+      process.env.VERCEL_GIT_COMMIT_SHA ||
+      process.env.GIT_COMMIT_SHA ||
+      'dev';
+
+    return `build-${String(sha).slice(0, 12)}`;
   },
 
   // P8: Tree-shake heavy libraries — only import used exports

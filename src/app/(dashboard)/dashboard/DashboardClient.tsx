@@ -28,6 +28,7 @@ import {
   staggerItem,
   fadeInUp,
 } from '@/lib/motion';
+import { features } from '@/lib/env';
 import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
 import type { Income, CurrencyCode } from '@/types';
 import type { MergedTransaction } from '@/components/features/transactions/TransactionTable';
@@ -82,22 +83,22 @@ const GoalForm = dynamic(
   () => import('@/components/features/goals/GoalForm').then((mod) => ({ default: mod.GoalForm })),
   { ssr: false }
 );
-const AIAssistant = dynamic(
+const AIAssistant = features.oracle ? dynamic(
   () => import('@/components/features/ai/AIAssistant').then((mod) => ({ default: mod.AIAssistant })),
   { ssr: false }
-);
-const OracleHero = dynamic(
+) : () => null;
+const OracleHero = features.oracle ? dynamic(
   () => import('@/components/features/oracle/OracleHero').then((mod) => ({ default: mod.OracleHero })),
   { ssr: false }
-);
-const OracleInsightCard = dynamic(
+) : () => null;
+const OracleInsightCard = features.oracle ? dynamic(
   () => import('@/components/features/oracle/OracleInsightCard').then((mod) => ({ default: mod.OracleInsightCard })),
   { ssr: false }
-);
-const OracleBrainCard = dynamic(
+) : () => null;
+const OracleBrainCard = features.oracle ? dynamic(
   () => import('@/components/features/oracle/OracleBrainCard').then((mod) => ({ default: mod.OracleBrainCard })),
   { ssr: false }
-);
+) : () => null;
 
 // M3: Desktop Dashboard Components (lg+ only)
 const DashboardHeader = dynamic(
@@ -116,10 +117,10 @@ const MiniGoalGrid = dynamic(
   () => import('@/components/features/dashboard/MiniGoalGrid').then((mod) => ({ default: mod.MiniGoalGrid })),
   { ssr: false }
 );
-const DesktopAICard = dynamic(
+const DesktopAICard = features.oracle ? dynamic(
   () => import('@/components/features/dashboard/DesktopAICard').then((mod) => ({ default: mod.DesktopAICard })),
   { ssr: false }
-);
+) : () => null;
 
 // M5: Desktop Goals Full-Page (lg+ only)
 const GoalsPage = dynamic(
@@ -397,7 +398,7 @@ export default function DashboardClient() {
       </AnimatePresence>
 
       {/* M11: Scroll Progress Indicator — right edge indigo bar */}
-      {activeTab === 'dashboard' && scrollProgress > 0 && scrollProgress < 1 && (
+      {features.oracle && activeTab === 'dashboard' && scrollProgress > 0 && scrollProgress < 1 && (
         <div
           className="scroll-progress-bar"
           style={{ height: `${scrollProgress * 100}vh`, opacity: scrollProgress < 0.98 ? 1 : 0 }}
@@ -436,9 +437,11 @@ export default function DashboardClient() {
                   </div>
 
                   {/* AI Assistant — col-span-4 */}
+                  {features.oracle && (
                   <div className="col-span-4 min-h-90">
                     <DesktopAICard />
                   </div>
+                  )}
 
                   {/* Recent Transactions — col-span-7 */}
                   <div className="col-span-7 min-h-80">
@@ -458,9 +461,11 @@ export default function DashboardClient() {
             <LayoutGroup>
             <BentoGrid isMounted={isMounted}>
               {/* Oracle Core Hero — full width, no card chrome */}
+              {features.oracle && (
               <BentoCard size="full">
                 <OracleHero onModuleClick={handleModuleClick} onScrollProgress={handleScrollProgress} />
               </BentoCard>
+              )}
 
               {/* Hero Balance — 2×2 (child has own glass-card styling) */}
               <BentoCard size="2x2" bare>
@@ -540,6 +545,7 @@ export default function DashboardClient() {
               </BentoCard>
 
               {/* Oracle Brain — 1×1 AI widget (M7) */}
+              {features.oracle && (
               <BentoCard
                 size="1x1"
                 pressable
@@ -547,6 +553,7 @@ export default function DashboardClient() {
               >
                 <OracleBrainCard />
               </BentoCard>
+              )}
 
               {/* Savings — 1×1 compact widget */}
               <BentoCard size="1x1" ariaLabel="Tasarruf oranı">
@@ -580,9 +587,11 @@ export default function DashboardClient() {
               </BentoCard>
 
               {/* Oracle AI Insight — 2×1 (child has own glass-card styling) */}
+              {features.oracle && (
               <BentoCard size="2x1" bare>
                 <OracleInsightCard />
               </BentoCard>
+              )}
 
               {/* Currency Selector — 1×1 (M6) */}
               <BentoCard
@@ -838,6 +847,10 @@ export default function DashboardClient() {
               <CalendarPage
                 onOpenReminderForm={() => setShowReminderDrawer(true)}
                 onOpenAlertForm={() => setShowAlertDrawer(true)}
+                onSelectTransaction={(tx) => {
+                  setSelectedTransaction(tx);
+                  setActiveTab('transactions');
+                }}
               />
             </motion.div>
           )}
@@ -917,7 +930,7 @@ export default function DashboardClient() {
       </Drawer>
 
       {/* AI Assistant */}
-      <AIAssistant />
+      {features.oracle && <AIAssistant />}
 
       {/* M10: Command Palette (⌘K Global Search) */}
       <CommandPalette

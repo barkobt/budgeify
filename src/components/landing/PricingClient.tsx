@@ -322,7 +322,22 @@ export default function PricingClient() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <Logo size="sm" showText={true} href="/" />
-            <p className="text-xs text-slate-600">© 2026 Budgeify Inc. All rights reserved.</p>
+
+            <div className="flex items-center gap-4">
+              <Link href="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                Gizlilik Politikası
+              </Link>
+              <span className="text-slate-700" aria-hidden="true">|</span>
+              <Link href="/terms" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                Kullanım Koşulları
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-xs text-slate-600">
+              © 2026 Budgeify. Tüm hakları saklıdır.
+            </p>
           </div>
         </div>
       </footer>

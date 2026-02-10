@@ -23,7 +23,7 @@ import { formatCurrency } from '@/utils';
 import { useBudgetStore } from '@/store/useBudgetStore';
 import type { Reminder } from '@/db/schema';
 
-interface DayTransaction {
+export interface DayTransaction {
   id: string;
   type: 'income' | 'expense';
   label: string;
@@ -36,6 +36,7 @@ interface DayDetailPanelProps {
   date: Date | null;
   reminders: Reminder[];
   onClose: () => void;
+  onTransactionClick?: (tx: DayTransaction) => void;
 }
 
 const REMINDER_TYPE_ICON: Record<string, React.ElementType> = {
@@ -52,7 +53,7 @@ const REMINDER_TYPE_COLOR: Record<string, string> = {
   custom: 'text-cyan-400 bg-cyan-500/15',
 };
 
-export function DayDetailPanel({ date, reminders, onClose }: DayDetailPanelProps) {
+export function DayDetailPanel({ date, reminders, onClose, onTransactionClick }: DayDetailPanelProps) {
   const expenses = useBudgetStore((s) => s.expenses);
   const incomes = useBudgetStore((s) => s.incomes);
   const getCategoryById = useBudgetStore((s) => s.getCategoryById);
@@ -132,7 +133,12 @@ export function DayDetailPanel({ date, reminders, onClose }: DayDetailPanelProps
             </h4>
             <div className="space-y-2">
               {dayTransactions.map((tx) => (
-                <div key={tx.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/3">
+                <button
+                  key={tx.id}
+                  type="button"
+                  onClick={() => onTransactionClick?.(tx)}
+                  className="flex items-center gap-3 p-2.5 rounded-xl bg-white/3 w-full text-left hover:bg-white/6 transition-colors"
+                >
                   <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
                     tx.type === 'income' ? 'bg-emerald-500/15' : 'bg-rose-500/15'
                   }`}>
@@ -151,7 +157,7 @@ export function DayDetailPanel({ date, reminders, onClose }: DayDetailPanelProps
                   }`}>
                     {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, currency)}
                   </span>
-                </div>
+                </button>
               ))}
             </div>
           </div>

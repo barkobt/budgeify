@@ -30,3 +30,7 @@ export const env = {
     return process.env.NODE_ENV === 'production';
   },
 } as const;
+
+export const features = Object.freeze({
+  oracle: process.env.NEXT_PUBLIC_FEATURE_ORACLE === '1',
+});

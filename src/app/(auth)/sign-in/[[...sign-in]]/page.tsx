@@ -106,8 +106,13 @@ export default function SignInPage() {
       {/* Clerk Sign In */}
       <ClerkSignInLoader />
 
+      {/* Auth helper text */}
+      <p className="text-center mt-4 text-[11px] text-slate-600 leading-relaxed max-w-xs mx-auto">
+        Email ile girişte kod sık geliyorsa, şifre ile giriş veya Google/GitHub ile giriş tercih edebilirsiniz.
+      </p>
+
       {/* Footer link */}
-      <p className="text-center mt-6 text-sm text-slate-500">
+      <p className="text-center mt-4 text-sm text-slate-500">
         Hesabın yok mu?{' '}
         <Link
           href="/sign-up"
