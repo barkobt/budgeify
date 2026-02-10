@@ -3,7 +3,11 @@
 import React from 'react';
 import { Lightbulb, Sparkles } from 'lucide-react';
 
-export const AIBoxShell: React.FC = () => {
+interface AIBoxShellProps {
+  children?: React.ReactNode;
+}
+
+export const AIBoxShell: React.FC<AIBoxShellProps> = ({ children }) => {
   return (
     <div className="glass-panel rounded-2xl p-5 h-full min-w-0 flex flex-col">
       <div className="flex items-center gap-2 mb-4 min-w-0">
@@ -36,6 +40,12 @@ export const AIBoxShell: React.FC = () => {
         <Sparkles size={14} />
         Oracle açıldığında detaylı analiz aktif olur
       </button>
+
+      {children ? (
+        <div className="mt-4 min-w-0">
+          {children}
+        </div>
+      ) : null}
     </div>
   );
 };

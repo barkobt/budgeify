@@ -377,44 +377,41 @@ export default function DashboardClient() {
 
                 {/* 12-column grid */}
                 <div className="grid grid-cols-12 gap-4">
-                  {/* Total Balance — col-span-8 */}
-                  <div className="col-span-8 min-h-90">
+                  {/* Total Balance */}
+                  <div className="col-span-12 min-h-90">
                     <DesktopBalanceHero />
                   </div>
 
-                  {/* AI Recommendations — col-span-4 */}
-                  {features.aiBox && (
-                  <div className="col-span-4 min-h-90 min-w-0">
-                    <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
-                      <div className="mb-3 min-w-0">
-                        <h2 className="text-sm font-semibold text-white">Öneriler</h2>
-                        <p className="text-[11px] text-slate-500">
-                          {features.oracle
-                            ? 'Oracle tarafından oluşturulan özet ve aksiyonlar'
-                            : 'Oracle kapalı: hafif öneri görünümü'}
-                        </p>
-                        {process.env.NODE_ENV !== 'production' && (
-                          <p className="mt-1 text-[10px] text-slate-600">
-                            AI_BOX={features.aiBox ? '1' : '0'} · ORACLE={features.oracle ? '1' : '0'}
-                          </p>
-                        )}
-                      </div>
-                      <div className="min-w-0 h-full">
-                        {features.oracle ? <OracleChat /> : <AIBoxShell />}
-                      </div>
-                    </div>
-                  </div>
-                  )}
-
                   {/* Recent Transactions — col-span-7 */}
-                  <div className="col-span-7 min-h-80">
+                  <div className={features.aiBox ? 'col-span-5 min-h-80 min-w-0' : 'col-span-7 min-h-80 min-w-0'}>
                     <RecentTransactions onViewAll={() => setActiveTab('transactions')} />
                   </div>
 
                   {/* Savings Goals — col-span-5 */}
-                  <div className="col-span-5 min-h-80">
+                  <div className={features.aiBox ? 'col-span-4 min-h-80 min-w-0' : 'col-span-5 min-h-80 min-w-0'}>
                     <MiniGoalGrid onViewAll={() => setActiveTab('goals')} />
                   </div>
+
+                  {/* Recommendations — same row as Son İşlemler / Tasarruf Hedefleri */}
+                  {features.aiBox && (
+                    <div className="col-span-3 min-h-80 min-w-0">
+                      <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+                        <div className="mb-3 min-w-0">
+                          <h2 className="text-sm font-semibold text-white">Öneriler</h2>
+                          <p className="text-[11px] text-slate-500">
+                            {features.oracle
+                              ? 'Oracle tarafından oluşturulan özet ve aksiyonlar'
+                              : 'Oracle kapalı: hafif öneri görünümü'}
+                          </p>
+                        </div>
+                        <div className="min-w-0 h-full">
+                          <AIBoxShell>
+                            {features.oracle ? <OracleChat /> : null}
+                          </AIBoxShell>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </div>
