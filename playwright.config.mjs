@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 const PORT = process.env.PORT || '3000';
 
@@ -21,7 +21,12 @@ export default defineConfig({
   projects: [
     {
       name: 'mobile-chromium',
-      use: { ...devices['iPhone 13'] },
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+      },
     },
   ],
 });
