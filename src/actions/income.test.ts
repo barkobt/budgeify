@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   mockAuthenticatedUser,
   mockUnauthenticatedUser,
+  mockAuth,
   resetAllMocks,
   mockDb,
   mockRevalidatePath,
@@ -202,5 +203,14 @@ describe('Income Actions — Error Handling', () => {
     const result = await createIncome({ amount: 100 });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.error).toBe('Gelir eklenirken bir hata oluştu');
+  });
+
+  it('createIncome returns failure result when user resolution throws', async () => {
+    mockAuth.mockResolvedValue({ userId: 'clerk_test_123' });
+    mockDb.limit.mockRejectedValueOnce(new Error('User lookup failed'));
+
+    const result = await createIncome({ amount: 100 });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(result.error).toBe('Kullanıcı doğrulanamadı');
   });
 });

@@ -97,7 +97,11 @@ export const MainSalaryForm: React.FC<MainSalaryFormProps> = ({ editingIncome, o
       } else {
         // Create new income
         if (dataSync) {
-          await dataSync.createIncome(incomeData);
+          const res = await dataSync.createIncome(incomeData);
+          if (!res?.success) {
+            setServerError(res?.error || 'Gelir kaydedilirken bir hata oluştu');
+            return;
+          }
         } else {
           // Demo mode: Local storage only
           addIncome({

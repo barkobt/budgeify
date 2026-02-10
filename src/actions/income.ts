@@ -57,17 +57,22 @@ export type UpdateIncomeInput = z.infer<typeof UpdateIncomeSchema>;
 // ========================================
 
 async function resolveUserId(): Promise<ActionResult<string>> {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) return { success: false, error: 'Oturum açmanız gerekiyor' };
+  try {
+    const { userId: clerkId } = await auth();
+    if (!clerkId) return { success: false, error: 'Oturum açmanız gerekiyor' };
 
-  const user = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.clerkId, clerkId))
-    .limit(1);
+    const user = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.clerkId, clerkId))
+      .limit(1);
 
-  if (!user[0]) return { success: false, error: 'Kullanıcı bulunamadı' };
-  return { success: true, data: user[0].id };
+    if (!user[0]) return { success: false, error: 'Kullanıcı bulunamadı' };
+    return { success: true, data: user[0].id };
+  } catch (error) {
+    console.error('[resolveUserId]', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return { success: false, error: 'Kullanıcı doğrulanamadı' };
+  }
 }
 
 function revalidateIncomePaths(): void {

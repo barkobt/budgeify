@@ -37,6 +37,37 @@ import type { TransactionStatus } from '@/types';
 import { DEFAULT_CATEGORIES } from '@/constants/categories';
 import { toast } from 'sonner';
 
+type MutationResult = {
+  success: boolean;
+  error?: string;
+};
+
+function normalizeActionResult<T>(
+  result: unknown,
+  fallbackError: string,
+): MutationResult & { data?: T } {
+  if (!result || typeof result !== 'object') {
+    return { success: false, error: fallbackError };
+  }
+
+  const candidate = result as { success?: unknown; error?: unknown; data?: T };
+  if (candidate.success === true) {
+    return { success: true, data: candidate.data };
+  }
+
+  if (candidate.success === false) {
+    return {
+      success: false,
+      error:
+        typeof candidate.error === 'string' && candidate.error.trim().length > 0
+          ? candidate.error
+          : fallbackError,
+    };
+  }
+
+  return { success: false, error: fallbackError };
+}
+
 /**
  * Resolve a server category UUID back to a local category ID (e.g. 'cat_food')
  * by matching server category name → local category name.
@@ -63,7 +94,7 @@ interface DataSyncContextType {
   lastError: string | null;
   clearError: () => void;
   syncData: () => Promise<void>;
-  createIncome: (data: { amount: number; description?: string; categoryId?: string; isRecurring?: boolean; date?: string; status?: TransactionStatus; expectedDate?: string }) => Promise<void>;
+  createIncome: (data: { amount: number; description?: string; categoryId?: string; isRecurring?: boolean; date?: string; status?: TransactionStatus; expectedDate?: string }) => Promise<MutationResult>;
   createExpense: (data: { amount: number; note?: string; categoryId?: string; date?: string; status?: TransactionStatus; expectedDate?: string }) => Promise<void>;
   createGoal: (data: { name: string; targetAmount: number; icon: string; targetDate?: Date }) => Promise<void>;
   updateIncome: (id: string, data: { amount?: number; description?: string; categoryId?: string; isRecurring?: boolean; date?: string; status?: TransactionStatus; expectedDate?: string | null }) => Promise<void>;
@@ -360,7 +391,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     date?: string;
     status?: TransactionStatus;
     expectedDate?: string;
-  }) => {
+  }): Promise<MutationResult> => {
     const tempId = `temp_${Date.now()}`;
     const now = new Date().toISOString();
 
@@ -392,23 +423,55 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
       expectedDate: data.expectedDate ? new Date(data.expectedDate) : undefined,
     };
 
-    const result = await serverCreateIncome(serverData);
-    if (!result.success) {
+    let rawResult: unknown;
+    try {
+      rawResult = await serverCreateIncome(serverData);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Gelir eklenirken beklenmeyen bir hata oluştu';
       store.deleteIncome(tempId);
-      setLastError(result.error);
-      toast.error('Gelir eklenemedi', { description: result.error });
-      return;
+      setLastError(message);
+      toast.error('Gelir eklenemedi', { description: message });
+      return { success: false, error: message };
+    }
+
+    const result = normalizeActionResult<{ id?: string }>(
+      rawResult,
+      'Gelir eklenirken bir hata oluştu',
+    );
+
+    const createdIncomeId =
+      result.success && typeof result.data?.id === 'string' && result.data.id.length > 0
+        ? result.data.id
+        : null;
+
+    if (!createdIncomeId) {
+      const message = !result.success
+        ? result.error ?? 'Gelir eklenirken bir hata oluştu'
+        : 'Gelir yanıtı doğrulanamadı';
+      store.deleteIncome(tempId);
+      setLastError(message);
+      toast.error('Gelir eklenemedi', { description: message });
+      return { success: false, error: message };
     }
 
     useBudgetStore.setState((state) => ({
       incomes: state.incomes.map((i) =>
-        i.id === tempId ? { ...i, id: result.data.id } : i
+        i.id === tempId ? { ...i, id: createdIncomeId } : i
       ),
     }));
 
     toast.success('Gelir eklendi');
     // M24-C: Pull confirmed server state
-    await syncData();
+    try {
+      await syncData();
+    } catch {
+      setLastError('Gelir eklendi ancak veriler senkronize edilemedi');
+    }
+
+    return { success: true };
   }, [store, syncData]);
 
   /**
