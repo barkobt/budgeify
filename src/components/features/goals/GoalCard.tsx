@@ -252,31 +252,31 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
 
       {/* Stats */}
       {!isCompleted && (
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          <div className="min-w-0 rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 overflow-hidden">
+          <div className="min-w-0 rounded-xl bg-white/5 p-2 sm:p-3 transition-all hover:bg-white/10">
             <div className="mb-1 flex items-center gap-1 text-slate-500">
               <Target className="h-3.5 w-3.5 shrink-0" />
-              <span className="text-xs font-medium truncate">Kalan</span>
+              <span className="text-[11px] sm:text-xs font-medium truncate">Kalan</span>
             </div>
-            <p className="text-sm font-bold text-slate-200 tabular-nums truncate">
+            <p className="text-[11px] sm:text-sm font-bold text-slate-200 tabular-nums truncate">
               {formatCurrencyCompact(remaining, currency)}
             </p>
           </div>
           {goal.targetDate && (
             <>
-              <div className="min-w-0 rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
+              <div className="min-w-0 rounded-xl bg-white/5 p-2 sm:p-3 transition-all hover:bg-white/10">
                 <div className="mb-1 flex items-center gap-1 text-slate-500">
                   <Calendar className="h-3.5 w-3.5 shrink-0" />
-                  <span className="text-xs font-medium truncate">Süre</span>
+                  <span className="text-[11px] sm:text-xs font-medium truncate">Süre</span>
                 </div>
-                <p className="text-sm font-bold text-slate-200 tabular-nums truncate">{daysLeft} gün</p>
+                <p className="text-[11px] sm:text-sm font-bold text-slate-200 tabular-nums truncate">{daysLeft} gün</p>
               </div>
-              <div className="min-w-0 rounded-xl bg-white/5 p-3 transition-all hover:bg-white/10">
+              <div className="min-w-0 rounded-xl bg-white/5 p-2 sm:p-3 transition-all hover:bg-white/10">
                 <div className="mb-1 flex items-center gap-1 text-slate-500">
                   <TrendingUp className="h-3.5 w-3.5 shrink-0" />
-                  <span className="text-xs font-medium truncate">Günlük</span>
+                  <span className="text-[11px] sm:text-xs font-medium truncate">Günlük</span>
                 </div>
-                <p className="text-sm font-bold text-slate-200 tabular-nums truncate">
+                <p className="text-[11px] sm:text-sm font-bold text-slate-200 tabular-nums truncate">
                   {formatCurrencyCompact(dailySavingsNeeded, currency)}
                 </p>
               </div>

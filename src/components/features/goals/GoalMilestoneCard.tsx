@@ -421,26 +421,26 @@ export const GoalMilestoneCard: React.FC<GoalMilestoneCardProps> = ({
 
       {/* Stats Row */}
       {!isCompleted && (
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex items-center gap-1.5 text-slate-500">
+        <div className="flex flex-wrap items-center gap-3 min-w-0 mb-4">
+          <div className="flex items-center gap-1.5 min-w-0 text-slate-500">
             <Target size={13} className="shrink-0" />
             <span className="text-xs">Kalan:</span>
-            <span className="text-xs font-semibold text-slate-300 tabular-nums">
+            <span className="text-xs font-semibold text-slate-300 tabular-nums truncate">
               {formatCurrency(remaining, currency)}
             </span>
           </div>
           {goal.targetDate && daysLeft > 0 && (
             <>
-              <div className="h-3 w-px bg-white/10" />
+              <div className="h-3 w-px bg-white/10 shrink-0" />
               <div className="flex items-center gap-1.5 text-slate-500">
                 <Calendar size={13} className="shrink-0" />
                 <span className="text-xs">{daysLeft} gün</span>
               </div>
-              <div className="h-3 w-px bg-white/10" />
-              <div className="flex items-center gap-1.5 text-slate-500">
+              <div className="h-3 w-px bg-white/10 shrink-0" />
+              <div className="flex items-center gap-1.5 min-w-0 text-slate-500">
                 <TrendingUp size={13} className="shrink-0" />
                 <span className="text-xs">Günlük:</span>
-                <span className="text-xs font-semibold text-slate-300 tabular-nums">
+                <span className="text-xs font-semibold text-slate-300 tabular-nums truncate">
                   {formatCurrency(dailySavingsNeeded, currency)}
                 </span>
               </div>

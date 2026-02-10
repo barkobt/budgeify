@@ -75,17 +75,17 @@ export const CategoryChart = () => {
       <CardContent>
         <div className="space-y-6">
           {/* Pie Chart */}
-          <div className="h-64">
+          <div className="h-64 overflow-visible">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
                 <Pie
                   data={chartData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
                   label={({ percentage }) => `%${percentage}`}
-                  outerRadius={80}
-                  innerRadius={40}
+                  outerRadius={75}
+                  innerRadius={35}
                   fill="#3B82F6"
                   dataKey="value"
                   stroke="rgba(255,255,255,0.1)"

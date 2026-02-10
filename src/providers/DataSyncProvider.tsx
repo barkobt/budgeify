@@ -34,7 +34,27 @@ import {
   addToGoal as serverAddToGoal,
 } from '@/actions';
 import type { TransactionStatus } from '@/types';
+import { DEFAULT_CATEGORIES } from '@/constants/categories';
 import { toast } from 'sonner';
+
+/**
+ * Resolve a server category UUID back to a local category ID (e.g. 'cat_food')
+ * by matching server category name → local category name.
+ * Falls back to the original UUID if no match is found.
+ */
+function resolveLocalCategoryId(
+  serverCategoryId: string | null,
+  serverCatsRaw: Array<{ id: string; name: string }>,
+): string {
+  if (!serverCategoryId) return 'cat_other';
+  if (serverCategoryId.startsWith('cat_')) return serverCategoryId;
+  const serverCat = serverCatsRaw.find((c) => c.id === serverCategoryId);
+  if (!serverCat) return 'cat_other';
+  const localCat = DEFAULT_CATEGORIES.find(
+    (c) => c.name.toLowerCase() === serverCat.name.toLowerCase(),
+  );
+  return localCat ? localCat.id : serverCategoryId;
+}
 
 interface DataSyncContextType {
   isLoading: boolean;
@@ -127,7 +147,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         .filter((expense) => !pendingDeletes.has(expense.id))
         .map((expense) => ({
           id: expense.id,
-          categoryId: expense.categoryId ?? 'cat_other',
+          categoryId: resolveLocalCategoryId(expense.categoryId, serverCatsRaw),
           amount: parseFloat(expense.amount),
           note: expense.note ?? undefined,
           date: expense.date.toISOString().split('T')[0],
@@ -224,7 +244,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
         .filter((expense) => !pendingDeletes.has(expense.id))
         .map((expense) => ({
           id: expense.id,
-          categoryId: expense.categoryId ?? 'cat_other',
+          categoryId: resolveLocalCategoryId(expense.categoryId, serverCatsRaw),
           amount: parseFloat(expense.amount),
           note: expense.note ?? undefined,
           date: expense.date.toISOString().split('T')[0],
