@@ -17,7 +17,6 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { PortalNavbar } from '@/components/layout/PortalNavbar';
 import { Sidebar } from '@/components/layout/Sidebar';
-import { NeonWalletIcon } from '@/components/ui/NeonWalletIcon';
 import { DockBar } from '@/components/layout/DockBar';
 import { Drawer } from '@/components/ui/Drawer';
 import { PageWrapper } from '@/components/ui/PageWrapper';
@@ -319,19 +318,28 @@ export default function DashboardClient() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="preflight-ambient" />
-            <div className="preflight-die-container">
-              <div className="preflight-die">
-                <NeonWalletIcon size={80} />
-              </div>
+            {/* Ambient glow */}
+            <div
+              className="absolute rounded-full blur-xl animate-pulse"
+              style={{
+                width: 240,
+                height: 240,
+                background: 'radial-gradient(circle, rgba(124,58,237,0.20) 0%, transparent 70%)',
+              }}
+            />
+            {/* PiggyBank icon — spin-slow + pulsate */}
+            <div className="loading-logo relative z-10">
+              <PiggyBank size={80} className="text-primary" style={{ filter: 'drop-shadow(0 0 20px rgba(124,58,237,0.5))' }} />
             </div>
             <div className="preflight-status" aria-live="polite">
               <span className="preflight-text preflight-text-1">Sistemler uyanıyor...</span>
               <span className="preflight-text preflight-text-2">Finansal çekirdek hazırlanıyor...</span>
-              <span className="preflight-text preflight-text-3">Oracle aktif</span>
+              <span className="preflight-text preflight-text-3">Veriler senkronize ediliyor...</span>
+              <span className="preflight-text preflight-text-4">Oracle aktif</span>
             </div>
-            <div className="preflight-progress">
-              <div className="preflight-progress-bar" />
+            {/* Progress bar — neon gradient */}
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-32 h-0.5 rounded-full bg-white/6 overflow-hidden">
+              <div className="loading-progress-bar" />
             </div>
           </motion.div>
         )}
