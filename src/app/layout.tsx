@@ -40,10 +40,12 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
+      { url: '/favicon-tab.ico', sizes: 'any', type: 'image/x-icon' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon.ico' },
     ],
+    shortcut: [{ url: '/favicon-tab.ico', type: 'image/x-icon' }],
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   robots: { index: true, follow: true },
@@ -81,6 +83,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://clerk.com" />
         <link rel="preconnect" href="https://img.clerk.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://img.clerk.com" />
+        <link rel="icon" href="/favicon-tab.ico" sizes="any" />
+        <link rel="shortcut icon" href="/favicon-tab.ico" />
       </head>
       <body className="min-h-screen antialiased font-sans">
         {/* P9: Skip-to-content link for keyboard navigation */}

@@ -16,6 +16,7 @@ const svgBuffer = readFileSync(resolve(ROOT, 'assets/brand/neon-pig.svg'));
 const sizes = [
   { name: 'favicon-16x16.png', size: 16, format: 'png' },
   { name: 'favicon-32x32.png', size: 32, format: 'png' },
+  { name: 'favicon-tab.ico', size: 64, format: 'ico' },
   { name: 'favicon.ico', size: 64, format: 'ico' },
   { name: 'apple-touch-icon.png', size: 180, format: 'png' },
   { name: 'icon-192.png', size: 192 },
