@@ -49,7 +49,7 @@ export default function DashboardLoading() {
           Veriler senkronize ediliyor...
         </span>
         <span className="preflight-text preflight-text-4">
-          Oracle aktif
+          Sistem hazır
         </span>
       </div>
 
