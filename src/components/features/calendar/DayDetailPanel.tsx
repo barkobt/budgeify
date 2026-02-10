@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/utils';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { fromAnyToLocalDateKey, toLocalDateKey } from '@/lib/dateKey';
 import type { Reminder } from '@/db/schema';
 
 export interface DayTransaction {
@@ -61,12 +62,12 @@ export function DayDetailPanel({ date, reminders, onClose, onTransactionClick }:
 
   if (!date) return null;
 
-  const dateStr = date.toISOString().split('T')[0];
+  const dateStr = toLocalDateKey(date);
 
   const dayTransactions: DayTransaction[] = [];
 
   expenses.forEach((exp) => {
-    const expDate = new Date(exp.date || exp.createdAt).toISOString().split('T')[0];
+    const expDate = fromAnyToLocalDateKey(exp.date || exp.createdAt);
     if (expDate === dateStr) {
       const cat = getCategoryById(exp.categoryId);
       dayTransactions.push({
@@ -81,7 +82,7 @@ export function DayDetailPanel({ date, reminders, onClose, onTransactionClick }:
   });
 
   incomes.forEach((inc) => {
-    const incDate = new Date(inc.date || inc.createdAt).toISOString().split('T')[0];
+    const incDate = fromAnyToLocalDateKey(inc.date || inc.createdAt);
     if (incDate === dateStr) {
       dayTransactions.push({
         id: inc.id,

@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/utils';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { fromAnyToLocalDateKey, toLocalDateKey } from '@/lib/dateKey';
 import { getReminders } from '@/actions/reminder';
 import { getBudgetAlerts, checkBudgetAlerts } from '@/actions/budget-alert';
 import type { Reminder, BudgetAlert } from '@/db/schema';
@@ -183,9 +184,9 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
     const map = new Map<string, { incomeCount: number; expenseCount: number; reminderCount: number; totalIncome: number; totalExpense: number }>();
 
     expenses.forEach((exp) => {
-      const d = new Date(exp.date || exp.createdAt);
-      if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
-        const key = d.getDate().toString();
+      const key = fromAnyToLocalDateKey(exp.date || exp.createdAt);
+      const [year, month] = key.split('-').map(Number);
+      if (year === currentYear && month === currentMonth + 1) {
         const existing = map.get(key) || { incomeCount: 0, expenseCount: 0, reminderCount: 0, totalIncome: 0, totalExpense: 0 };
         existing.expenseCount++;
         existing.totalExpense += exp.amount;
@@ -194,9 +195,9 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
     });
 
     incomes.forEach((inc) => {
-      const d = new Date(inc.date || inc.createdAt);
-      if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
-        const key = d.getDate().toString();
+      const key = fromAnyToLocalDateKey(inc.date || inc.createdAt);
+      const [year, month] = key.split('-').map(Number);
+      if (year === currentYear && month === currentMonth + 1) {
         const existing = map.get(key) || { incomeCount: 0, expenseCount: 0, reminderCount: 0, totalIncome: 0, totalExpense: 0 };
         existing.incomeCount++;
         existing.totalIncome += inc.amount;
@@ -205,9 +206,9 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
     });
 
     reminders.forEach((rem) => {
-      const d = new Date(rem.dueDate);
-      if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
-        const key = d.getDate().toString();
+      const key = fromAnyToLocalDateKey(rem.dueDate);
+      const [year, month] = key.split('-').map(Number);
+      if (year === currentYear && month === currentMonth + 1) {
         const existing = map.get(key) || { incomeCount: 0, expenseCount: 0, reminderCount: 0, totalIncome: 0, totalExpense: 0 };
         existing.reminderCount++;
         map.set(key, existing);
@@ -237,8 +238,9 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
     const now = new Date();
     return expenses
       .filter((exp) => {
-        const d = new Date(exp.date || exp.createdAt);
-        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+        const key = fromAnyToLocalDateKey(exp.date || exp.createdAt);
+        const [year, month] = key.split('-').map(Number);
+        return year === now.getFullYear() && month === now.getMonth() + 1;
       })
       .reduce((sum, exp) => sum + exp.amount, 0);
   }, [expenses]);
@@ -248,7 +250,8 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
   // Reminders for selected date
   const selectedDateReminders = useMemo(() => {
     if (!selectedDate) return [];
-    return reminders.filter((r) => isSameDay(new Date(r.dueDate), selectedDate));
+    const selectedKey = toLocalDateKey(selectedDate);
+    return reminders.filter((r) => fromAnyToLocalDateKey(r.dueDate) === selectedKey);
   }, [selectedDate, reminders]);
 
   // Calendar grid
@@ -382,7 +385,8 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
                 const date = new Date(currentYear, currentMonth, day);
-                const data = dayDataMap.get(day.toString());
+                const dateKey = toLocalDateKey(date);
+                const data = dayDataMap.get(dateKey);
                 const isSelected = selectedDate && isSameDay(date, selectedDate);
                 const isTodayDate = isToday(date);
 

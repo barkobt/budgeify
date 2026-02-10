@@ -18,6 +18,7 @@ import {
   Target,
   CalendarDays,
   BarChart3,
+  Settings,
   Plus,
   ArrowUpRight,
   ArrowDownRight,
@@ -90,20 +91,19 @@ export const DockBar: React.FC<DockBarProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Radial Quick-Add Actions — positioned above DockBar */}
+      {/* Quick actions — 2x2 grid to avoid mobile clipping */}
       <AnimatePresence>
         {fabOpen && (
           <div
-            className="fixed z-50 flex gap-3"
+            className="fixed z-50 grid grid-cols-2 gap-2 w-[min(92vw,360px)]"
             style={{
-              bottom: 'calc(48px + 80px)',
+              bottom: 'calc(56px + 88px)',
               left: '50%',
               transform: 'translateX(-50%)',
             }}
           >
-            {/* Gelir Ekle — up-left */}
             <motion.button
-              className="dock-radial-action"
+              className="dock-radial-action w-full min-w-0"
               onClick={() => handleQuickAction('income')}
               initial={{ opacity: 0, y: 20, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -114,12 +114,11 @@ export const DockBar: React.FC<DockBarProps> = ({
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20">
                 <ArrowUpRight size={16} className="text-emerald-400" strokeWidth={2} />
               </div>
-              <span className="text-sm font-medium text-white/90">Gelir Ekle</span>
+              <span className="text-xs sm:text-sm font-medium text-white/90 truncate">Gelir Ekle</span>
             </motion.button>
 
-            {/* Gider Ekle — up-right */}
             <motion.button
-              className="dock-radial-action"
+              className="dock-radial-action w-full min-w-0"
               onClick={() => handleQuickAction('expense')}
               initial={{ opacity: 0, y: 20, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -130,12 +129,11 @@ export const DockBar: React.FC<DockBarProps> = ({
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/20">
                 <ArrowDownRight size={16} className="text-rose-400" strokeWidth={2} />
               </div>
-              <span className="text-sm font-medium text-white/90">Gider Ekle</span>
+              <span className="text-xs sm:text-sm font-medium text-white/90 truncate">Gider Ekle</span>
             </motion.button>
 
-            {/* Analiz — quick access */}
             <motion.button
-              className="dock-radial-action"
+              className="dock-radial-action w-full min-w-0"
               onClick={() => { closeFab(); onTabChange('analytics'); }}
               initial={{ opacity: 0, y: 20, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -146,7 +144,22 @@ export const DockBar: React.FC<DockBarProps> = ({
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20">
                 <BarChart3 size={16} className="text-indigo-400" strokeWidth={2} />
               </div>
-              <span className="text-sm font-medium text-white/90">Analiz</span>
+              <span className="text-xs sm:text-sm font-medium text-white/90 truncate">Analiz</span>
+            </motion.button>
+
+            <motion.button
+              className="dock-radial-action w-full min-w-0"
+              onClick={() => { closeFab(); onTabChange('settings'); }}
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.8 }}
+              transition={{ ...springs.snappy, delay: 0.2 }}
+              aria-label="Ayarlar"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-500/20">
+                <Settings size={16} className="text-zinc-300" strokeWidth={2} />
+              </div>
+              <span className="text-xs sm:text-sm font-medium text-white/90 truncate">Ayarlar</span>
             </motion.button>
           </div>
         )}

@@ -25,7 +25,7 @@ import {
 const PLAN_FEATURES_MONTHLY = [
   'AI Finansal Analiz',
   'Sınırsız İşlem',
-  'Gerçek Zamanlı Sync',
+  'Gerçek Zamanlı Senkronizasyon',
   'Hedef Takibi',
   'Kategori Yönetimi',
   'Temel Raporlama',
@@ -34,7 +34,7 @@ const PLAN_FEATURES_MONTHLY = [
 const PLAN_FEATURES_YEARLY = [
   'AI Finansal Analiz',
   'Sınırsız İşlem',
-  'Gerçek Zamanlı Sync',
+  'Gerçek Zamanlı Senkronizasyon',
   'Hedef Takibi',
   'Kategori Yönetimi',
   'Gelişmiş Raporlama',
@@ -53,7 +53,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Verilerim güvende mi?',
-    a: 'Tüm verileriniz bank-grade encryption ile korunmaktadır. Clerk auth + encrypted data layer kullanıyoruz.',
+    a: 'Tüm verileriniz banka seviyesinde şifreleme ile korunur. Clerk kimlik doğrulaması ve şifreli veri katmanı kullanıyoruz.',
   },
   {
     q: 'Birden fazla cihazda kullanabilir miyim?',
@@ -64,7 +64,7 @@ const FAQ_ITEMS = [
 const COMPARISON_FEATURES = [
   { name: 'AI Finansal Analiz', icon: Brain, monthly: true, yearly: true },
   { name: 'Sınırsız İşlem', icon: Zap, monthly: true, yearly: true },
-  { name: 'Gerçek Zamanlı Sync', icon: Clock, monthly: true, yearly: true },
+  { name: 'Gerçek Zamanlı Senkronizasyon', icon: Clock, monthly: true, yearly: true },
   { name: 'Hedef Takibi', icon: Target, monthly: true, yearly: true },
   { name: 'Gelişmiş Raporlama', icon: BarChart3, monthly: false, yearly: true },
   { name: 'Öncelikli Destek', icon: Shield, monthly: false, yearly: true },
@@ -73,7 +73,7 @@ const COMPARISON_FEATURES = [
 
 export default function PricingClient() {
   return (
-    <div className="min-h-screen overflow-hidden relative" style={{ background: '#050505' }}>
+    <div className="min-h-screen overflow-x-hidden overflow-y-auto relative" style={{ background: '#050505' }}>
       {/* ── NAVIGATION ── */}
       <motion.nav
         initial={{ y: -60, opacity: 0 }}
@@ -217,8 +217,8 @@ export default function PricingClient() {
 
             <div className="rounded-2xl border border-white/5 overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
               {/* Table Header */}
-              <div className="grid grid-cols-[1fr_100px_100px] gap-0 border-b border-white/8 px-5 py-3.5">
-                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Özellik</span>
+              <div className="grid grid-cols-[minmax(0,1fr)_72px_72px] sm:grid-cols-[1fr_100px_100px] gap-0 border-b border-white/8 px-4 sm:px-5 py-3.5">
+                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider min-w-0">Özellik</span>
                 <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider text-center">Aylık</span>
                 <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider text-center">Yıllık</span>
               </div>
@@ -229,13 +229,13 @@ export default function PricingClient() {
                 return (
                   <div
                     key={feature.name}
-                    className={`grid grid-cols-[1fr_100px_100px] gap-0 px-5 py-3 ${
+                    className={`grid grid-cols-[minmax(0,1fr)_72px_72px] sm:grid-cols-[1fr_100px_100px] gap-0 px-4 sm:px-5 py-3 ${
                       i < COMPARISON_FEATURES.length - 1 ? 'border-b border-white/5' : ''
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <Icon size={14} className="text-slate-500 shrink-0" />
-                      <span className="text-sm text-slate-300">{feature.name}</span>
+                      <span className="text-sm text-slate-300 break-words">{feature.name}</span>
                     </div>
                     <div className="flex justify-center">
                       {feature.monthly ? (
@@ -299,7 +299,7 @@ export default function PricingClient() {
                 </FadeInDiv>
                 <FadeInDiv direction="up" delay={0.1}>
                   <p className="text-base text-slate-400 mb-8 max-w-xl mx-auto">
-                    14 günlük ücretsiz deneme ile yapay zekâ destekli finansal yönetimi deneyimleyin.
+                    14 günlük ücretsiz deneme ile yapay zeka destekli finansal yönetimi deneyimleyin.
                   </p>
                 </FadeInDiv>
                 <FadeInDiv direction="up" delay={0.2}>
