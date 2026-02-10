@@ -6,6 +6,9 @@
  * This prevents loading.tsx from blocking during sign-out navigation.
  */
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import DashboardClient from './DashboardClient';
 
 export default function DashboardPage() {

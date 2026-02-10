@@ -15,6 +15,7 @@ interface OracleMemory {
   insights: StoredInsight[];
   lastAnalysis: string | null;
   conversationCount: number;
+  schemaVersion: number;
 }
 
 interface StoredInsight {
@@ -25,16 +26,23 @@ interface StoredInsight {
 
 function getMemory(): OracleMemory {
   if (typeof window === 'undefined') {
-    return { insights: [], lastAnalysis: null, conversationCount: 0 };
+    return { insights: [], lastAnalysis: null, conversationCount: 0, schemaVersion: 1 };
   }
 
   try {
     const raw = localStorage.getItem(MEMORY_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Migrate legacy memory without schemaVersion
+      if (typeof parsed.schemaVersion === 'undefined') {
+        return { ...parsed, schemaVersion: 1 };
+      }
+      return parsed;
+    }
   } catch {
     // Corrupted data, reset
   }
-  return { insights: [], lastAnalysis: null, conversationCount: 0 };
+  return { insights: [], lastAnalysis: null, conversationCount: 0, schemaVersion: 1 };
 }
 
 function saveMemory(memory: OracleMemory): void {

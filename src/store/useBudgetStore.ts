@@ -313,7 +313,7 @@ export const useBudgetStore = create<BudgetStoreState>()(
     }),
     {
       name: 'budgeify-store',
-      version: 4,
+      version: 5,
       skipHydration: true,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as Record<string, unknown>;
@@ -363,6 +363,30 @@ export const useBudgetStore = create<BudgetStoreState>()(
             state.selectedMonth = { year: n.getFullYear(), month: n.getMonth() };
           }
           if (!state.currency) state.currency = 'TRY';
+        }
+        if (version < 5) {
+          // v5: Cross-device consistency — validate state structure
+          if (!state || typeof state !== 'object') {
+            return initialState as unknown as BudgetStoreState;
+          }
+          // Ensure core arrays exist and are valid
+          const coreArrays = ['incomes', 'expenses', 'goals', 'categories', 'serverCategories'];
+          for (const key of coreArrays) {
+            if (!Array.isArray(state[key])) {
+              state[key] = key === 'categories' ? DEFAULT_CATEGORIES : [];
+            }
+          }
+          // Validate selectedMonth
+          if (!state.selectedMonth || typeof state.selectedMonth !== 'object' || 
+              typeof (state.selectedMonth as { year?: unknown; month?: unknown }).year !== 'number' || 
+              typeof (state.selectedMonth as { year?: unknown; month?: unknown }).month !== 'number') {
+            const n = new Date();
+            state.selectedMonth = { year: n.getFullYear(), month: n.getMonth() };
+          }
+          // Ensure currency is valid
+          if (!state.currency || typeof state.currency !== 'string') {
+            state.currency = 'TRY';
+          }
         }
         return state as unknown as BudgetStoreState;
       },
