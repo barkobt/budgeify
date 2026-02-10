@@ -104,8 +104,8 @@ const MiniGoalGrid = dynamic(
   () => import('@/components/features/dashboard/MiniGoalGrid').then((mod) => ({ default: mod.MiniGoalGrid })),
   { ssr: false }
 );
-const DesktopOracleRecommendations = features.oracle ? dynamic(
-  () => import('@/components/features/oracle/OracleInsightCard').then((mod) => ({ default: mod.OracleInsightCard })),
+const DesktopAICard = features.oracle ? dynamic(
+  () => import('@/components/features/dashboard/DesktopAICard').then((mod) => ({ default: mod.DesktopAICard })),
   { ssr: false }
 ) : () => null;
 
@@ -384,10 +384,10 @@ export default function DashboardClient() {
                     <div className="h-full min-w-0 rounded-2xl border border-white/8 bg-white/[0.02] p-4">
                       <div className="mb-3">
                         <h2 className="text-sm font-semibold text-white">AI Oneriler</h2>
-                        <p className="text-[11px] text-slate-500">Oracle tarafindan uretilen guncel ongoruler</p>
+                        <p className="text-[11px] text-slate-500">Oracle tarafindan olusturulan ozet ve aksiyonlar</p>
                       </div>
                       <div className="min-w-0">
-                        <DesktopOracleRecommendations />
+                        <DesktopAICard />
                       </div>
                     </div>
                   </div>
