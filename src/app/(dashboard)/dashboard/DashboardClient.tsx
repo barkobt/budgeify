@@ -219,7 +219,7 @@ export default function DashboardClient() {
   // Debug badge visibility and desktop media state
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    setShowDebugBadge(process.env.NODE_ENV !== 'production' || searchParams.get('debug') === '1');
+    setShowDebugBadge(searchParams.get('debug') === '1');
 
     const mediaQuery = window.matchMedia('(min-width: 1024px)');
     const updateIsDesktop = () => setIsDesktopLg(mediaQuery.matches);
