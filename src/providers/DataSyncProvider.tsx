@@ -46,9 +46,9 @@ interface DataSyncContextType {
   createIncome: (data: { amount: number; description?: string; categoryId?: string; isRecurring?: boolean; date?: string; status?: TransactionStatus; expectedDate?: string }) => Promise<void>;
   createExpense: (data: { amount: number; note?: string; categoryId?: string; date?: string; status?: TransactionStatus; expectedDate?: string }) => Promise<void>;
   createGoal: (data: { name: string; targetAmount: number; icon: string; targetDate?: Date }) => Promise<void>;
-  updateIncome: (id: string, data: { amount?: number; description?: string; categoryId?: string; isRecurring?: boolean; status?: TransactionStatus; expectedDate?: string | null }) => Promise<void>;
-  updateExpense: (id: string, data: { amount?: number; note?: string; categoryId?: string; status?: TransactionStatus; expectedDate?: string | null }) => Promise<void>;
-  updateGoal: (id: string, data: { name?: string; targetAmount?: number; icon?: string; targetDate?: Date | null }) => Promise<void>;
+  updateIncome: (id: string, data: { amount?: number; description?: string; categoryId?: string; isRecurring?: boolean; date?: string; status?: TransactionStatus; expectedDate?: string | null }) => Promise<void>;
+  updateExpense: (id: string, data: { amount?: number; note?: string; categoryId?: string; date?: string; status?: TransactionStatus; expectedDate?: string | null }) => Promise<void>;
+  updateGoal: (id: string, data: { name?: string; targetAmount?: number; icon?: string; targetDate?: Date | null; status?: 'active' | 'completed' | 'cancelled' }) => Promise<void>;
   removeIncome: (id: string) => Promise<void>;
   removeExpense: (id: string) => Promise<void>;
   removeGoal: (id: string) => Promise<void>;
@@ -479,6 +479,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     description?: string;
     categoryId?: string;
     isRecurring?: boolean;
+    date?: string;
     status?: TransactionStatus;
     expectedDate?: string | null;
   }) => {
@@ -496,9 +497,16 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     // Skip server call for temp IDs
     if (id.startsWith('temp_')) return;
 
+    // Resolve category to server UUID if provided
+    const resolvedCategoryId = data.categoryId
+      ? useBudgetStore.getState().resolveServerCategoryId(data.categoryId)
+      : undefined;
+
     // Server expects Date objects
     const serverData = {
       ...data,
+      categoryId: resolvedCategoryId !== undefined ? resolvedCategoryId : data.categoryId,
+      date: data.date ? new Date(data.date) : undefined,
       expectedDate: data.expectedDate === null ? null : data.expectedDate ? new Date(data.expectedDate) : undefined,
     };
     const result = await serverUpdateIncome(id, serverData);
@@ -520,6 +528,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     amount?: number;
     note?: string;
     categoryId?: string;
+    date?: string;
     status?: TransactionStatus;
     expectedDate?: string | null;
   }) => {
@@ -537,9 +546,16 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     // Skip server call for temp IDs
     if (id.startsWith('temp_')) return;
 
+    // Resolve category to server UUID if provided
+    const resolvedCategoryId = data.categoryId
+      ? useBudgetStore.getState().resolveServerCategoryId(data.categoryId)
+      : undefined;
+
     // Server expects Date objects
     const serverData = {
       ...data,
+      categoryId: resolvedCategoryId !== undefined ? resolvedCategoryId : data.categoryId,
+      date: data.date ? new Date(data.date) : undefined,
       expectedDate: data.expectedDate === null ? null : data.expectedDate ? new Date(data.expectedDate) : undefined,
     };
     const result = await serverUpdateExpense(id, serverData);
@@ -639,6 +655,7 @@ export function DataSyncProvider({ children }: { children: React.ReactNode }) {
     targetAmount?: number;
     icon?: string;
     targetDate?: Date | null;
+    status?: 'active' | 'completed' | 'cancelled';
   }) => {
     const current = useBudgetStore.getState().goals.find((g) => g.id === id);
     if (!current) return;

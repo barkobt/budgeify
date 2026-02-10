@@ -34,6 +34,10 @@ export const metadata: Metadata = {
   applicationName: 'Budgeify',
   category: 'finance',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon-32.png',
+    apple: '/apple-icon-180.png',
+  },
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
@@ -91,8 +95,8 @@ export default function RootLayout({
 
   return (
     <ClerkProvider
-      afterSignInUrl="/dashboard"
-      afterSignUpUrl="/dashboard"
+      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/dashboard"
       appearance={{
         variables: {
           colorPrimary: '#4F46E5',

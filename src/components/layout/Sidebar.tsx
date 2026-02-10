@@ -42,11 +42,11 @@ const NAV_ITEMS: { label: string; icon: React.ElementType; tab: TabType }[] = [
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const [expanded, setExpanded] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [ClerkUserBtn, setClerkUserBtn] = useState<React.ComponentType<any> | null>(null);
+  const [useUserHook, setUseUserHook] = useState<(() => { user?: any; isLoaded?: boolean }) | null>(null);
 
   useEffect(() => {
     import('@clerk/nextjs')
-      .then((clerk) => setClerkUserBtn(() => clerk.UserButton))
+      .then((clerk) => setUseUserHook(() => clerk.useUser))
       .catch(() => {});
   }, []);
 
@@ -167,34 +167,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
           </AnimatePresence>
         </button>
 
-        {/* User Profile Card */}
-        <div className="flex items-center gap-3 rounded-xl px-3 py-2.5 bg-white/3">
-          {ClerkUserBtn ? (
-            <ClerkUserBtn
-              appearance={{
-                variables: {
-                  colorPrimary: '#7C3AED',
-                  colorBackground: '#0A0A0F',
-                  colorText: '#E2E8F0',
-                  colorTextSecondary: '#94A3B8',
-                  borderRadius: '0.75rem',
-                },
-                elements: {
-                  avatarBox: 'w-8 h-8 ring-2 ring-[var(--color-primary)]/30',
-                  userButtonPopoverCard: '!bg-[#121223] border border-white/10 shadow-2xl',
-                  userButtonPopoverActions: '!bg-transparent',
-                  userButtonPopoverActionButton: '!text-slate-200 hover:!bg-white/10',
-                  userButtonPopoverActionButtonText: '!text-slate-200',
-                  userButtonPopoverActionButtonIcon: '!text-slate-400',
-                  userPreviewMainIdentifier: '!text-white',
-                  userPreviewSecondaryIdentifier: '!text-slate-400',
-                  userButtonPopoverFooter: 'hidden',
-                },
-              }}
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse shrink-0" />
-          )}
+        {/* User Profile Card — click navigates to settings */}
+        <button
+          onClick={() => onTabChange('settings')}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 bg-white/3 hover:bg-white/5 transition-all w-full text-left"
+          aria-label="Profil ve ayarlar"
+        >
+          <SidebarAvatar useUser={useUserHook} />
           <AnimatePresence>
             {expanded && (
               <motion.div
@@ -204,12 +183,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                <p className="text-xs font-medium text-white/80">Hesabım</p>
+                <SidebarUserName useUser={useUserHook} />
                 <p className="text-[10px] text-zinc-500">Profil & Ayarlar</p>
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </button>
 
         {/* Collapse Toggle */}
         <button
@@ -223,5 +202,88 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
     </aside>
   );
 };
+
+/**
+ * SidebarAvatar — Static avatar from Clerk useUser (no UserButton popover)
+ */
+function SidebarAvatar({
+  useUser,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useUser: (() => { user?: any; isLoaded?: boolean }) | null;
+}) {
+  if (!useUser) {
+    return <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse shrink-0" />;
+  }
+  return <SidebarAvatarInner useUser={useUser} />;
+}
+
+function SidebarAvatarInner({
+  useUser,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useUser: () => { user?: any; isLoaded?: boolean };
+}) {
+  let imageUrl: string | undefined;
+  let initials = '?';
+  try {
+    const result = useUser();
+    imageUrl = result.user?.imageUrl;
+    const first = result.user?.firstName?.[0] || '';
+    const last = result.user?.lastName?.[0] || '';
+    if (first || last) initials = `${first}${last}`.toUpperCase();
+  } catch {
+    // Clerk not ready
+  }
+
+  if (imageUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={imageUrl}
+        alt="Profil"
+        className="w-8 h-8 rounded-full ring-2 ring-primary/30 object-cover shrink-0"
+      />
+    );
+  }
+
+  return (
+    <div className="w-8 h-8 rounded-full bg-primary/20 ring-2 ring-primary/30 flex items-center justify-center shrink-0">
+      <span className="text-xs font-bold text-primary">{initials}</span>
+    </div>
+  );
+}
+
+/**
+ * SidebarUserName — Display user name from Clerk useUser
+ */
+function SidebarUserName({
+  useUser,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useUser: (() => { user?: any; isLoaded?: boolean }) | null;
+}) {
+  if (!useUser) {
+    return <p className="text-xs font-medium text-white/80">Hesabım</p>;
+  }
+  return <SidebarUserNameInner useUser={useUser} />;
+}
+
+function SidebarUserNameInner({
+  useUser,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useUser: () => { user?: any; isLoaded?: boolean };
+}) {
+  let name = 'Hesabım';
+  try {
+    const result = useUser();
+    const n = [result.user?.firstName, result.user?.lastName].filter(Boolean).join(' ');
+    if (n) name = n;
+  } catch {
+    // Clerk not ready
+  }
+  return <p className="text-xs font-medium text-white/80 truncate">{name}</p>;
+}
 
 export default Sidebar;

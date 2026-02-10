@@ -134,6 +134,12 @@ const AnalyticsPage = dynamic(
   { ssr: false, loading: () => <SkeletonList count={6} /> }
 );
 
+// M10: Command Palette (⌘K Global Search)
+const CommandPalette = dynamic(
+  () => import('@/components/features/search/CommandPalette').then((mod) => ({ default: mod.CommandPalette })),
+  { ssr: false }
+);
+
 // M7: Desktop Settings Page (lg+ only)
 const SettingsPage = dynamic(
   () => import('@/components/features/settings/SettingsPage').then((mod) => ({ default: mod.SettingsPage })),
@@ -165,6 +171,7 @@ export default function DashboardClient() {
   const [showPreflight, setShowPreflight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isOverlayActive, setIsOverlayActive] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
 
   // Hydration guard: skip initial animations on SSR
   useEffect(() => {
@@ -179,6 +186,25 @@ export default function DashboardClient() {
     const handler = () => setActiveTab('dashboard');
     window.addEventListener('oracle:reset-dashboard', handler);
     return () => window.removeEventListener('oracle:reset-dashboard', handler);
+  }, []);
+
+  // M10: ⌘K keyboard shortcut to open command palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowCommandPalette((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // M10: Listen for open:command-palette event (from DashboardHeader search input)
+  useEffect(() => {
+    const handler = () => setShowCommandPalette(true);
+    window.addEventListener('open:command-palette', handler);
+    return () => window.removeEventListener('open:command-palette', handler);
   }, []);
 
   // Track overlay state for DockBar visibility (AI Assistant + Drawers)
@@ -283,7 +309,7 @@ export default function DashboardClient() {
   };
 
   return (
-    <>
+    <div className="relative">
       {/* Client-side cinematic entrance — replaces server-side delay */}
       <AnimatePresence>
         {showPreflight && (
@@ -749,11 +775,18 @@ export default function DashboardClient() {
       {/* AI Assistant */}
       <AIAssistant />
 
+      {/* M10: Command Palette (⌘K Global Search) */}
+      <CommandPalette
+        open={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onNavigate={(tab) => { setActiveTab(tab); setShowCommandPalette(false); }}
+      />
+
       {/* v4.6: Portal Navbar + Dock Bar — mobile only */}
       <div className="lg:hidden">
         <PortalNavbar activeTab={activeTab} />
         <DockBar activeTab={activeTab} onTabChange={setActiveTab} onOpenDrawer={setOpenDrawer} hidden={isOverlayActive} />
       </div>
-    </>
+    </div>
   );
 }

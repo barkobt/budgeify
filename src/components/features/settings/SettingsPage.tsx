@@ -27,6 +27,8 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { useBudgetStore } from '@/store/useBudgetStore';
+import { SignOutDialog } from './SignOutDialog';
+import { ProfileModal } from './ProfileModal';
 import type { CurrencyCode } from '@/types';
 
 const CURRENCIES: { code: CurrencyCode; label: string; symbol: string }[] = [
@@ -41,8 +43,8 @@ export function SettingsPage() {
 
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [ClerkUserBtn, setClerkUserBtn] = useState<React.ComponentType<any> | null>(null);
+  const [showSignOut, setShowSignOut] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [useUserHook, setUseUserHook] = useState<(() => { user?: any; isLoaded?: boolean }) | null>(null);
 
@@ -51,7 +53,6 @@ export function SettingsPage() {
   useEffect(() => {
     import('@clerk/nextjs')
       .then((clerk) => {
-        setClerkUserBtn(() => clerk.UserButton);
         setUseUserHook(() => clerk.useUser);
       })
       .catch(() => {});
@@ -76,37 +77,21 @@ export function SettingsPage() {
       {/* Profile Section */}
       <SectionCard title="Profil" icon={User} description="Hesap bilgileriniz ve profil ayarlarınız">
         <div className="flex items-center gap-4">
-          {ClerkUserBtn ? (
-            <ClerkUserBtn
-              appearance={{
-                variables: {
-                  colorPrimary: '#7C3AED',
-                  colorBackground: '#0A0A0F',
-                  colorText: '#E2E8F0',
-                  colorTextSecondary: '#94A3B8',
-                  borderRadius: '0.75rem',
-                },
-                elements: {
-                  avatarBox: 'w-14 h-14 ring-2 ring-primary/30',
-                  userButtonPopoverCard: '!bg-[#121223] border border-white/10 shadow-2xl',
-                  userButtonPopoverActions: '!bg-transparent',
-                  userButtonPopoverActionButton: '!text-slate-200 hover:!bg-white/10',
-                  userButtonPopoverActionButtonText: '!text-slate-200',
-                  userButtonPopoverActionButtonIcon: '!text-slate-400',
-                  userPreviewMainIdentifier: '!text-white',
-                  userPreviewSecondaryIdentifier: '!text-slate-400',
-                  userButtonPopoverFooter: 'hidden',
-                },
-              }}
-            />
-          ) : (
-            <div className="w-14 h-14 rounded-full bg-white/10 animate-pulse shrink-0" />
-          )}
+          <button
+            onClick={() => setShowProfile(true)}
+            className="shrink-0 group"
+            aria-label="Profil yönetimini aç"
+          >
+            <ClerkAvatar useUser={useUserHook} />
+          </button>
           <div className="min-w-0">
             <ClerkUserInfo useUser={useUserHook} />
-            <p className="text-xs text-zinc-500 mt-1">
-              Profil fotoğrafınızı ve bilgilerinizi değiştirmek için avatarınıza tıklayın.
-            </p>
+            <button
+              onClick={() => setShowProfile(true)}
+              className="text-xs text-primary hover:text-primary/80 mt-1 transition-colors"
+            >
+              Profili Düzenle →
+            </button>
           </div>
         </div>
       </SectionCard>
@@ -170,21 +155,14 @@ export function SettingsPage() {
           <SecurityRow
             icon={Lock}
             label="Şifre Değiştir"
-            description="Son değişiklik: bilinmiyor"
-            onClick={() => {
-              // Clerk manages password changes via UserButton popover
-              const btn = document.querySelector('.cl-userButtonTrigger') as HTMLElement;
-              btn?.click();
-            }}
+            description="Clerk profil yönetimi üzerinden"
+            onClick={() => setShowProfile(true)}
           />
           <SecurityRow
             icon={Smartphone}
             label="Aktif Oturumlar"
             description="Tüm cihazlardaki oturumlarınızı yönetin"
-            onClick={() => {
-              const btn = document.querySelector('.cl-userButtonTrigger') as HTMLElement;
-              btn?.click();
-            }}
+            onClick={() => setShowProfile(true)}
           />
           <SecurityRow
             icon={CreditCard}
@@ -197,10 +175,7 @@ export function SettingsPage() {
             label="Tüm Cihazlardan Çıkış"
             description="Tüm aktif oturumları sonlandır"
             danger
-            onClick={() => {
-              const btn = document.querySelector('.cl-userButtonTrigger') as HTMLElement;
-              btn?.click();
-            }}
+            onClick={() => setShowSignOut(true)}
           />
         </div>
       </SectionCard>
@@ -208,12 +183,16 @@ export function SettingsPage() {
       {/* App Info */}
       <div className="glass-panel rounded-xl p-4 text-center">
         <p className="text-xs text-zinc-500">
-          Budgeify v6.0 — Design Overhaul
+          Budgeify v7.0 — App Store Ready
         </p>
         <p className="text-[10px] text-zinc-600 mt-1">
           Next.js • Clerk Auth • Neon DB • Framer Motion
         </p>
       </div>
+
+      {/* Modals */}
+      <SignOutDialog open={showSignOut} onClose={() => setShowSignOut(false)} />
+      <ProfileModal open={showProfile} onClose={() => setShowProfile(false)} />
     </div>
   );
 }
@@ -343,6 +322,57 @@ function SecurityRow({
         <ChevronRight size={16} className={`shrink-0 ${danger ? 'text-rose-500/50' : 'text-zinc-600'}`} />
       )}
     </button>
+  );
+}
+
+/**
+ * ClerkAvatar — Display user avatar from Clerk or fallback
+ */
+function ClerkAvatar({
+  useUser,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useUser: (() => { user?: any; isLoaded?: boolean }) | null;
+}) {
+  if (!useUser) {
+    return <div className="w-14 h-14 rounded-full bg-white/10 animate-pulse shrink-0" />;
+  }
+  return <ClerkAvatarInner useUser={useUser} />;
+}
+
+function ClerkAvatarInner({
+  useUser,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useUser: () => { user?: any; isLoaded?: boolean };
+}) {
+  let imageUrl: string | undefined;
+  let initials = '?';
+  try {
+    const result = useUser();
+    imageUrl = result.user?.imageUrl;
+    const first = result.user?.firstName?.[0] || '';
+    const last = result.user?.lastName?.[0] || '';
+    if (first || last) initials = `${first}${last}`.toUpperCase();
+  } catch {
+    // Clerk not ready
+  }
+
+  if (imageUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={imageUrl}
+        alt="Profil"
+        className="w-14 h-14 rounded-full ring-2 ring-primary/30 object-cover group-hover:ring-primary/60 transition-all"
+      />
+    );
+  }
+
+  return (
+    <div className="w-14 h-14 rounded-full bg-primary/20 ring-2 ring-primary/30 flex items-center justify-center group-hover:ring-primary/60 transition-all">
+      <span className="text-lg font-bold text-primary">{initials}</span>
+    </div>
   );
 }
 

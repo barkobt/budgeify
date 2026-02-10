@@ -10,9 +10,10 @@
  * - Glass panel styling
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Sparkles, TrendingUp, Target, MessageCircle } from 'lucide-react';
+import { useBudgetStore } from '@/store/useBudgetStore';
 import {
   getFinancialSnapshot,
   calculateHealthScore,
@@ -35,15 +36,20 @@ function getScoreLabel(score: number): string {
 }
 
 export const DesktopAICard: React.FC = () => {
-  const [health, setHealth] = useState<HealthScore | null>(null);
-  const [velocityLabel, setVelocityLabel] = useState('Veri bekleniyor');
-  const [goalLabel, setGoalLabel] = useState('Hedef belirlenmemiş');
+  // Subscribe to store slices so we recalculate when data changes
+  const incomes = useBudgetStore((s) => s.incomes);
+  const expenses = useBudgetStore((s) => s.expenses);
+  const goals = useBudgetStore((s) => s.goals);
 
-  useEffect(() => {
+  const { health, velocityLabel, goalLabel } = useMemo(() => {
     const snapshot = getFinancialSnapshot();
 
+    let computedHealth: HealthScore | null = null;
+    let computedVelocity = 'Veri bekleniyor';
+    let computedGoal = 'Hedef belirlenmemiş';
+
     if (snapshot.dataAvailability.hasExpenses || snapshot.dataAvailability.hasIncomes) {
-      setHealth(calculateHealthScore(snapshot));
+      computedHealth = calculateHealthScore(snapshot);
     }
 
     // Spending velocity
@@ -51,14 +57,14 @@ export const DesktopAICard: React.FC = () => {
       const trend = getSpendingTrend(snapshot.currentMonthExpenses, snapshot.previousMonthExpenses);
       if (trend.previousTotal > 0) {
         if (trend.direction === 'up') {
-          setVelocityLabel(`Harcama %${trend.changePercent} arttı`);
+          computedVelocity = `Harcama %${trend.changePercent} arttı`;
         } else if (trend.direction === 'down') {
-          setVelocityLabel(`Harcama %${Math.abs(trend.changePercent)} azaldı`);
+          computedVelocity = `Harcama %${Math.abs(trend.changePercent)} azaldı`;
         } else {
-          setVelocityLabel('Harcama hızı sabit');
+          computedVelocity = 'Harcama hızı sabit';
         }
       } else {
-        setVelocityLabel('İlk ay verisi toplanıyor');
+        computedVelocity = 'İlk ay verisi toplanıyor';
       }
     }
 
@@ -69,12 +75,15 @@ export const DesktopAICard: React.FC = () => {
         gi.progressPercent > best.progressPercent ? gi : best, goalInsights[0]);
       const remaining = 100 - closest.progressPercent;
       if (remaining <= 0) {
-        setGoalLabel(`${closest.goal.name} tamamlandı!`);
+        computedGoal = `${closest.goal.name} tamamlandı!`;
       } else {
-        setGoalLabel(`${closest.goal.name}: %${remaining} kaldı`);
+        computedGoal = `${closest.goal.name}: %${remaining} kaldı`;
       }
     }
-  }, []);
+
+    return { health: computedHealth, velocityLabel: computedVelocity, goalLabel: computedGoal };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: subscribe to store slices for reactivity
+  }, [incomes, expenses, goals]);
 
   const handleOpenAssistant = useCallback(() => {
     window.dispatchEvent(new CustomEvent('oracle:open-assistant'));
