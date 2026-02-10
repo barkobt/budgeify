@@ -87,13 +87,13 @@ export default function PricingClient() {
             <Logo size="sm" showText={true} href="/" />
             <div className="hidden md:flex items-center gap-6">
               <Link href="/#features" className="text-sm text-slate-400 hover:text-white transition-colors font-medium">
-                Features
+                Özellikler
               </Link>
               <Link href="/pricing" className="text-sm text-white font-medium">
-                Pricing
+                Fiyatlandırma
               </Link>
               <Link href="/#about" className="text-sm text-slate-400 hover:text-white transition-colors font-medium">
-                About
+                Hakkımızda
               </Link>
             </div>
             <div className="flex items-center gap-3">
@@ -128,11 +128,11 @@ export default function PricingClient() {
 
           <div className="relative max-w-4xl mx-auto">
             <FadeInDiv>
-              <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Pricing</span>
+              <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Fiyatlandırma</span>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 font-display">
-                Simple,{' '}
-                <span className="text-gradient-logo">Transparent</span>{' '}
-                Pricing
+                Basit,{' '}
+                <span className="text-gradient-logo">Şeffaf</span>{' '}
+                Fiyatlandırma
               </h1>
               <p className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto">
                 Finansal özgürlüğünüz için yatırım yapın. İhtiyacınıza uygun planı seçin.
@@ -307,7 +307,7 @@ export default function PricingClient() {
                     href="/sign-up"
                     className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple"
                   >
-                    Start Free
+                    Ücretsiz Başla
                     <ArrowRight size={16} />
                   </Link>
                 </FadeInDiv>

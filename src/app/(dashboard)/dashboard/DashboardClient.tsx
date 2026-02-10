@@ -29,7 +29,6 @@ import {
   fadeInUp,
 } from '@/lib/motion';
 import { features } from '@/lib/env';
-import type { WalletModuleId } from '@/components/features/oracle/OracleHero';
 import type { Income, CurrencyCode } from '@/types';
 import type { MergedTransaction } from '@/components/features/transactions/TransactionTable';
 import { exportToCSV, exportToPDF } from '@/lib/export';
@@ -85,18 +84,6 @@ const GoalForm = dynamic(
 );
 const AIAssistant = features.oracle ? dynamic(
   () => import('@/components/features/ai/AIAssistant').then((mod) => ({ default: mod.AIAssistant })),
-  { ssr: false }
-) : () => null;
-const OracleHero = features.oracle ? dynamic(
-  () => import('@/components/features/oracle/OracleHero').then((mod) => ({ default: mod.OracleHero })),
-  { ssr: false }
-) : () => null;
-const OracleInsightCard = features.oracle ? dynamic(
-  () => import('@/components/features/oracle/OracleInsightCard').then((mod) => ({ default: mod.OracleInsightCard })),
-  { ssr: false }
-) : () => null;
-const OracleBrainCard = features.oracle ? dynamic(
-  () => import('@/components/features/oracle/OracleBrainCard').then((mod) => ({ default: mod.OracleBrainCard })),
   { ssr: false }
 ) : () => null;
 
@@ -186,7 +173,6 @@ export default function DashboardClient() {
   const [selectedTransaction, setSelectedTransaction] = useState<MergedTransaction | null>(null);
 
   const [showPreflight, setShowPreflight] = useState(true);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [isOverlayActive, setIsOverlayActive] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
 
@@ -245,20 +231,6 @@ export default function DashboardClient() {
     }
   }, [openDrawer, editingIncome]);
 
-  // M11: Ambient ignition — drive orb opacity via CSS custom properties
-  const handleScrollProgress = (progress: number) => {
-    setScrollProgress(progress);
-    // Phase 3 Ignition (50–70%): ambient orbs intensify
-    const indigoOpacity = progress < 0.5 ? 0.06
-      : progress < 0.7 ? 0.06 + (progress - 0.5) / 0.2 * 0.14
-      : 0.20;
-    const violetOpacity = progress < 0.5 ? 0.04
-      : progress < 0.7 ? 0.04 + (progress - 0.5) / 0.2 * 0.08
-      : 0.12;
-    document.documentElement.style.setProperty('--ambient-indigo-opacity', String(indigoOpacity));
-    document.documentElement.style.setProperty('--ambient-violet-opacity', String(violetOpacity));
-  };
-
   // Live store data
   const expenses = useBudgetStore((s) => s.expenses);
   const incomes = useBudgetStore((s) => s.incomes);
@@ -266,27 +238,6 @@ export default function DashboardClient() {
   const deleteIncome = useBudgetStore((s) => s.deleteIncome);
   const getSavingsRate = useBudgetStore((s) => s.getSavingsRate);
   const getActiveGoals = useBudgetStore((s) => s.getActiveGoals);
-
-  // OracleHero module click handler
-  const handleModuleClick = (moduleId: WalletModuleId) => {
-    switch (moduleId) {
-      case 'income':
-        setOpenDrawer('income');
-        break;
-      case 'expense':
-        setOpenDrawer('expense');
-        break;
-      case 'goals':
-        setActiveTab('goals');
-        break;
-      case 'analytics':
-        setActiveTab('analytics');
-        break;
-      case 'insights':
-        // Scroll to Oracle insight card
-        break;
-    }
-  };
 
   const currency = useBudgetStore((s) => s.currency);
   const setCurrency = useBudgetStore((s) => s.setCurrency);
@@ -397,15 +348,6 @@ export default function DashboardClient() {
         )}
       </AnimatePresence>
 
-      {/* M11: Scroll Progress Indicator — right edge indigo bar */}
-      {features.oracle && activeTab === 'dashboard' && scrollProgress > 0 && scrollProgress < 1 && (
-        <div
-          className="scroll-progress-bar"
-          style={{ height: `${scrollProgress * 100}vh`, opacity: scrollProgress < 0.98 ? 1 : 0 }}
-          aria-hidden="true"
-        />
-      )}
-
       {/* v6.0: Desktop Sidebar — hidden on mobile */}
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
@@ -460,13 +402,6 @@ export default function DashboardClient() {
             <div className="lg:hidden">
             <LayoutGroup>
             <BentoGrid isMounted={isMounted}>
-              {/* Oracle Core Hero — full width, no card chrome */}
-              {features.oracle && (
-              <BentoCard size="full">
-                <OracleHero onModuleClick={handleModuleClick} onScrollProgress={handleScrollProgress} />
-              </BentoCard>
-              )}
-
               {/* Hero Balance — 2×2 (child has own glass-card styling) */}
               <BentoCard size="2x2" bare>
                 <MainBalanceCard />
@@ -544,17 +479,6 @@ export default function DashboardClient() {
                 </div>
               </BentoCard>
 
-              {/* Oracle Brain — 1×1 AI widget (M7) */}
-              {features.oracle && (
-              <BentoCard
-                size="1x1"
-                pressable
-                ariaLabel="Oracle AI durumu"
-              >
-                <OracleBrainCard />
-              </BentoCard>
-              )}
-
               {/* Savings — 1×1 compact widget */}
               <BentoCard size="1x1" ariaLabel="Tasarruf oranı">
                 <div className="flex flex-col h-full justify-between">
@@ -585,13 +509,6 @@ export default function DashboardClient() {
                   </div>
                 </div>
               </BentoCard>
-
-              {/* Oracle AI Insight — 2×1 (child has own glass-card styling) */}
-              {features.oracle && (
-              <BentoCard size="2x1" bare>
-                <OracleInsightCard />
-              </BentoCard>
-              )}
 
               {/* Currency Selector — 1×1 (M6) */}
               <BentoCard
@@ -929,8 +846,12 @@ export default function DashboardClient() {
         <BudgetAlertForm onSuccess={() => setShowAlertDrawer(false)} />
       </Drawer>
 
-      {/* AI Assistant */}
-      {features.oracle && <AIAssistant />}
+      {/* AI Assistant — desktop only */}
+      {features.oracle && (
+        <div className="hidden lg:block">
+          <AIAssistant />
+        </div>
+      )}
 
       {/* M10: Command Palette (⌘K Global Search) */}
       <CommandPalette

@@ -83,7 +83,7 @@ function AuthAwareButtons({ useAuth }: { useAuth: () => { isSignedIn?: boolean }
         className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider"
       >
         <LayoutDashboard size={16} />
-        Dashboard
+        Gösterge Paneli
       </Link>
     );
   }
@@ -98,13 +98,13 @@ function GuestNavButtons() {
         href="/sign-in"
         className="text-sm font-medium text-slate-400 hover:text-white transition-colors whitespace-nowrap"
       >
-        Log In
+        Giriş Yap
       </Link>
       <Link
         href="/sign-up"
         className="px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple whitespace-nowrap"
       >
-        Start Free
+        Kayıt Ol
       </Link>
     </>
   );
@@ -258,7 +258,7 @@ function DataStrip() {
             <div className="relative">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Portfolio Performance</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Canlı Portföy Performansı</span>
               </div>
 
               <div className="w-full h-64 sm:h-72">
@@ -352,9 +352,9 @@ function DataStrip() {
             {/* Stats */}
             <div className="space-y-6">
               {[
-                { label: 'Total Assets Managed', value: '$4.2B', badge: '↑ 12%', badgeColor: 'text-emerald-400' },
-                { label: 'Prediction Accuracy', value: '99.8%', badge: '< AI', badgeColor: 'text-[#0da6f2]' },
-                { label: 'Security Uptime', value: '100%', badge: 'All Systems Nominal', badgeColor: 'text-slate-500' },
+                { label: 'Yönetilen Toplam Varlık', value: '$4.2B', badge: '↑ 12%', badgeColor: 'text-emerald-400' },
+                { label: 'Tahmin Doğruluğu', value: '99.8%', badge: '< AI', badgeColor: 'text-[#0da6f2]' },
+                { label: 'Güvenlik Çalışma Süresi', value: '100%', badge: 'Tüm Sistemler Aktif', badgeColor: 'text-slate-500' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -414,9 +414,9 @@ export default function LandingClient() {
             <Logo size="sm" showText={true} href="/" />
 
             <div className="hidden md:flex items-center gap-6">
-              {['Features', 'Pricing', 'About'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className="text-sm text-slate-400 hover:text-white transition-colors font-medium">
-                  {item}
+              {[{ label: 'Özellikler', href: '#features' }, { label: 'Fiyatlandırma', href: '#pricing' }, { label: 'Hakkımızda', href: '#about' }].map((item) => (
+                <a key={item.href} href={item.href} className="text-sm text-slate-400 hover:text-white transition-colors font-medium">
+                  {item.label}
                 </a>
               ))}
             </div>
@@ -451,22 +451,23 @@ export default function LandingClient() {
               <HeroText delay={0.1}>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6">
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-                  <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">AI V2.0 Live</span>
+                  <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">AI V2.0 Aktif</span>
                 </div>
               </HeroText>
 
               {/* Main headline */}
               <HeroText delay={0.2}>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.1] mb-6 font-display">
-                  Command Your Capital with{' '}
-                  <span className="text-gradient-logo">AI Intelligence</span>
+                  Sermayenizi{' '}
+                  <span className="text-gradient-logo">Yapay Zekâ</span>{' '}
+                  ile Yönetin
                 </h1>
               </HeroText>
 
               {/* Subheadline */}
               <HeroText delay={0.3}>
                 <p className="text-base sm:text-lg text-slate-400 max-w-lg mb-8 leading-relaxed">
-                  The first financial operating system that evolves with your spending habits. Experience predictive budgeting powered by neural networks in a seamless obsidian void.
+                  Harcama alışkanlıklarınızla birlikte gelişen ilk finansal işletim sistemi. Yapay sinir ağları ile desteklenen öngörülü bütçe yönetimini deneyimleyin.
                 </p>
               </HeroText>
 
@@ -477,12 +478,12 @@ export default function LandingClient() {
                     href="/sign-up"
                     className="group flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 text-sm font-bold text-white btn-portal-gradient rounded-full uppercase tracking-wider btn-glow-purple whitespace-nowrap"
                   >
-                    Start Free
+                    Ücretsiz Başla
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <button className="flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 text-sm font-medium text-slate-300 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all whitespace-nowrap">
                     <Play size={14} />
-                    Watch Demo
+                    Demo İzle
                   </button>
                 </div>
               </HeroText>
@@ -495,7 +496,7 @@ export default function LandingClient() {
                       <div key={i} className="w-8 h-8 rounded-full border-2 border-[#050505] bg-gradient-to-br from-slate-600 to-slate-800" />
                     ))}
                   </div>
-                  <span className="text-xs text-slate-500">Trusted by <strong className="text-slate-300">50,000+</strong> visionaries</span>
+                  <span className="text-xs text-slate-500"><strong className="text-slate-300">50.000+</strong> kullanıcının tercihi</span>
                 </div>
               </HeroText>
             </div>
@@ -514,10 +515,10 @@ export default function LandingClient() {
       <FadeInSection className="py-20 sm:py-28 px-4">
         <div className="max-w-4xl mx-auto">
           <FadeInDiv className="text-center mb-16">
-            <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">How It Works</span>
+            <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Nasıl Çalışır</span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
-              Four Steps to{' '}
-              <span className="text-gradient-logo">Financial Autonomy</span>
+              Dört Adımda{' '}
+              <span className="text-gradient-logo">Finansal Özgürlük</span>
             </h2>
             <p className="text-base text-slate-400 max-w-xl mx-auto">
               Yapay zekâ destekli finansal özgürlüğünüze dört adımda ulaşın.
@@ -532,25 +533,25 @@ export default function LandingClient() {
               {
                 step: '01',
                 icon: Wifi,
-                title: 'Sync Your Ecosystem',
+                title: 'Ekosisteminizi Bağlayın',
                 desc: 'Tüm finansal verilerinizi tek bir noktada entegre edin. Gelir, gider ve hedefleriniz anında senkronize olur.',
               },
               {
                 step: '02',
                 icon: Brain,
-                title: 'Neural Training',
+                title: 'Yapay Zekâ Eğitimi',
                 desc: 'AI modeli harcama alışkanlıklarınızı öğrenir. Kategori bazlı analiz ve trend tahminleri oluşturur.',
               },
               {
                 step: '03',
                 icon: Activity,
-                title: 'Predictive Simulation',
+                title: 'Öngörü Simülasyonu',
                 desc: 'Gelecek harcamalarınız simüle edilir. Bütçe aşım riski ve tasarruf fırsatları önceden belirlenir.',
               },
               {
                 step: '04',
                 icon: Sparkles,
-                title: 'Autonomous Execution',
+                title: 'Otonom Yürütme',
                 desc: 'Bütçe optimizasyonu otomatik çalışır. Hedeflerinize ulaşmanız için akıllı öneriler sunar.',
               },
             ].map((item, i) => (
@@ -582,11 +583,11 @@ export default function LandingClient() {
         <div className="max-w-6xl mx-auto">
           <FadeInDiv className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
-              Quantum-Level{' '}
-              <span className="text-gradient-logo">Financial Clarity</span>
+              Kuantum Düzeyinde{' '}
+              <span className="text-gradient-logo">Finansal Netlik</span>
             </h2>
             <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto">
-              Unlock the power of automated intelligence for your assets. Our system learns, adapts, and grows your wealth in real-time.
+              Varlıklarınız için otomatik zekânın gücünü açığa çıkarın. Sistemimiz öğrenir, uyum sağlar ve servetinizi gerçek zamanlı büyütür.
             </p>
           </FadeInDiv>
 
@@ -594,18 +595,18 @@ export default function LandingClient() {
             {[
               {
                 icon: TrendingUp,
-                title: 'Predictive Spending',
-                desc: 'Our AI anticipates your expenses before they happen using historical data and market trends, alerting you to adjust your budget proactively.',
+                title: 'Öngörülü Harcama',
+                desc: 'Yapay zekâmız, geçmiş veriler ve piyasa trendlerini kullanarak harcamalarınızı gerçekleşmeden önce tahmin eder ve bütçenizi proaktif olarak ayarlamanız için sizi uyarır.',
               },
               {
                 icon: Brain,
-                title: 'Neural Auto-Save',
-                desc: 'Smart algorithms analyze your daily cash flow and automatically set aside micro-amounts into high-yield diverse portfolios without you noticing.',
+                title: 'Nöral Otomatik Tasarruf',
+                desc: 'Akıllı algoritmalar günlük nakit akışınızı analiz eder ve fark etmeden mikro tutarları yüksek getirili çeşitlendirilmiş portföylere otomatik olarak ayırır.',
               },
               {
                 icon: ShieldCheck,
-                title: 'Holographic Security',
-                desc: 'Biometric encryption meets decentralized data storage. Your financial DNA is protected by military-grade, quantum-resistant protocols.',
+                title: 'Holografik Güvenlik',
+                desc: 'Biyometrik şifreleme, merkezi olmayan veri depolama ile buluşuyor. Finansal DNA\'nız askeri düzeyde, kuantum dayanıklı protokollerle korunmaktadır.',
               },
             ].map((feature) => (
               <StaggerItem key={feature.title}>
@@ -640,11 +641,11 @@ export default function LandingClient() {
             />
             <div className="relative">
               <FadeInDiv>
-                <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Pricing</span>
+                <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Fiyatlandırma</span>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
-                  Simple,{' '}
-                  <span className="text-gradient-logo">Transparent</span>{' '}
-                  Pricing
+                  Basit,{' '}
+                  <span className="text-gradient-logo">Şeffaf</span>{' '}
+                  Fiyatlandırma
                 </h2>
                 <p className="text-base text-slate-400 max-w-xl mx-auto mb-4">
                   Aylık <strong className="text-white">99 ₺</strong>&apos;den başlayan fiyatlarla AI destekli finansal yönetim.
@@ -673,7 +674,7 @@ export default function LandingClient() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left — Text */}
             <FadeInDiv direction="left">
-              <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">About Budgeify</span>
+              <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Budgeify Hakkında</span>
               <h2 className="text-3xl sm:text-4xl font-black text-white mb-6 font-display">
                 Finansal Özgürlük{' '}
                 <span className="text-gradient-logo">Herkesin Hakkı</span>
@@ -708,10 +709,10 @@ export default function LandingClient() {
                 />
                 <div className="relative space-y-5">
                   {[
-                    { title: 'Next.js 14', desc: 'Server-first React framework' },
-                    { title: 'Neural AI Engine', desc: 'Harcama tahmin ve optimizasyon' },
-                    { title: 'Real-time Sync', desc: 'Cross-device anlık senkronizasyon' },
-                    { title: 'Bank-Grade Security', desc: 'Clerk auth + encrypted data layer' },
+                    { title: 'Next.js 14', desc: 'Sunucu öncelikli React framework' },
+                    { title: 'Yapay Zekâ Motoru', desc: 'Harcama tahmin ve optimizasyon' },
+                    { title: 'Gerçek Zamanlı Sync', desc: 'Tüm cihazlarda anlık senkronizasyon' },
+                    { title: 'Banka Düzeyinde Güvenlik', desc: 'Clerk auth + şifreli veri katmanı' },
                   ].map((item, i) => (
                     <div key={item.title} className="flex items-start gap-3">
                       <div className="mt-1 w-6 h-6 rounded-md bg-[#9d00ff]/10 flex items-center justify-center shrink-0">
@@ -747,13 +748,13 @@ export default function LandingClient() {
             <div className="relative">
               <FadeInDiv direction="up">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 font-display">
-                  Ready to{' '}
-                  <span className="text-gradient-logo">Upgrade?</span>
+                  Yükseltmeye{' '}
+                  <span className="text-gradient-logo">Hazır mısınız?</span>
                 </h2>
               </FadeInDiv>
               <FadeInDiv direction="up" delay={0.1}>
                 <p className="text-base text-slate-400 mb-8 max-w-xl mx-auto">
-                  Join the waiting list for the next generation of financial intelligence. Early adopters get premium perks.
+                  Yeni nesil finansal zekâ için bekleme listesine katılın. Erken kullanıcılar premium avantajlardan yararlanır.
                 </p>
               </FadeInDiv>
               <FadeInDiv direction="up" delay={0.2}>
@@ -766,7 +767,7 @@ export default function LandingClient() {
                     <input
                       id="cta-email"
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="E-posta adresinizi girin"
                       className="neon-input w-full pl-10 pr-4 py-3 rounded-lg text-sm"
                       autoComplete="email"
                     />
@@ -775,7 +776,7 @@ export default function LandingClient() {
                     href="/sign-up"
                     className="w-full sm:w-auto px-6 py-3 text-sm font-bold text-white btn-portal-gradient rounded-lg uppercase tracking-wider whitespace-nowrap text-center"
                   >
-                    Join Beta
+                    Beta&apos;ya Katıl
                   </Link>
                 </div>
               </FadeInDiv>
