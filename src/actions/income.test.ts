@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   mockAuthenticatedUser,
   mockUnauthenticatedUser,
+  mockAuth,
   resetAllMocks,
   mockDb,
   mockRevalidatePath,
@@ -205,7 +206,7 @@ describe('Income Actions — Error Handling', () => {
   });
 
   it('createIncome returns failure result when user resolution throws', async () => {
-    mockAuthenticatedUser();
+    mockAuth.mockResolvedValue({ userId: 'clerk_test_123' });
     mockDb.limit.mockRejectedValueOnce(new Error('User lookup failed'));
 
     const result = await createIncome({ amount: 100 });
