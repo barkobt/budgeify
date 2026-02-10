@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
+import { env } from '@/lib/env';
 import { PiggyBank, Loader2 } from 'lucide-react';
 
 const clerkAppearance = {
@@ -84,7 +85,12 @@ function ClerkSignInLoader() {
     );
   }
 
-  return <SignInComponent appearance={clerkAppearance} />;
+  return (
+    <SignInComponent
+      appearance={clerkAppearance}
+      fallbackRedirectUrl={env.clerkSignInFallbackRedirectUrl}
+    />
+  );
 }
 
 export default function SignInPage() {

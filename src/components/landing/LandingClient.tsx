@@ -192,18 +192,18 @@ function CreditCardVisual() {
 
           {/* Balance */}
           <div>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Balance</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Bakiye</p>
             <p className="text-2xl sm:text-3xl font-black text-white font-display tracking-tight">$1,249,920.00</p>
           </div>
 
           {/* Bottom row */}
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[9px] text-slate-500 uppercase tracking-widest">Card Number</p>
+              <p className="text-[9px] text-slate-500 uppercase tracking-widest">Kart Numarası</p>
               <p className="text-xs text-white/60 font-mono tracking-wider">•••• •••• •••• 4598</p>
             </div>
             <div className="text-right">
-              <p className="text-[9px] text-slate-500 uppercase tracking-widest">Exp</p>
+              <p className="text-[9px] text-slate-500 uppercase tracking-widest">Son Kul.</p>
               <p className="text-xs text-white/60 font-mono">EXP 12/28</p>
             </div>
           </div>
@@ -451,7 +451,7 @@ export default function LandingClient() {
               <HeroText delay={0.1}>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6">
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-                  <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">AI V2.0 Aktif</span>
+                  <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">YZ V2.0 Aktif</span>
                 </div>
               </HeroText>
 
@@ -540,7 +540,7 @@ export default function LandingClient() {
                 step: '02',
                 icon: Brain,
                 title: 'Yapay Zeka Eğitimi',
-                desc: 'AI modeli harcama alışkanlıklarınızı öğrenir. Kategori bazlı analiz ve trend tahminleri oluşturur.',
+                desc: 'Yapay zeka modeli harcama alışkanlıklarınızı öğrenir. Kategori bazlı analiz ve trend tahminleri oluşturur.',
               },
               {
                 step: '03',
@@ -648,7 +648,7 @@ export default function LandingClient() {
                   Fiyatlandırma
                 </h2>
                 <p className="text-base text-slate-400 max-w-xl mx-auto mb-4">
-                  Aylık <strong className="text-white">99 ₺</strong>&apos;den başlayan fiyatlarla AI destekli finansal yönetim.
+                  Aylık <strong className="text-white">99 ₺</strong>&apos;den başlayan fiyatlarla yapay zeka destekli finansal yönetim.
                   Yıllık planda <span className="text-emerald-400 font-bold">%30 indirim</span>.
                 </p>
               </FadeInDiv>
@@ -689,7 +689,7 @@ export default function LandingClient() {
                 {[
                   { icon: Users, label: '50K+', sub: 'Kullanıcı' },
                   { icon: Heart, label: '99.8%', sub: 'Memnuniyet' },
-                  { icon: Code2, label: '24/7', sub: 'AI Aktif' },
+                  { icon: Code2, label: '24/7', sub: 'YZ Aktif' },
                 ].map((stat) => (
                   <div key={stat.label} className="text-center">
                     <stat.icon size={20} className="text-[#0da6f2] mx-auto mb-2" />

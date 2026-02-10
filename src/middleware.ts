@@ -7,6 +7,7 @@
  * Protected routes: /dashboard and sub-routes.
  */
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -19,6 +20,14 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  if (
+    req.nextUrl.pathname.startsWith('/dashboard') &&
+    req.method !== 'GET' &&
+    req.method !== 'HEAD'
+  ) {
+    return NextResponse.redirect(new URL('/dashboard', req.url), 303);
+  }
+
   if (
     !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
     !process.env.CLERK_SECRET_KEY

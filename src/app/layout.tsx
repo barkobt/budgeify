@@ -20,7 +20,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Budgeify - AI-Powered Kisisel Finans',
+  title: 'Budgeify - Yapay Zeka Destekli Kişisel Finans',
   description:
     'Yapay zeka destekli, modern ve minimalist kisisel finans yonetimi uygulamasi.',
   keywords: [
@@ -36,8 +36,12 @@ export const metadata: Metadata = {
   category: 'finance',
   manifest: '/manifest.json',
   icons: {
-    icon: '/icon.svg',
-    shortcut: '/icon.svg',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
     apple: '/apple-icon-180.png',
   },
   robots: { index: true, follow: true },
@@ -45,7 +49,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'tr_TR',
     url: 'https://budgeify.vercel.app',
-    title: 'Budgeify - AI-Powered Kisisel Finans',
+    title: 'Budgeify - Yapay Zeka Destekli Kişisel Finans',
     description: 'Yapay zeka destekli kisisel finans uygulamasi.',
     siteName: 'Budgeify',
   },
@@ -71,8 +75,8 @@ export default function RootLayout({
     <html lang="tr" className={`${inter.variable} ${plusJakarta.variable}`}>
       <head>
         {/* P8: Preconnect hints — reduce connection latency for critical third-party origins */}
-        <link rel="preconnect" href="https://clerk.budgeify.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://clerk.budgeify.com" />
+        <link rel="preconnect" href="https://clerk.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://clerk.com" />
         <link rel="preconnect" href="https://img.clerk.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://img.clerk.com" />
       </head>
