@@ -46,7 +46,6 @@ const navItems: { name: string; icon: DockIcon; tab: TabType }[] = [
 
 const navItemsRight: { name: string; icon: DockIcon; tab: TabType }[] = [
   { name: 'Hedefler', icon: Target, tab: 'goals' },
-  { name: 'Analiz', icon: BarChart3, tab: 'analytics' },
   { name: 'Takvim', icon: CalendarDays, tab: 'calendar' },
 ];
 
@@ -132,6 +131,22 @@ export const DockBar: React.FC<DockBarProps> = ({
                 <ArrowDownRight size={16} className="text-rose-400" strokeWidth={2} />
               </div>
               <span className="text-sm font-medium text-white/90">Gider Ekle</span>
+            </motion.button>
+
+            {/* Analiz — quick access */}
+            <motion.button
+              className="dock-radial-action"
+              onClick={() => { closeFab(); onTabChange('analytics'); }}
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.8 }}
+              transition={{ ...springs.snappy, delay: 0.15 }}
+              aria-label="Analiz"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20">
+                <BarChart3 size={16} className="text-indigo-400" strokeWidth={2} />
+              </div>
+              <span className="text-sm font-medium text-white/90">Analiz</span>
             </motion.button>
           </div>
         )}

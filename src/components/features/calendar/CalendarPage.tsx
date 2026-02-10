@@ -12,7 +12,7 @@
  * - Budget alert cards
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -31,6 +31,8 @@ import { useBudgetStore } from '@/store/useBudgetStore';
 import { getReminders } from '@/actions/reminder';
 import { getBudgetAlerts, checkBudgetAlerts } from '@/actions/budget-alert';
 import type { Reminder, BudgetAlert } from '@/db/schema';
+
+import { Drawer } from '@/components/ui/Drawer';
 
 // Lazy-loaded sub-components
 import { DayDetailPanel } from './DayDetailPanel';
@@ -84,11 +86,23 @@ interface CalendarPageProps {
   onSelectTransaction?: (tx: MergedTransaction) => void;
 }
 
+// Mobile detection (< lg = < 1024px)
+const LG_QUERY = '(max-width: 1023px)';
+function subscribeMQ(cb: () => void) {
+  const mql = window.matchMedia(LG_QUERY);
+  mql.addEventListener('change', cb);
+  return () => mql.removeEventListener('change', cb);
+}
+function getSnapshotMQ() { return window.matchMedia(LG_QUERY).matches; }
+function getServerSnapshotMQ() { return false; }
+
 export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTransaction }: CalendarPageProps) {
+  const isMobile = useSyncExternalStore(subscribeMQ, getSnapshotMQ, getServerSnapshotMQ);
   const now = new Date();
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(now.getMonth());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showDayDrawer, setShowDayDrawer] = useState(false);
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [budgetAlertsList, setBudgetAlertsList] = useState<BudgetAlert[]>([]);
   const [alertChecks, setAlertChecks] = useState<{ alertId: string; name: string; thresholdAmount: number; currentSpending: number; isTriggered: boolean; percentUsed: number }[]>([]);
@@ -375,7 +389,10 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
                 return (
                   <button
                     key={day}
-                    onClick={() => setSelectedDate(date)}
+                    onClick={() => {
+                      setSelectedDate(date);
+                      if (isMobile) setShowDayDrawer(true);
+                    }}
                     className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-sm transition-all duration-200 relative ${
                       isSelected
                         ? 'bg-primary/20 border border-primary/40 text-white'
@@ -505,7 +522,7 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
           )}
         </div>
 
-        {/* Day Detail Panel — xl+ */}
+        {/* Day Detail Panel — xl+ desktop */}
         {selectedDate && (
           <div className="hidden xl:block w-80 shrink-0">
             <DayDetailPanel
@@ -517,6 +534,28 @@ export function CalendarPage({ onOpenReminderForm, onOpenAlertForm, onSelectTran
           </div>
         )}
       </div>
+
+      {/* Day Detail Drawer — mobile (< lg) */}
+      <Drawer
+        open={showDayDrawer && isMobile && !!selectedDate}
+        onOpenChange={(open) => {
+          setShowDayDrawer(open);
+          if (!open) setSelectedDate(null);
+        }}
+        title={selectedDate?.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })}
+      >
+        {selectedDate && (
+          <DayDetailPanel
+            date={selectedDate}
+            reminders={selectedDateReminders}
+            onClose={() => { setShowDayDrawer(false); setSelectedDate(null); }}
+            onTransactionClick={(tx) => {
+              setShowDayDrawer(false);
+              handleTransactionClick(tx);
+            }}
+          />
+        )}
+      </Drawer>
     </div>
   );
 }
